@@ -1,1 +1,0 @@
-Driver: the usage limit has reset. Continue the plan from where you stopped; next: {{next}}.

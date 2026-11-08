@@ -1,1 +1,0 @@
-Driver: start the Buildflow flow per docs/BRIEF.md § Orchestration (driver directives): run bash buildflow/bin/state.sh and take the next action from its current phase (setup, start, shape), committing on {{build_branch}}. Operator AFK: decide and log in docs/decisions.md. At every gate print GATE: <tag> alone on a line and STOP; never run sign.sh or create tags.

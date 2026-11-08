@@ -1,9 +1,0 @@
-{
-  "name": "tab-pilot",
-  "main": "src/index.ts",
-  "compatibility_date": "2026-10-01",
-  "durable_objects": { "bindings": [{ "name": "HUB", "class_name": "Hub" }] },
-  "r2_buckets": [{ "binding": "FILES", "bucket_name": "tab-pilot-files" }],
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Hub"] }],
-  "observability": { "enabled": true }
-}

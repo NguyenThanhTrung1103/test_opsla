@@ -1,1 +1,0 @@
-Driver: disk at {{free_gb}} GB. Run at most 1 implementer until I send RESUME.

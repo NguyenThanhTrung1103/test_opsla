@@ -1,1 +1,0 @@
-Driver: independent verify of {{sha7}} FAILED ({{summary}}). Details: {{verify_file}}. Fix on {{build_branch}} before starting new phases; I re-verify when the branch head moves.

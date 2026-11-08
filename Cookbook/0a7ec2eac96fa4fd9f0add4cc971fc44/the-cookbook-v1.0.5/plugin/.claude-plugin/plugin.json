@@ -1,7 +1,0 @@
-{
-  "name": "intent-studio",
-  "version": "0.5.0",
-  "description": "Turn a vague business idea into a one-page plan an AI builder can run with, check it, and hand it to your builder. Claude can also discuss business questions and content with your own ChatGPT or Gemini, by rules.",
-  "author": { "name": "Tony" },
-  "license": "LicenseRef-Proprietary"
-}

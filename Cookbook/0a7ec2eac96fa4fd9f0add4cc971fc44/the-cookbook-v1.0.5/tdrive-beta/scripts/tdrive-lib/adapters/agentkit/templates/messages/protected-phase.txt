@@ -1,1 +1,0 @@
-Driver: phase {{phase}} ({{name}}) touches {{kind}}: every subagent on it uses model {{model}} with effort high, whatever its kind.

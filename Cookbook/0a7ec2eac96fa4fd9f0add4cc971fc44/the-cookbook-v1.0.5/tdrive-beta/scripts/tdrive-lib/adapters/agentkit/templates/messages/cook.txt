@@ -1,1 +1,0 @@
-/ak:cook {{plan_path}} --auto{{parallel_flag}} — follow docs/BRIEF.md § Orchestration (driver directives): max {{max_implementers}} agents total incl. nested; implementers never spawn agents; mark the phase Status cell Done and commit on {{build_branch}}. {{phase_limit_clause}}

@@ -1,16 +1,33 @@
-# Harness core maintenance binary
+# Harness maintenance
 scripts/bin/harness
 scripts/bin/harness.exe
 
-# Local SQLite State
+# Local runtime state & databases
 harness.db
 *.db
+*.db-journal
+*.sqlite
+data/
 
-# Disposable Cookbook Sandbox
-.cookbook-sandbox/
+# Cloudflare local dev cache
+.wrangler/
 
-# Dependencies & Build
+# Dependencies & build outputs
 node_modules/
 dist/
 .gemini/
+.cookbook-sandbox/
+.harness-core/
 
+# External reference archives & skills (not needed for project runtime)
+Cookbook/
+200lab-agent-skills/
+200lab-agent-skills.zip
+
+# Temporary scripts & artifacts
+apply_uxui_fixes.py
+*.tmp
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

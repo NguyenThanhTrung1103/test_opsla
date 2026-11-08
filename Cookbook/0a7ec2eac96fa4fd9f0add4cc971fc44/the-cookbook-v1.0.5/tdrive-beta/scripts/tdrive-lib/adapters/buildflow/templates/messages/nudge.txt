@@ -1,1 +1,0 @@
-Driver check-in: you look idle. Continue the ledger per docs/BRIEF.md § Orchestration (driver directives); next: {{next}}. If a gate waits, print GATE: <tag> alone on a line and work only on rows it does not block; otherwise decide the safest option, log it in docs/decisions.md, and continue.

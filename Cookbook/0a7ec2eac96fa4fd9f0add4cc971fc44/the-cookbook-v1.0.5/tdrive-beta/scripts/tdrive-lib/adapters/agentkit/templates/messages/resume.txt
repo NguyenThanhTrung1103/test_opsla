@@ -1,1 +1,0 @@
-Driver: RESUME dispatch, max {{max_implementers}} concurrent implementers.

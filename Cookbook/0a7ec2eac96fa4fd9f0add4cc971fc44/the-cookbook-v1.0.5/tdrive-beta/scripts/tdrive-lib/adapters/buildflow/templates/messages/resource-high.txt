@@ -1,1 +1,0 @@
-Driver: resource pressure is {{level}} (memory free {{mem_free_pct}}%, load per cpu {{load_per_cpu}}, running agents incl. nested {{agents}}, cap {{max_implementers}}); advice: {{advice}}. {{dispatch_rule}}; implementers work sequentially without subagents.

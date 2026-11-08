@@ -1,1 +1,0 @@
-Driver check-in: you look idle. Continue the plan per docs/BRIEF.md § Orchestration (driver directives); next: {{next}}. If blocked, decide the safest option, log it in docs/decisions.md, and continue.
