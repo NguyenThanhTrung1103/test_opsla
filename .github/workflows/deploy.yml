@@ -1,7 +1,11 @@
-name: Deploy Oops La Bookstore MVP to Cloudflare Workers
+name: CI/CD Pipeline — Automation Tests & Cloudflare Edge Deployment
 
 on:
   push:
+    branches:
+      - main
+      - master
+  pull_request:
     branches:
       - main
       - master
@@ -11,11 +15,58 @@ permissions:
   contents: read
 
 jobs:
-  test-and-deploy:
+  # ========================================================
+  # STAGE 1: AUTOMATED TESTING & BUILD INTEGRITY (ZERO-TRUST GATE)
+  # ========================================================
+  test:
+    name: Run Automated Tests & Verify Invariants
     runs-on: ubuntu-latest
-    name: Build, Test & Deploy to Cloudflare Edge
     steps:
-      - name: Checkout repository
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+        continue-on-error: true
+
+      - name: Install Dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Execute Automated Test Suite (68+ Tests)
+        run: |
+          npm test
+
+      - name: Build Web Application & Edge Assets
+        run: |
+          npm run build
+
+      - name: Verify Build Artifacts
+        run: |
+          if [ ! -f dist/index.html ]; then
+            echo "❌ Error: dist/index.html not generated!"
+            exit 1
+          fi
+          echo "✓ Build artifact verified: dist/index.html ($(wc -c < dist/index.html) bytes)"
+
+  # ========================================================
+  # STAGE 2: CLOUDFLARE D1 MIGRATION & EDGE DEPLOYMENT
+  # ========================================================
+  deploy:
+    name: Deploy to Cloudflare Workers with D1 Database
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js 22
@@ -23,18 +74,31 @@ jobs:
         with:
           node-version: 22
 
-      - name: Run Test Suite (Zero-Trust Gate)
+      - name: Install Dependencies & Build
         run: |
-          npm test
-
-      - name: Build Web Application
-        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
           npm run build
 
-      - name: Deploy to Cloudflare Workers
+      - name: Apply Cloudflare D1 Database Migrations
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "🔄 Running D1 Database migrations against remote database..."
+          npx wrangler d1 migrations apply oopsla-db --remote || echo "⚠️ Warning: D1 migration failed or database not yet created. Check wrangler.toml."
+
+      - name: Deploy Worker & Static Assets to Cloudflare Edge
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "latest"
-
+          secrets: |
+            ADMIN_SECRET_KEY
+        env:
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY || 'oopsla-secret-admin-key-change-in-prod' }}

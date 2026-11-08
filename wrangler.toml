@@ -4,7 +4,16 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
-
 [assets]
 directory = "./dist"
 binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "oopsla-db"
+database_id = "00000000-0000-0000-0000-000000000000" # Cloudflare D1 UUID from wrangler d1 create oopsla-db
+migrations_dir = "migrations"
+
+[vars]
+ENVIRONMENT = "production"
+DEFAULT_ADMIN_ROLE = "STAFF"
