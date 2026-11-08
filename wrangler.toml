@@ -11,7 +11,7 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "oopsla-db"
-database_id = "00000000-0000-0000-0000-000000000000" # Cloudflare D1 UUID from wrangler d1 create oopsla-db
+database_id = "3c078acc-b184-480b-81c4-58bc7b1c73c5"
 migrations_dir = "migrations"
 
 [vars]
