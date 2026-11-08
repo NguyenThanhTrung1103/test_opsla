@@ -1,0 +1,1 @@
+Driver: build the ledger rows of {{plan_path}} on {{build_branch}} per docs/BRIEF.md § Orchestration (driver directives): max {{max_implementers}} agents incl. nested; implementers never spawn agents; once a row's closing gate is signed, mark it done in the ledger and commit. Gates: print GATE: <tag> alone and STOP; never run sign.sh. {{phase_limit_clause}}

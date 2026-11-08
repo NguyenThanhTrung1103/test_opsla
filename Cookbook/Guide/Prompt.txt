@@ -1,0 +1,39 @@
+Tôi đang sử dụng Windows, Google Antigravity và AgentKit đã cài sẵn.
+
+Hãy đọc `AGENTS.md` (Global Constitution, Source of Truth), file Model Routing và tài liệu Handoff của The Cookbook.
+
+**Nhiệm vụ: Kiểm tra, chuẩn hóa và chuẩn bị tích hợp The Cookbook v1.0.5 vào Antigravity.**
+
+Sử dụng AgentKit Engineer Skills theo khả năng thực tế đã được phát hiện:
+
+1. Dùng `ak:scout` để kiểm tra cấu trúc ZIP gốc và Compatibility Pack.
+2. Dùng `ak:xia` ở chế độ phân tích port, xác định những phần có thể tái sử dụng, những phần cần adapter và các dependency không tương thích.
+3. Dùng `ak:skill-creator` để kiểm tra và đề xuất chuẩn hóa Cookbook Skills.
+4. Lập kế hoạch thay đổi tối thiểu, tránh tạo thêm framework hoặc công cụ điều phối không cần thiết.
+5. Trình kế hoạch và danh sách file dự kiến thay đổi cho tôi duyệt trước khi dùng `ak:cook`.
+6. Sau khi được duyệt, dùng `ak:test` và `ak:code-review` để kiểm chứng PV-01, PV-02 và các thay đổi.
+
+**Các ràng buộc bắt buộc:**
+
+- Giữ nguyên 100% `AGENTS.md` và source The Cookbook gốc.
+- Không ghi đè Rules/Skills đã tồn tại.
+- Bỏ qua `tdrive` vì tôi dùng Windows.
+- Không cài lại AgentKit nếu bản hiện tại hoạt động.
+- Không tự chạy script cài đặt của Claude Code.
+- Không sửa dự án Oops La hoặc bắt đầu xây dựng ứng dụng.
+- Nếu AgentKit Skill không được Antigravity nhận diện, báo `BLOCKED`, không giả định đã chạy.
+- Chỉ báo `PASS` khi có bằng chứng thực tế trên Windows.
+- Gemini Flash 3.8 phụ trách coding; Claude Opus 5.5 phụ trách review và verification. Fallback sang Flash chỉ khi có bằng chứng Opus hết quota.
+- Không tự tuyên bố đã chuyển model nếu Antigravity chưa hỗ trợ hoặc chưa xác minh.
+
+Xuất báo cáo Markdown gồm:
+
+- Source và cấu trúc đã kiểm tra
+- Ma trận tương thích Cookbook → Antigravity
+- File cần giữ, sửa, thêm hoặc loại khỏi bản port
+- Kết quả PV-01 và PV-02: `PASS / FAIL / BLOCKED`
+- Các lệnh đã thực thi và kết quả
+- Rủi ro còn tồn tại
+- Kế hoạch triển khai tối thiểu cần tôi phê duyệt
+
+Chỉ thực hiện kiểm tra và lập kế hoạch ở vòng đầu. **Không tự triển khai trước khi được duyệt.**

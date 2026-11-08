@@ -1,0 +1,355 @@
+# Incident registry of the pattern catcher (data only; yamlite subset).
+# Closed and extensible: every class names its detector function in
+# core/lib/incidents.py (an unknown function is refused), a seed fixture
+# under tests/fixtures/incidents/ and a test case in
+# tests/incidents/test_detectors.sh. Adding a class = entry + detector +
+# seed fixture + test.
+#
+# Fields per class:
+#   id          class id (lowercase, dashes)
+#   severity    low | medium | high. High only for data-loss risk, money,
+#               security, crash or a false acceptance (a pass that does
+#               not hold on a clean checkout): one high occurrence makes a lesson
+#               candidate; other classes need lessons.min_count.
+#   description what the incident is
+#   detector    function in core/lib/incidents.py: (events, params, ctx)
+#   params      detector parameters (optional)
+#   wake_match  stop ids and watch events whose wake shows this lesson
+#   promote     how a lesson may change the kit: target (pane-regex,
+#               watch-trigger, govern-guard, verify-probe, message-template,
+#               preset-default, model-policy), recipe (ready | draft) and
+#               the recipe's fields (preset-default: key, value, presets;
+#               pane-regex: expect_state, a classifier STATE or not-<STATE>;
+#               drafts: test_hint)
+#   fix_hint    one-line fix shown in lessons and at wake
+#   capture     true: a live incident saves a scrubbed pane capture
+#   seeds       incidents the class was seeded from: date, provenance
+#               (real | derived | synthetic, with repo files and decision
+#               ids only) and the fixture
+version: 1
+classes:
+  - id: false-busy
+    severity: medium
+    description: "The pane was read BUSY while its screen stayed unchanged for several watch ticks, so an idle orchestrator was left waiting."
+    detector: detect_false_busy
+    params:
+      min_static_ticks: 3
+    wake_match: [busy-stall, stall]
+    promote:
+      target: pane-regex
+      recipe: draft
+      expect_state: IDLE
+      test_hint: "The saved capture classifies as IDLE, not BUSY."
+    fix_hint: "Read a turn-end line with no live timer as IDLE; nudge or cook instead of waiting on a static BUSY screen."
+    capture: true
+    seeds:
+      - date: "2026-10-10"
+        provenance: "real: A1 turn-end line read BUSY, cook held 27 min (tests/fixtures/trace/backfill-demo/tdrive.log 17:12:46Z to 17:40:13Z); fix 6ed5e1f; docs/decisions.md D-77; plans/reports/fix-brief-261010-turn-end-busy.md"
+        fixture: tests/fixtures/incidents/false-busy.jsonl
+  - id: pause-not-lifted
+    severity: medium
+    description: "A resource pause was sent and the level dropped below critical for several checks, but no resource-resume message lifted it."
+    detector: detect_pause_not_lifted
+    params:
+      pause_rule: '(?i)pause|dispatch no new agents'
+      min_checks: 3
+    wake_match: [stall, resource-critical-persisting]
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "A paused episode that drops below critical sends exactly one resource-resume message."
+    fix_hint: "Send one resource-resume when a paused episode drops below critical; never wait for level=ok."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "derived: real RESOURCE rows of the A1 run (tests/fixtures/trace/backfill-demo/govern.jsonl, critical to high, load 15.65 to 3.46 per cpu); the send template comes from the acceptance evidence because backfill cannot recover template names; fix ef99e66; docs/decisions.md D-77"
+        fixture: tests/fixtures/incidents/pause-not-lifted.jsonl
+  - id: report-contradiction
+    severity: medium
+    description: "A report showed verify PASS and also flagged the same sha as verify DEFERRED with a retry pending."
+    detector: detect_report_contradiction
+    wake_match: []
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "A report whose saved verify covers the pending sha shows no retry-pending heads-up."
+    fix_hint: "Do not show verify DEFERRED retry pending when a saved verify result already covers that sha."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "real: A1 phase report shows verify PASS targets 3/3 and verify DEFERRED 6c1b684 retry pending (tests/fixtures/trace/backfill-demo/reports/20261010-004429-52487-9.md); docs/decisions.md D-77"
+        fixture: tests/fixtures/incidents/report-contradiction
+  - id: report-overflow
+    severity: low
+    description: "A report DONE line ran over the length a reader can scan."
+    detector: detect_report_overflow
+    params:
+      max_done_chars: 400
+    wake_match: []
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "A report over many done phases keeps its DONE line within 400 chars."
+    fix_hint: "Cap the DONE line: up to 3 names, else a phase count with the latest name, at most 400 chars."
+    capture: false
+    seeds:
+      - date: "2026-10-09"
+        provenance: "real: first takeover report DONE line of 1162 chars joining 8 phases (tests/fixtures/incidents/report-overflow/reports/20261009-220956-25809-1.md); docs/decisions.md D-74"
+        fixture: tests/fixtures/incidents/report-overflow
+  - id: count-mismatch
+    severity: medium
+    description: "The RESOURCE agent count disagreed with the agents the pane showed at the same time."
+    detector: detect_count_mismatch
+    params:
+      window_s: 60
+    wake_match: []
+    promote:
+      target: pane-regex
+      recipe: draft
+      expect_state: BUSY
+      test_hint: "The saved capture reads the same AGENTS count as the pane event."
+    fix_hint: "Resolve the session before counting agents; trust the pane count over a session-less 0."
+    capture: true
+    seeds:
+      - date: "2026-10-09"
+        provenance: "real: takeover RESOURCE agents=0 five times while the pane showed 2 running agents (tests/fixtures/pane/live-tally-agents-2.txt); fix c0f304b; docs/decisions.md D-76. Provenance only, no detector: the manual watcher Done double count (plans/reports/fix-brief-261009-takeover-review.md)"
+        fixture: tests/fixtures/incidents/count-mismatch-agents.jsonl
+  - id: cache-in-use-cleanup
+    severity: high
+    description: "Cleanup would remove (or removed) a cache while a running process referenced its root."
+    detector: detect_cache_in_use_cleanup
+    params:
+      statuses: [would-clean, ok]
+    wake_match: [disk-alert-persisting]
+    promote:
+      target: govern-guard
+      recipe: ready
+    fix_hint: "Skip the cache while a process references its root; add that process to the entry's process_args_absent."
+    capture: false
+    seeds:
+      - date: "2026-10-09"
+        provenance: "real: playwright-browsers would-clean while chrome-headless-shell ran (tests/fixtures/govern/ps-live-playwright-go.txt); fix d9cd50a; docs/decisions.md D-59; plans/reports/fix-brief-261009-govern-guards.md. The Go cache case is not root-path detectable and stays covered by tests/govern/test_live_guards.sh"
+        fixture: tests/fixtures/incidents/cache-in-use-cleanup.jsonl
+  - id: resource-leak-foreign
+    severity: medium
+    description: "An orphaned process (parent pid 1) of another owner kept burning cpu across checks."
+    detector: detect_resource_leak_foreign
+    params:
+      ignore_cmds: [launchd, mds, mds_stores, mdworker, backupd, WindowServer, kernel_task, 'Virtualization VM', com.apple.Virtualization.VirtualMachine, softwareupdated, photoanalysisd]
+      min_cpu: 50
+      min_gap_min: 10
+    wake_match: [resource-critical-persisting]
+    promote:
+      target: watch-trigger
+      recipe: draft
+      test_hint: "TOP rows of an orphaned high-cpu process seen 10 minutes apart raise a heads-up."
+    fix_hint: "Name the orphaned high-cpu process (pid, cmd) to the operator; it is not the run's own load."
+    capture: false
+    seeds:
+      - date: "2026-10-09"
+        provenance: "real: takeover govern TOP rows, 5 yes processes owner=other about 65 percent cpu at 15:47Z, 3 of them about 75 percent at 17:03Z; ppid 1 observed by the orchestrator with ps; the driver removed 8 orphaned yes processes (state dir driver-actions.log, tests/fixtures/trace/driver-actions.log line 1); docs/decisions.md D-80"
+        fixture: tests/fixtures/incidents/resource-leak-foreign.jsonl
+  - id: nested-fanout-over-cap
+    severity: high
+    description: "More agents ran (nested included) than the run's concurrency cap."
+    detector: detect_nested_fanout_over_cap
+    wake_match: [resource-critical-persisting, RESOURCE_HIGH]
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "The cook and resource-high messages state the cap counts nested agents."
+    fix_hint: "Count nested agents against the cap; tell the orchestrator to run at most the cap including nested agents."
+    capture: false
+    seeds:
+      - date: "2026-10-09"
+        provenance: "derived: the overload of 2026-10-09 about 04:45Z, load 250 on 10 cpus, swap 25.5 of 26.6 GB, 6 agents incl. nested with cap 2 (tests/fixtures/resources/darwin-tonight, tests/fixtures/resources/pane-six-agents.synthetic.txt); docs/amendments/A01-resource-pressure.md; docs/decisions.md D-53"
+        fixture: tests/fixtures/incidents/nested-fanout-over-cap.jsonl
+  - id: probe-miss
+    severity: medium
+    description: "A mutation probe's gate exited 0 with the plant in place, so the probe missed."
+    detector: detect_probe_miss
+    params:
+      got: exit0
+    wake_match: [verify-failures]
+    promote:
+      target: verify-probe
+      recipe: draft
+      test_hint: "A regenerating gate still fails on the staged plant."
+    fix_hint: "Stage the probe plant so a regenerating gate cannot overwrite it before the gate runs."
+    capture: false
+    seeds:
+      - date: "2026-10-09"
+        provenance: "real: a generated-drift plant overwritten by a regenerating gen-check gate gave probe got=exit0 FAIL (tests/fixtures/verify/repo, tests/lib/fixture-verify-repo.sh); fix 21a95c2; docs/decisions.md D-74; plans/reports/fix-brief-261009-probe-staging.md"
+        fixture: tests/fixtures/incidents/probe-miss.jsonl
+  - id: false-resource-alarm
+    severity: low
+    description: "A resource alert fired while govern measured the resource level ok."
+    detector: detect_false_resource_alarm
+    params:
+      alarm_regex: '(?i)\b(swap|mem|memory|load|resource)'
+      window_s: 120
+    wake_match: [resource-critical-persisting]
+    promote:
+      target: watch-trigger
+      recipe: draft
+      test_hint: "Swap free 0.00M at 34 percent memory free gives RESOURCE level ok and no alert."
+    fix_hint: "Drive resource alerts by memory free percent and load per cpu; macOS sizes swap dynamically."
+    capture: false
+    seeds:
+      - date: "2026-10-09"
+        provenance: "derived: the manual watcher fired SWAP_LOW 0.00M at 34 percent free (tests/fixtures/resources/darwin-dynamic-swap); docs/decisions.md D-55; docs/amendments/A01-resource-pressure.md"
+        fixture: tests/fixtures/incidents/false-resource-alarm.jsonl
+  - id: false-question
+    severity: medium
+    description: "The pane was read as a QUESTION, then moved on with no keys or answer sent."
+    detector: detect_false_question
+    wake_match: [question]
+    promote:
+      target: pane-regex
+      recipe: draft
+      expect_state: not-QUESTION
+      test_hint: "The saved capture with question text in the scrollback does not classify as QUESTION."
+    fix_hint: "Match question prompts only in the bottom prompt region, never in scrollback."
+    capture: true
+    seeds:
+      - date: "2026-10-09"
+        provenance: "real (manual run): the watcher matched its QUESTION regex over the whole pane, later cut to 12 lines (docs/reference/manual-run/watch.sh line 13, docs/reference/manual-run/drive-watch-multi.sh line 16); plans/reports/researcher-261009-0822-pane-govern-fixtures.md finding 8; derived pane tests/fixtures/incidents/pane-quoted-question.derived.txt"
+        fixture: tests/fixtures/incidents/false-question.jsonl
+  - id: false-idle
+    severity: medium
+    description: "The pane was read IDLE while background shells or agents ran, or it turned BUSY again with nothing sent."
+    detector: detect_false_idle
+    wake_match: [stall]
+    promote:
+      target: pane-regex
+      recipe: draft
+      expect_state: BUSY
+      test_hint: "The saved capture with a running background shell classifies as BUSY."
+    fix_hint: "Treat a turn end with a running background shell or agent as BUSY, not IDLE."
+    capture: true
+    seeds:
+      - date: "2026-10-09"
+        provenance: "derived: a turn end with only a background shell reads IDLE to the manual watcher (tests/fixtures/pane/pane-turnend-bgagent-1.txt); plans/reports/researcher-261009-0822-pane-govern-fixtures.md finding 9"
+        fixture: tests/fixtures/incidents/false-idle.jsonl
+      - date: "2026-10-10"
+        provenance: "real: live A1 re-run demo-a02, the pane read IDLE while a red-team agent row ran and the loop nudged the engine, which committed its plan before the review finished (pane tests/fixtures/pane/pane-idle-agent-1.derived.txt; docs/decisions.md D-92; plans/reports/fix-brief-261010-live-a1-findings.md)"
+        fixture: tests/fixtures/incidents/false-idle-agent-row.jsonl
+  - id: limit-hit
+    severity: medium
+    description: "The engine hit its usage limit."
+    detector: detect_limit_hit
+    wake_match: [limit]
+    promote:
+      target: preset-default
+      recipe: ready
+      key: models.limit_switch_hits
+      value: 1
+      presets: [sleep-run]
+    fix_hint: "After repeated usage limits switch to the budget model table (models.limit_switch_hits)."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "synthetic: no limit was hit on 2026-10-09/10; the manual watcher reads a limit screen as IDLE (tests/fixtures/pane/pane-limit.synthetic.txt); plans/reports/researcher-261009-0822-pane-govern-fixtures.md finding 10"
+        fixture: tests/fixtures/incidents/limit-hit.jsonl
+  - id: watch-lapse
+    severity: medium
+    description: "After a wake with the session still busy, nothing re-armed the loop or a watch for too long."
+    detector: detect_watch_lapse
+    params:
+      max_gap_min: 15
+    wake_match: [stall, busy-stall]
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "The driver skill re-arms the loop right after handling a wake."
+    fix_hint: "Re-arm the loop (start --resume) right after handling a wake while the session is busy."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "synthetic: from the manual-run contract to actively monitor (docs/reference/manual-run/auto-contract.md)"
+        fixture: tests/fixtures/incidents/watch-lapse.jsonl
+  - id: send-garbled
+    severity: medium
+    description: "A message was sent but the input box still held pending text afterwards."
+    detector: detect_send_garbled
+    params:
+      window_s: 120
+    wake_match: [stall]
+    promote:
+      target: pane-regex
+      recipe: draft
+      expect_state: READY
+      test_hint: "The saved capture after the send reads PENDING_INPUT yes."
+    fix_hint: "Write long text to a file and send a pointer to it; after a send, check the input box is empty before the next message."
+    capture: true
+    seeds:
+      - date: "2026-10-10"
+        provenance: "synthetic: from the manual-run contract on send hygiene (docs/reference/manual-run/auto-contract.md); pane tests/fixtures/pane/live-typed-unsent.txt"
+        fixture: tests/fixtures/incidents/send-garbled.jsonl
+      - date: "2026-10-10"
+        provenance: "real: a long tmux send to the orchestrator arrived cut off (docs/driver-notes/N01-model-classifier.md; docs/decisions.md D-88); the trace is derived (send size and times approximate)"
+        fixture: tests/fixtures/incidents/send-garbled-truncated.jsonl
+  - id: rework-cascade
+    severity: medium
+    description: "Three or more verifies failed at one done count: surgical fixes are not converging."
+    detector: detect_rework_cascade
+    params:
+      min_fails: 3
+    wake_match: [verify-failures]
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "The third failed verify at one count asks the orchestrator to widen the fix."
+    fix_hint: "After three failed verifies at one phase, widen the fix (re-plan the phase) instead of another surgical card."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "synthetic: from the manual-run contract rule that three surgical cards mean widen (docs/reference/manual-run/auto-contract.md)"
+        fixture: tests/fixtures/incidents/rework-cascade.jsonl
+  - id: flake-rerun-pass
+    severity: medium
+    description: "One sha failed verify and later passed with no change: a flaky target."
+    detector: detect_flake_rerun_pass
+    wake_match: [verify-failures]
+    promote:
+      target: verify-probe
+      recipe: draft
+      test_hint: "A target that fails then passes on the same sha is reported as flaky."
+    fix_hint: "Rerun a failed target once before reporting FAIL and flag the target as flaky."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "synthetic: none seen on 2026-10-09/10"
+        fixture: tests/fixtures/incidents/flake-rerun-pass.jsonl
+  - id: empty-verify-output
+    severity: medium
+    description: "A test target exited 0 with no test summary line."
+    detector: detect_empty_verify_output
+    params:
+      test_targets: [test, tests, unit, e2e, integration, check-tests]
+    wake_match: [verify-failures]
+    promote:
+      target: verify-probe
+      recipe: draft
+      test_hint: "A test target with exit 0 and no summary line does not count as a pass."
+    fix_hint: "Require a test summary line for test targets; a silent exit 0 is not a pass."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "synthetic: none seen on 2026-10-09/10 (the A1 lint and gen-check targets have no summary but are not test targets)"
+        fixture: tests/fixtures/incidents/empty-verify-output.jsonl
+  - id: passes-only-in-dirty-tree
+    severity: high
+    description: "Verify failed on a clean checkout while the source work tree held git-ignored test files, so the tests passed only in the dirty tree."
+    detector: detect_passes_only_in_dirty_tree
+    wake_match: [verify-failures]
+    promote:
+      target: message-template
+      recipe: draft
+      test_hint: "A guard test fails when a file under tests/ is git-ignored or a fixture a tracked test names is not tracked."
+    fix_hint: "Track every fixture (never git-ignore tests/) and accept a phase only on a clean detached-worktree verify."
+    capture: false
+    seeds:
+      - date: "2026-10-10"
+        provenance: "real: phase-14 commit addf3f2 passed 838/838 in the orchestrator's dirty tree and 834/838 in the driver's clean detached-worktree verify; .gitignore *.log hid 3 trace fixture logs (tests/repo/test_fixtures_tracked.sh); docs/decisions.md D-83; plans/reports/fix-brief-261010-dirty-tree-fixtures.md"
+        fixture: tests/fixtures/incidents/passes-only-in-dirty-tree.jsonl

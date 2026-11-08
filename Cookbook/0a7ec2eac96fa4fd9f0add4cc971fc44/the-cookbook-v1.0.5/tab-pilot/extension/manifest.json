@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "tab-pilot",
+  "version": "0.5.0",
+  "description": "Remote control of ChatGPT, Gemini, Substack, LinkedIn, TikTok, Viblo and dev.to tabs via the tab-pilot relay (MCP / socket).",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "scripting",
+    "tabs",
+    "storage",
+    "alarms",
+    "tabGroups",
+    "debugger"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "tab-pilot"
+  },
+  "options_page": "options.html",
+  "minimum_chrome_version": "116"
+}

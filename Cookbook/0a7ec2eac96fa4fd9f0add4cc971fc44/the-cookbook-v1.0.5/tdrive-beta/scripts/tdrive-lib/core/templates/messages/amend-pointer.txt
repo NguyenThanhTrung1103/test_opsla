@@ -1,0 +1,1 @@
+Amendment {{id}} is in {{path}}: read it, commit it, amend the plan to apply it, mention {{id}} in the plan commit message, leave in-flight phases alone, then continue.

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Oops La Book Store — Admin CMS & Dual-Role Engine (Claude Design)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  
+  <!-- Claude Design System Styles -->
+  <link rel="stylesheet" href="./styles.css"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-[#FAF9F5] text-stone-900 selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white border-b border-stone-200">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-6">
+      
+      <!-- Brand & Admin Indicator -->
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 bg-stone-900 text-stone-100 rounded-lg flex items-center justify-center font-serif font-bold text-sm">
+            OL
+          </div>
+          <div>
+            <span class="font-serif text-base font-bold text-stone-900 block leading-tight">Oops La CMS</span>
+            <span class="text-[10px] font-mono text-stone-400 uppercase tracking-widest block">Operations Console</span>
+          </div>
+        </a>
+
+        <div class="h-4 w-px bg-stone-200 hidden sm:block"></div>
+
+        <!-- Return to Storefront link -->
+        <a href="index.html" class="text-xs font-mono text-stone-500 hover:text-stone-900 flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          <span>Xem Storefront Khách Hàng</span>
+        </a>
+      </div>
+
+      <!-- Center Dual Role Engine Control -->
+      <div class="flex items-center gap-3 bg-stone-100 p-1.5 rounded-lg border border-stone-200 shadow-xs">
+        <span class="text-[11px] font-mono text-stone-500 px-2 font-medium">Ca trực:</span>
+        <button id="roleBtnOwner" onclick="switchAdminRole('OWNER')" class="px-3 py-1 text-xs font-mono font-bold bg-amber-500 text-stone-950 rounded shadow-xs transition">
+          Chủ tiệm (OWNER)
+        </button>
+        <button id="roleBtnStaff" onclick="switchAdminRole('STAFF')" class="px-3 py-1 text-xs font-mono text-stone-600 hover:text-stone-900 rounded transition">
+          Nhân viên (STAFF)
+        </button>
+      </div>
+
+      <!-- Right Tokens link -->
+      <div class="flex items-center gap-3">
+        <a href="components.html" class="px-3 py-1.5 text-xs font-mono text-stone-600 hover:text-stone-900 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Design Tokens</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN ADMIN WORKSPACE ================= -->
+  <div class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-8 py-8 flex flex-col md:flex-row gap-8">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 shrink-0 space-y-6">
+      
+      <!-- Current Role Status Card -->
+      <div class="bg-white border border-stone-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400">PHÂN QUYỀN HIỆN TẠI</span>
+          <span id="adminCurrentRoleLabel" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded bg-amber-100 text-amber-900 border border-amber-300/60">
+            OWNER
+          </span>
+        </div>
+        <p id="adminRoleDesc" class="text-xs text-stone-600 leading-relaxed">
+          Toàn quyền duyệt đơn, trừ tồn kho (AC-11), hủy đơn đã duyệt và chỉnh sửa chuyên mục.
+        </p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <nav class="space-y-1.5">
+        <button id="adminNavBtn-dashboard" onclick="switchAdminTab('dashboard')" class="w-full text-left px-4 py-3 flex items-center gap-3 bg-stone-800 text-white font-medium rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          <span>Bảng Chỉ Số (Dashboard)</span>
+        </button>
+
+        <button id="adminNavBtn-orders" onclick="switchAdminTab('orders')" class="w-full text-left px-4 py-3 flex items-center gap-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div class="flex-1 flex items-center justify-between">
+            <span>Quản Lý Đơn Yêu Cầu</span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-100 text-amber-800 font-bold">3</span>
+          </div>
+        </button>
+
+        <button id="adminNavBtn-products" onclick="switchAdminTab('products')" class="w-full text-left px-4 py-3 flex items-center gap-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+          <span>Kho Ấn Bản Chuyên Khảo</span>
+        </button>
+
+        <button id="adminNavBtn-editorial" onclick="switchAdminTab('editorial')" class="w-full text-left px-4 py-3 flex items-center gap-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <span>Bài Luận & Chuyên Đề</span>
+        </button>
+      </nav>
+
+    </aside>
+
+    <!-- Main Workspace Content -->
+    <main class="flex-1 space-y-8">
+      
+      <!-- ================= TAB 1: DASHBOARD ================= -->
+      <section id="adminTab-dashboard" class="space-y-8">
+        
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">DOANH THU ĐÃ CHỐT</span>
+            <div id="adminKpiRevenue" class="font-mono text-2xl font-bold text-stone-900 tabular-nums">2.300.000 VNĐ</div>
+            <span class="text-[11px] font-mono text-emerald-600 mt-2 block">✓ 100% Tiền tệ chuẩn VNĐ (CURR-01)</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">ĐƠN CHỜ LIÊN HỆ</span>
+            <div id="adminKpiPending" class="font-mono text-2xl font-bold text-amber-700 tabular-nums">1</div>
+            <span class="text-[11px] font-mono text-amber-600 mt-2 block">Cần nhân viên liên hệ xác thực</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">CẢNH BÁO QUÁ 48 GIỜ</span>
+            <div id="adminKpiStale" class="font-mono text-2xl font-bold text-rose-700 tabular-nums">1</div>
+            <span class="text-[11px] font-mono text-rose-600 mt-2 block">Cần ưu tiên xử lý gấp</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">ẤN PHẨM CÒN 1 CUỐN</span>
+            <div id="adminKpiLowStock" class="font-mono text-2xl font-bold text-stone-900 tabular-nums">2</div>
+            <span class="text-[11px] font-mono text-stone-500 mt-2 block">Bow-Wow 2 & Tadao Ando XXL</span>
+          </div>
+
+        </div>
+
+        <!-- Invariants & Security Health Indicator -->
+        <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-4">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+            <h3 class="font-serif text-lg font-bold text-stone-900">Bảo Chứng Bất Biến Nghiệp Vụ (Tri-Pillar Governance)</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+              ● 100% Invariants Verified
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+              <strong class="font-mono text-stone-900 block mb-1">AC-11 & AC-15 Guard</strong>
+              <p class="text-stone-600">Chỉ tài khoản OWNER mới được kích hoạt lệnh trừ kho một lần duy nhất khi duyệt đơn.</p>
+            </div>
+            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+              <strong class="font-mono text-stone-900 block mb-1">BD-04 Auto-Reservation</strong>
+              <p class="text-stone-600">Khách hàng gửi yêu cầu giữ bản trên website không tự ý làm giảm số lượng tồn kho.</p>
+            </div>
+            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+              <strong class="font-mono text-stone-900 block mb-1">OD-01 Cancellation Guard</strong>
+              <p class="text-stone-600">Nhân viên STAFF không được phép hủy đơn hàng sau khi Owner đã duyệt chốt.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 2: ORDERS WORKFLOW ================= -->
+      <section id="adminTab-orders" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-stone-900">Quản Lý Đơn Yêu Cầu Sưu Tầm</h3>
+            <p class="text-xs font-mono text-stone-500 mt-1">Quy trình: PENDING_CONTACT → CONTACTED → CONFIRMED (hoặc CANCELLED)</p>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-stone-400">Xem:</span>
+            <button class="px-3 py-1.5 text-xs font-mono bg-white border border-stone-300 rounded-md hover:border-stone-800 transition">Tất cả đơn</button>
+            <button class="px-3 py-1.5 text-xs font-mono bg-white border border-stone-300 rounded-md hover:border-stone-800 transition">Chờ xử lý</button>
+          </div>
+        </div>
+
+        <!-- Orders Table Card -->
+        <div class="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-stone-50 border-b border-stone-200 text-[11px] font-mono text-stone-500 uppercase">
+                  <th class="px-4 py-3 font-semibold">Mã đơn & Tag</th>
+                  <th class="px-4 py-3 font-semibold">Người sưu tầm</th>
+                  <th class="px-4 py-3 font-semibold">Ấn bản & Giá trị</th>
+                  <th class="px-4 py-3 font-semibold">Trạng thái</th>
+                  <th class="px-4 py-3 font-semibold text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersTableBody">
+                <!-- Rendered by preview.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 3: PRODUCTS INVENTORY ================= -->
+      <section id="adminTab-products" class="hidden space-y-6">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-stone-900">Kho Ấn Phẩm Kiến Trúc</h3>
+            <p class="text-xs font-mono text-stone-500 mt-1">Cập nhật số lượng tồn kho tức thì với cơ chế bảo toàn</p>
+          </div>
+        </div>
+
+        <div class="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-stone-50 border-b border-stone-200 text-[11px] font-mono text-stone-500 uppercase">
+                  <th class="px-4 py-3 font-semibold">Ấn phẩm & ISBN</th>
+                  <th class="px-4 py-3 font-semibold">Giá niêm yết</th>
+                  <th class="px-4 py-3 font-semibold">Tồn kho</th>
+                  <th class="px-4 py-3 font-semibold">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody id="adminProductsTableBody">
+                <!-- Rendered by preview.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 4: EDITORIAL ESSAYS ================= -->
+      <section id="adminTab-editorial" class="hidden space-y-6">
+        <div>
+          <h3 class="font-serif text-2xl font-bold text-stone-900">Bài Luận Chuyên Đề & Nghiên Cứu</h3>
+          <p class="text-xs font-mono text-stone-500 mt-1">Nội dung giám tuyển và khảo cứu học thuật</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-mono text-stone-400 uppercase">01 Thg 11, 2026 • Giám tuyển Oops La</span>
+              <h4 class="font-serif text-lg font-bold text-stone-900 mt-1">Atelier Bow-Wow và Nghệ Thuật Giải Phẫu Không Gian 1:20</h4>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-mono rounded bg-emerald-50 text-emerald-800 border border-emerald-200">Đã xuất bản</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-mono text-stone-400 uppercase">03 Thg 11, 2026 • KTS. Lê Quang</span>
+              <h4 class="font-serif text-lg font-bold text-stone-900 mt-1">TASCHEN SUMO Edition: Khi Cuốn Sách Trở Thành Khối Điêu Khắc Độc Lập</h4>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-mono rounded bg-emerald-50 text-emerald-800 border border-emerald-200">Đã xuất bản</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Global Toast Notification -->
+  <div id="globalToast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 bg-stone-900 text-stone-50 px-4 py-3 rounded-xl shadow-xl text-xs font-mono border border-stone-800">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="globalToastMessage">Thao tác thành công</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./tweaks-panel.js"></script>
+  <script src="./preview.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto switch to orders on start if requested
+      renderAdminDashboard();
+      renderAdminOrders();
+      renderAdminProducts();
+    });
+  </script>
+</body>
+</html>

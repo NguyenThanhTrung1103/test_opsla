@@ -1,0 +1,39 @@
+{
+  "type": "design",
+  "designSystems": [],
+  "primaryDesignSystem": null,
+  "assets": {
+    "Oops La Book Store (Claude Design)": {
+      "versions": [
+        {
+          "path": "index.html",
+          "createdAt": "2026-11-07T15:16:19.747Z",
+          "status": "needs-review",
+          "subtitle": "Interactive Claude-inspired Storefront & Collector Journey"
+        }
+      ]
+    },
+    "Oops La CMS Dashboard": {
+      "versions": [
+        {
+          "path": "dashboard.html",
+          "createdAt": "2026-11-07T15:16:26.443Z",
+          "status": "needs-review",
+          "subtitle": "Admin CMS Console with Dual-Role Engine"
+        }
+      ]
+    },
+    "Claude Design System Specimen": {
+      "versions": [
+        {
+          "path": "components.html",
+          "createdAt": "2026-11-07T15:16:32.114Z",
+          "status": "needs-review",
+          "subtitle": "Component Library, Tokens & Guidelines"
+        }
+      ]
+    }
+  },
+  "createdAt": "2026-11-07T15:16:19.754Z",
+  "updatedAt": "2026-11-07T15:16:32.120Z"
+}

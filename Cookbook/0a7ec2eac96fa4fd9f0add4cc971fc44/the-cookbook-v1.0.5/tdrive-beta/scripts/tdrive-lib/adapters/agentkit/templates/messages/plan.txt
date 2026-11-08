@@ -1,0 +1,1 @@
+{{plan_command}} — operator AFK: adjudicate validation and red-team questions yourself (decide, log in docs/decisions.md). Phase table columns: | # | Phase | Depends on | Status | (Pending, In progress, Done). Commit the plan on {{build_branch}}. After red-team, STOP: do not start implementation.

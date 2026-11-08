@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Oops La Book Store — Architecture Monographs & Atelier Bow-Wow (Claude Design)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  
+  <!-- Claude Design System Styles -->
+  <link rel="stylesheet" href="./styles.css"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-[#FAF9F5] text-stone-900 selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- ================= TOP UTILITY & NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 bg-[#FAF9F5]/90 backdrop-blur-md border-b border-stone-200/80 transition-all">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-6">
+      
+      <!-- Brand & Monogram -->
+      <div class="flex items-center gap-6">
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 bg-stone-900 text-stone-100 rounded-lg flex items-center justify-center font-serif font-bold text-lg shadow-xs group-hover:bg-[#C2410C] transition-colors">
+            OL
+          </div>
+          <div>
+            <span class="font-serif text-lg font-bold tracking-tight text-stone-900 block leading-tight">Oops La Book Store</span>
+            <span class="text-[10px] font-mono tracking-widest text-stone-500 uppercase block">Editorial Architecture Archive</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Center Search Bar (Claude style command search) -->
+      <div class="hidden md:flex flex-1 max-w-md relative">
+        <div class="w-full flex items-center bg-white border border-stone-200 rounded-lg px-3.5 py-1.5 focus-within:border-stone-800 focus-within:ring-2 focus-within:ring-stone-800/10 shadow-xs transition-all">
+          <svg class="w-4 h-4 text-stone-400 mr-2.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            placeholder="Tìm theo KTS, ISBN, Tác phẩm (Bow-Wow, Ando...)" 
+            class="w-full text-xs font-mono bg-transparent focus:outline-none placeholder:text-stone-400"
+            oninput="handleSearch(this.value)"
+          />
+          <kbd class="hidden sm:inline-block text-[10px] font-mono text-stone-400 bg-stone-100 border border-stone-200 px-1.5 py-0.5 rounded">⌘K</kbd>
+        </div>
+      </div>
+
+      <!-- Right Actions: Switch to Admin CMS, Components Book, Shopping Bag -->
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg border border-stone-200 transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          <span>Admin CMS</span>
+        </a>
+
+        <a href="components.html" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg border border-stone-200 transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Design Tokens</span>
+        </a>
+
+        <!-- Shopping Bag CTA -->
+        <button onclick="toggleCartDrawer()" class="relative flex items-center gap-2 px-3.5 py-2 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono font-medium shadow-xs transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Túi sưu tầm</span>
+          <span id="cartCountBadge" class="w-5 h-5 rounded-full bg-[#C2410C] group-hover:bg-white text-white font-bold text-[10px] flex items-center justify-center tabular-nums">1</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO SHOWCASE (EDITORIAL ARCHIVE) ================= -->
+  <section class="border-b border-stone-200 bg-arch-grid py-12 lg:py-16">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8">
+      
+      <!-- Top Tagline & Book Switcher Pills -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-stone-200/80">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold bg-[#FFF7ED] text-[#C2410C] border border-[#FFEDD5] uppercase tracking-wider">
+            FEATURED TECHNICAL MONOGRAPH
+          </span>
+          <span id="heroPublisherBadge" class="text-xs font-mono text-stone-500 uppercase">TOTO PUBLISHING (TOKYO)</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-stone-400">Ấn phẩm trưng bày:</span>
+          <button onclick="switchHeroFeaturedBook('ols-book-01')" class="px-3 py-1 text-xs font-mono rounded-md border border-stone-300 hover:border-stone-800 bg-white font-medium transition">
+            Graphic Anatomy (Bow-Wow)
+          </button>
+          <button onclick="switchHeroFeaturedBook('ols-book-03')" class="px-3 py-1 text-xs font-mono rounded-md border border-stone-300 hover:border-stone-800 bg-white font-medium transition">
+            Tadao Ando XXL (SUMO)
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Showcase Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Editorial Content -->
+        <div class="lg:col-span-7 space-y-6">
+          <h1 id="heroBookTitle" class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900 leading-[1.05]">
+            Graphic Anatomy Atelier Bow-Wow
+          </h1>
+
+          <p id="heroBookQuote" class="font-serif text-lg sm:text-xl text-stone-700 leading-relaxed italic border-l-2 border-[#C2410C] pl-4">
+            Ấn bản kinh điển trình bày 43 công trình nhà ở của Atelier Bow-Wow qua các bản vẽ mặt cắt phối cảnh (Sectional Perspective) tỷ lệ 1:20 vẽ tay hoàn toàn. Từng chi tiết đồ đạc, nếp sinh hoạt và vật liệu được bóc tách với độ chuẩn xác vi mô.
+          </p>
+
+          <!-- Technical Specs Strip -->
+          <div class="grid grid-cols-3 gap-4 py-4 px-5 bg-white border border-stone-200/90 rounded-xl shadow-xs">
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Kích thước</span>
+              <span id="heroSpecDims" class="font-mono text-sm font-semibold text-stone-800 tabular-nums">260 × 260 mm</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Quy cách</span>
+              <span id="heroSpecPages" class="font-mono text-sm font-semibold text-stone-800 tabular-nums">156 Pages / 24 Houses</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Giá niêm yết (VNĐ)</span>
+              <span id="heroSpecPrice" class="font-mono text-sm font-bold text-[#C2410C] tabular-nums">1.250.000 VNĐ</span>
+            </div>
+          </div>
+
+          <!-- Action CTAs -->
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="openLookInsideModal(state.heroFeaturedBookId)" class="px-6 py-3.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono uppercase tracking-widest font-semibold flex items-center gap-2.5 shadow-sm transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>Xem giải phẫu không gian 1:20</span>
+            </button>
+
+            <button onclick="addToBag(state.heroFeaturedBookId)" class="px-6 py-3.5 bg-white hover:bg-stone-50 border border-stone-300 hover:border-stone-900 text-stone-900 rounded-lg text-xs font-mono uppercase tracking-widest font-semibold flex items-center gap-2 shadow-xs transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>Thêm vào túi sưu tầm</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Visual Book Stage & Plate Switcher -->
+        <div class="lg:col-span-5 flex flex-col items-center">
+          
+          <!-- Plate Switcher Buttons -->
+          <div class="flex items-center gap-1.5 p-1 bg-white border border-stone-200 rounded-lg shadow-xs mb-4">
+            <button id="heroBtn-jacket" onclick="switchHeroPlate('jacket')" class="px-3 py-1.5 text-xs font-mono font-medium rounded-md transition-all">
+              01. Dust Jacket
+            </button>
+            <button id="heroBtn-blue" onclick="switchHeroPlate('blue')" class="px-3 py-1.5 text-xs font-mono font-medium rounded-md transition-all">
+              02. Blue Hardcover
+            </button>
+            <button id="heroBtn-section" onclick="switchHeroPlate('section')" class="px-3 py-1.5 text-xs font-mono font-medium rounded-md transition-all">
+              03. Section 1:20
+            </button>
+          </div>
+
+          <!-- Dynamic SVG/Visual Plate Container -->
+          <div id="heroStageVisualContainer" class="w-full cursor-pointer" onclick="openLookInsideModal(state.heroFeaturedBookId)">
+            <!-- Rendered via preview.js -->
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MONOGRAPH CATALOG SECTION ================= -->
+  <section class="py-12 bg-white border-b border-stone-200">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8">
+      
+      <!-- Catalog Controls Toolbar -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-stone-200">
+        <div>
+          <h2 class="font-serif text-3xl font-bold text-stone-900 tracking-tight">Thư Mục Chuyên Khảo Kiến Trúc</h2>
+          <p class="text-xs font-mono text-stone-500 mt-1">Ấn bản sưu tầm, bản vẽ tay Atelier Bow-Wow & các tác phẩm tuyển tập TASCHEN</p>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div id="catalogCategoryPills" class="flex flex-wrap items-center gap-1.5">
+            <!-- Rendered by JS -->
+          </div>
+          <div class="h-4 w-px bg-stone-200 mx-1"></div>
+          <div id="catalogSizePills" class="flex items-center gap-1.5">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Counter & Live Status Bar -->
+      <div class="py-4 flex items-center justify-between text-xs font-mono text-stone-400">
+        <span id="catalogCountLabel">HIỂN THỊ 6 / 6 ẤN BẢN KIẾN TRÚC</span>
+        <span class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Đảm bảo bảo quản phòng vô trùng 50% RH
+        </span>
+      </div>
+
+      <!-- Books Responsive Grid -->
+      <div id="booksGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+        <!-- Rendered by preview.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= EDITORIAL ESSAY SECTION ================= -->
+  <section class="py-16 bg-[#FAF9F5] border-b border-stone-200">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <span class="text-xs font-mono text-[#C2410C] uppercase tracking-widest block mb-1">EDITORIAL ARCHIVE</span>
+          <h2 class="font-serif text-3xl font-bold text-stone-900">Bài Luận & Chuyên Đề Nghiên Cứu</h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <article class="bg-white border border-stone-200 rounded-xl p-8 shadow-xs flex flex-col justify-between hover:border-stone-400 transition">
+          <div>
+            <div class="flex items-center gap-3 text-xs font-mono text-stone-400 mb-3">
+              <span>01 Thg 11, 2026</span>
+              <span>•</span>
+              <span>6 phút đọc</span>
+              <span>•</span>
+              <span class="text-stone-700 font-semibold">Giám tuyển Oops La</span>
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-stone-900 mb-3 leading-snug">
+              Atelier Bow-Wow và Nghệ Thuật Giải Phẫu Không Gian 1:20
+            </h3>
+            <p class="font-sans text-sm text-stone-600 leading-relaxed mb-6">
+              Tại sao bản vẽ mặt cắt phối cảnh (Sectional Perspective) tỷ lệ 1:20 lại trở thành ngôn ngữ định danh cho trường phái kiến trúc hành vi Tokyo? Khảo sát 43 công trình nhà phố vi mô.
+            </p>
+          </div>
+          <button onclick="openLookInsideModal('ols-book-01')" class="text-xs font-mono font-semibold text-[#C2410C] hover:underline flex items-center gap-1.5 self-start">
+            Đọc bài luận và xem minh họa →
+          </button>
+        </article>
+
+        <article class="bg-white border border-stone-200 rounded-xl p-8 shadow-xs flex flex-col justify-between hover:border-stone-400 transition">
+          <div>
+            <div class="flex items-center gap-3 text-xs font-mono text-stone-400 mb-3">
+              <span>03 Thg 11, 2026</span>
+              <span>•</span>
+              <span>8 phút đọc</span>
+              <span>•</span>
+              <span class="text-stone-700 font-semibold">KTS. Lê Quang</span>
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-stone-900 mb-3 leading-snug">
+              TASCHEN SUMO Edition: Khi Cuốn Sách Trở Thành Khối Điêu Khắc Độc Lập
+            </h3>
+            <p class="font-sans text-sm text-stone-600 leading-relaxed mb-6">
+              Khảo sát ấn bản Tadao Ando XXL nặng 18.5kg và triết lý "Cuốn sách không chỉ để đọc, mà là một vật thể kiến trúc trong không gian sống" đi kèm giá đỡ sách thiết kế độc bản.
+            </p>
+          </div>
+          <button onclick="openLookInsideModal('ols-book-03')" class="text-xs font-mono font-semibold text-[#C2410C] hover:underline flex items-center gap-1.5 self-start">
+            Đọc bài luận và xem minh họa →
+          </button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white py-12 border-t border-stone-200 mt-auto">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div class="w-8 h-8 bg-stone-900 text-stone-100 rounded flex items-center justify-center font-serif font-bold text-sm">OL</div>
+        <span class="text-xs font-mono text-stone-500">Oops La Book Store © 2026. Editorial Architecture Platform.</span>
+      </div>
+      <div class="flex items-center gap-6 text-xs font-mono text-stone-500">
+        <span>Đơn vị tiền tệ chuẩn: VNĐ (CURR-01)</span>
+        <span>•</span>
+        <span>Cam kết bảo toàn nguyên bản BD-04</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL: CONTINUOUS VERTICAL LOOK INSIDE ================= -->
+  <div id="lookInsideModal" class="fixed inset-0 z-50 hidden bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#FAF9F5] border border-stone-200 rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-stone-200 bg-white flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-mono text-[#C2410C] uppercase tracking-widest block">LOOK INSIDE CONTINUOUS VIEWER</span>
+          <h3 id="modalBookTitle" class="font-serif text-xl font-bold text-stone-900">Graphic Anatomy Atelier Bow-Wow</h3>
+          <p id="modalBookMeta" class="text-xs font-mono text-stone-500 mt-0.5">TOTO Publishing • 978-4-88706-278-8</p>
+        </div>
+
+        <!-- Zoom & Close Controls -->
+        <div class="flex items-center gap-2">
+          <div class="flex items-center bg-stone-100 border border-stone-200 rounded-lg p-1 text-xs font-mono">
+            <button onclick="zoomSpread(-0.25)" class="px-2.5 py-1 text-stone-600 hover:text-stone-900 hover:bg-stone-200 rounded transition font-bold" title="Thu nhỏ">-</button>
+            <button onclick="resetSpreadZoom()" class="px-2 py-1 text-stone-600 hover:text-stone-900 hover:bg-stone-200 rounded transition" title="Mặc định 1x">1x</button>
+            <button onclick="zoomSpread(0.25)" class="px-2.5 py-1 text-stone-600 hover:text-stone-900 hover:bg-stone-200 rounded transition font-bold" title="Phóng to">+</button>
+          </div>
+          <button onclick="closeLookInsideModal()" class="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition" title="Đóng (ESC)">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Spreads Continuous Vertical Viewport -->
+      <div id="modalSpreadsContainer" class="flex-1 overflow-y-auto bg-stone-100/50 transition-transform">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-white border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-xs text-stone-600 max-w-xl">
+          <strong class="text-stone-900 font-semibold">Tình trạng vật lý: </strong>
+          <span id="modalPhysicalCondition">Ấn bản bảo quản chuẩn quốc tế.</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="modalBookPrice" class="font-mono text-base font-bold text-stone-900 tabular-nums">1.250.000 VNĐ</span>
+          <button onclick="addToBag(state.activeModalBook?.id); closeLookInsideModal();" class="px-5 py-2.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono font-semibold transition">
+            Thêm vào túi sưu tầm
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= SHOPPING BAG DRAWER ================= -->
+  <div id="cartDrawerBackdrop" class="fixed inset-0 z-50 hidden bg-stone-900/40 backdrop-blur-xs flex justify-end" onclick="if(event.target === this) toggleCartDrawer();">
+    <div class="w-full max-w-md bg-white h-full shadow-2xl flex flex-col border-l border-stone-200">
+      
+      <!-- Drawer Header -->
+      <div class="p-5 border-b border-stone-200 flex items-center justify-between bg-[#FAF9F5]">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-stone-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <h3 class="font-serif text-lg font-bold text-stone-900">Túi Ấn Phẩm Sưu Tầm</h3>
+        </div>
+        <button onclick="toggleCartDrawer()" class="p-1.5 text-stone-400 hover:text-stone-900 rounded-md">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Items List -->
+      <div id="cartItemsList" class="flex-1 overflow-y-auto p-5">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="p-5 border-t border-stone-200 bg-[#FAF9F5] space-y-4">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-stone-500 uppercase">Tổng tiền niêm yết</span>
+          <span id="cartSubtotalAmount" class="text-base font-bold text-stone-900 tabular-nums">0 VNĐ</span>
+        </div>
+        <div class="p-3 bg-amber-50 border border-amber-200/80 rounded-lg text-[11px] text-amber-900 font-sans">
+          <strong>Quy tắc BD-04:</strong> Gửi yêu cầu giữ bản sẽ không trừ kho tự động. Chủ tiệm sẽ liên hệ trực tiếp để xác nhận tình trạng ấn bản.
+        </div>
+        <button onclick="openCheckoutModal()" class="w-full py-3.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono uppercase tracking-widest font-semibold shadow-xs transition">
+          Gửi yêu cầu sưu tầm & Lấy mã FB Messenger
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: COLLECTOR REQUEST FORM ================= -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-stone-200 rounded-2xl w-full max-w-lg shadow-2xl p-6">
+      
+      <div class="flex items-center justify-between border-b border-stone-100 pb-4 mb-5">
+        <div>
+          <span class="text-[10px] font-mono text-[#C2410C] uppercase tracking-widest block">COLLECTOR REQUEST</span>
+          <h3 class="font-serif text-xl font-bold text-stone-900">Thông Tin Người Nhận Ấn Bản</h3>
+        </div>
+        <button onclick="closeCheckoutModal()" class="p-1.5 text-stone-400 hover:text-stone-900 rounded-md">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <form onsubmit="submitCollectorRequest(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono font-medium text-stone-700 mb-1">Họ và tên người sưu tầm *</label>
+          <input id="checkoutFullName" type="text" required placeholder="KTS. Nguyễn Văn A" class="w-full px-3.5 py-2 text-xs border border-stone-200 rounded-lg focus:outline-none focus:border-stone-800" value="Trần Minh Hoàng" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-medium text-stone-700 mb-1">Số điện thoại liên hệ (Việt Nam) *</label>
+          <input id="checkoutPhone" type="tel" required placeholder="0912345678" class="w-full px-3.5 py-2 text-xs font-mono border border-stone-200 rounded-lg focus:outline-none focus:border-stone-800" value="0912345678" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-medium text-stone-700 mb-1">Địa chỉ nhận ấn bản *</label>
+          <textarea id="checkoutAddress" required rows="2" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." class="w-full px-3.5 py-2 text-xs border border-stone-200 rounded-lg focus:outline-none focus:border-stone-800">Phòng 402, Tòa nhà Indochina, 4 Nguyễn Đình Chiểu, Quận 1, TP. Hồ Chí Minh</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-medium text-stone-700 mb-1">Ghi chú lưu kho / đóng gói (tùy chọn)</label>
+          <input id="checkoutNotes" type="text" placeholder="Bọc chống sốc 2 lớp góc sách..." class="w-full px-3.5 py-2 text-xs border border-stone-200 rounded-lg focus:outline-none focus:border-stone-800" value="Giao giờ hành chính, gọi trước 15 phút." />
+        </div>
+
+        <div class="pt-4 border-t border-stone-100 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeCheckoutModal()" class="px-4 py-2.5 text-xs font-mono text-stone-600 hover:bg-stone-100 rounded-lg transition">
+            Hủy
+          </button>
+          <button type="submit" class="px-5 py-2.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono font-semibold transition">
+            Xác nhận gửi yêu cầu
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: MESSENGER EXPORT CONFIRMATION ================= -->
+  <div id="messengerModal" class="fixed inset-0 z-50 hidden bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-stone-200 rounded-2xl w-full max-w-lg shadow-2xl p-6">
+      
+      <div class="flex items-center justify-between border-b border-stone-100 pb-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center font-bold">✓</div>
+          <div>
+            <h3 class="font-serif text-lg font-bold text-stone-900">Yêu Cầu Đã Ghi Nhận Thành Công!</h3>
+            <span class="text-xs font-mono text-stone-500">Mã đơn: <strong id="messengerOrderId" class="text-stone-900">OLS-xxxxxx</strong></span>
+          </div>
+        </div>
+        <button onclick="closeMessengerModal()" class="p-1.5 text-stone-400 hover:text-stone-900 rounded-md">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-stone-600 mb-3">
+        Dưới đây là nội dung đã được định dạng chuẩn. Hãy bấm sao chép và dán vào hộp thoại Facebook Messenger của Oops La để giữ bản nhanh nhất:
+      </p>
+
+      <textarea id="messengerCopyBox" readonly rows="8" class="w-full font-mono text-xs bg-stone-50 border border-stone-200 rounded-lg p-3 text-stone-800 focus:outline-none mb-4 selection:bg-amber-200"></textarea>
+
+      <div class="flex items-center justify-between gap-3">
+        <button onclick="closeMessengerModal()" class="px-4 py-2.5 text-xs font-mono text-stone-600 hover:bg-stone-100 rounded-lg transition">
+          Đóng
+        </button>
+        <button onclick="copyMessengerText()" class="px-5 py-2.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-2 shadow-xs transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>Sao chép vào Clipboard</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= GLOBAL TOAST NOTIFICATION ================= -->
+  <div id="globalToast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 bg-stone-900 text-stone-50 px-4 py-3 rounded-xl shadow-xl text-xs font-mono border border-stone-800">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="globalToastMessage">Thao tác thành công</span>
+  </div>
+
+  <!-- Tweaks Panel & Preview Scripts -->
+  <script src="./tweaks-panel.js"></script>
+  <script src="./preview.js"></script>
+</body>
+</html>

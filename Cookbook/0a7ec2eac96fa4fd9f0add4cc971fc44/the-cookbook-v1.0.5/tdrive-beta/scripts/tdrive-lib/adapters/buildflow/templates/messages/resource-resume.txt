@@ -1,0 +1,1 @@
+Driver: resource pressure eased to {{level}} (memory free {{mem_free_pct}}%, load per cpu {{load_per_cpu}}). Resume dispatch with at most {{max_implementers}} concurrent agents in total including nested; implementers still never spawn their own.

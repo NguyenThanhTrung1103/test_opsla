@@ -1,0 +1,121 @@
+# Model + effort policy: task kind -> model tier + effort.
+# Applied only through launch flags (the orchestrator) and directive text
+# (subagents); interactive model or effort commands are never typed.
+# Read by core/lib/models.py (yamlite subset: block maps, flow lists).
+version: 1
+
+# tier -> engine --model alias
+tiers:
+  strongest: opus
+  standard: sonnet
+  light: haiku
+
+# Protected kinds always run on the strongest tier with high effort and are
+# never downgraded. This list may only add kinds: security, money and auth
+# are hard-coded in models.py.
+protected: [security, money, auth]
+
+# Tables are selected by config models.table (budget: models.budget_table).
+# The orchestrator row picks only the model; its effort is run.effort.
+# tier none: no model, run the command.
+tables:
+  default:
+    orchestrator:
+      tier: strongest
+    plan:
+      tier: strongest
+      effort: high
+    red-team:
+      tier: strongest
+      effort: high
+    architecture:
+      tier: strongest
+      effort: high
+    security:
+      tier: strongest
+      effort: high
+    money:
+      tier: strongest
+      effort: high
+    auth:
+      tier: strongest
+      effort: high
+    review:
+      tier: strongest
+      effort: high
+    implement:
+      tier: standard
+      effort: medium
+    docs:
+      tier: standard
+      effort: medium
+    mechanical:
+      tier: standard
+      effort: medium
+    deterministic:
+      tier: none
+  budget:
+    orchestrator:
+      tier: standard
+    plan:
+      tier: standard
+      effort: high
+    red-team:
+      tier: standard
+      effort: high
+    architecture:
+      tier: standard
+      effort: high
+    security:
+      tier: strongest
+      effort: high
+    money:
+      tier: strongest
+      effort: high
+    auth:
+      tier: strongest
+      effort: high
+    review:
+      tier: standard
+      effort: high
+    implement:
+      tier: light
+      effort: medium
+    docs:
+      tier: light
+      effort: medium
+    mechanical:
+      tier: light
+      effort: medium
+    deterministic:
+      tier: none
+
+# Kind per phase. Protected (in the order of `protected`) only on evidence
+# that the phase CHANGES protected code: a protected tag, a protected keyword
+# in the title (plan row name or phase title) or the first Goal/Overview/
+# Scope sentence (code spans and HTML comments removed), or more than half of
+# the owned file paths with a keyword at a path-segment start
+# (`internal/ledger/`, `auth/`). Other prose and plan columns are context,
+# never evidence: a money-domain plan names payments in every phase. Then
+# the plan table's Model column (sets the tier of a non-protected kind); then frontmatter tags naming a kind; then these
+# keywords on the title and the first Goal/Overview sentence, in this order;
+# then the kind matching more than half of the owned paths; then the
+# default. Keywords are case-insensitive python regexes. `ledger` skips the
+# Buildflow ledger file LEDGER.md. A protected keyword carries its domain
+# sense, never a bare word with a common engineering, VCS or tooling sense
+# (git checkout, tmux/test/browser session, decommission, concurrency,
+# striped, commit signing, git credential helper, login shell, crypto/sha256).
+classify:
+  default: implement
+  keywords:
+    security: ['secur', 'secret', '\bkyc\b', 'crypto(?!/(sha\d*|md5)\b|\.createhash\b)', '\brls\b', 'vuln', '\b(ed25519|ecdsa|hmac)\b', '\bsigned manifests?\b']
+    money: ['ledger(?!\.md)', 'payout', 'payment', '(?<!de)commission', '\btax(es)?\b', 'billing', 'invoice', 'refund', 'money', 'checkout (page|flow|form|session|cart)', '\bcarts?\b', '\bstripe\b', 'paypal', 'braintree', 'adyen', 'wallet', 'payroll', '\bcurrenc(y|ies)\b', '\bpsps?\b']
+    auth: ['\bauth(?!or)', 'oauth', '\b(user|login|auth|web) sessions?\b', '\bsessions? (tokens?|cookies?|stores?|expiry|fixation)\b', 'step-?up', '(?<!docker )(?<!npm )\blog-?in\b(?! shells?\b)', '\bsign[- ]?in\b', '\bsign[- ]?up\b', 'password', '\b(user|login|account|client|api) credentials?\b', '\bjwt\b', '\bsso\b']
+    red-team: ['red[- ]?team', 'adversar', 'threat model']
+    architecture: ['architect', 'system design', '\bschema design']
+    review: ['\b(code|design|plan|pr|peer) review', '\breview (of |the )?(code|diff|changes|pull request)', '\baudit']
+    plan: ['\bplan(ning)?\b', 'roadmap', 'brainstorm']
+    docs: ['\bdocs?\b', 'documentation', 'readme', '\bguide\b', 'changelog', 'tutorial']
+    mechanical: ['\brename', '\btypos?\b', '\bformat(ting)?\b', '\bbump\b', '\breorder', '\bmove files']
+    deterministic: ['\bdeterministic\b', 'run the (test suite|linter)']
+    implement: ['\bimplement']

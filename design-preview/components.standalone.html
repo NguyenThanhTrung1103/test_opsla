@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Oops La Book Store — Design System & Component Library (Claude Design)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  
+  <!-- Claude Design System Styles -->
+  <style data-inlined-from="./styles.css">
+/* ==========================================================================
+   Oops La Book Store — Claude Design System
+   Architecture: Claude Code / Claude Design Inspired Editorial Commerce
+   ========================================================================== */
+
+:root {
+  /* Color Palette — Warm Paper & Refined Charcoal */
+  --bg-canvas: #FAF9F5;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F4F1EA;
+  --bg-muted: #EBE7DE;
+
+  --border-subtle: #E8E4DC;
+  --border-default: #D6D1C7;
+  --border-strong: #A8A29E;
+
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #78716C;
+  --text-faint: #A8A29E;
+
+  /* Brand Accents — Warm Terracotta / Sienna & Technical Cyan */
+  --accent: #C2410C;
+  --accent-hover: #9A3412;
+  --accent-subtle: #FFF7ED;
+  --accent-border: #FFEDD5;
+
+  --arch-blue: #0284C7;
+  --arch-blue-subtle: #F0F9FF;
+  --arch-blue-border: #BAE6FD;
+
+  --arch-ochre: #B45309;
+  --arch-ochre-subtle: #FEF3C7;
+
+  /* Semantic Status Tokens */
+  --status-success-bg: #ECFDF5;
+  --status-success-text: #065F46;
+  --status-success-border: #A7F3D0;
+
+  --status-warning-bg: #FFFBEB;
+  --status-warning-text: #92400E;
+  --status-warning-border: #FDE68A;
+
+  --status-danger-bg: #FEF2F2;
+  --status-danger-text: #991B1B;
+  --status-danger-border: #FECACA;
+
+  --status-muted-bg: #F5F5F4;
+  --status-muted-text: #78716C;
+  --status-muted-border: #E7E5E4;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(28, 25, 23, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(28, 25, 23, 0.06), 0 1px 2px -1px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(28, 25, 23, 0.06), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(28, 25, 23, 0.07), 0 4px 6px -4px rgba(28, 25, 23, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(28, 25, 23, 0.09), 0 8px 10px -6px rgba(28, 25, 23, 0.04);
+  --shadow-book: 0 12px 28px -6px rgba(28, 25, 23, 0.14), 0 6px 12px -4px rgba(28, 25, 23, 0.06), -3px 0 8px rgba(28, 25, 23, 0.04);
+  --shadow-book-hover: 0 20px 36px -8px rgba(28, 25, 23, 0.20), 0 8px 16px -4px rgba(28, 25, 23, 0.08), -4px 0 12px rgba(28, 25, 23, 0.06);
+
+  /* Typography */
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Dark Mode Overrides (for Tweaks Panel switching) */
+[data-theme="dark"] {
+  --bg-canvas: #121110;
+  --bg-surface: #1C1917;
+  --bg-subtle: #292524;
+  --bg-muted: #332E2B;
+
+  --border-subtle: #292524;
+  --border-default: #44403C;
+  --border-strong: #78716C;
+
+  --text-primary: #F5F5F4;
+  --text-secondary: #D6D3D1;
+  --text-muted: #A8A29E;
+  --text-faint: #78716C;
+
+  --accent: #EA580C;
+  --accent-hover: #F97316;
+  --accent-subtle: #431407;
+  --accent-border: #7C2D12;
+
+  --arch-blue: #38BDF8;
+  --arch-blue-subtle: #082F49;
+  --arch-blue-border: #075985;
+
+  --status-success-bg: #064E3B;
+  --status-success-text: #6EE7B7;
+  --status-success-border: #047857;
+
+  --status-warning-bg: #451A03;
+  --status-warning-text: #FCD34D;
+  --status-warning-border: #78350F;
+
+  --status-danger-bg: #450A0A;
+  --status-danger-text: #FCA5A5;
+  --status-danger-border: #7F1D1D;
+
+  --status-muted-bg: #292524;
+  --status-muted-text: #A8A29E;
+  --status-muted-border: #44403C;
+
+  --shadow-book: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+  --shadow-book-hover: 0 20px 36px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* Global Reset & Base Styling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular Numerals for Prices, Dimensions, Metrics */
+.tabular-nums, .price-tag, .spec-data, .metric-value, .order-id {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Refined Book Physical Presentation */
+.book-cover-stage {
+  perspective: 1200px;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.book-card-presentation {
+  position: relative;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.book-card-presentation:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-lg);
+}
+
+.book-spine-accent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0.08) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Architectural Subtle Blueprint Grid Background */
+.bg-arch-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(168, 162, 158, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(168, 162, 158, 0.08) 1px, transparent 1px);
+}
+
+/* Continuous Vertical Look Inside Reader */
+.spread-viewport {
+  max-height: calc(90vh - 120px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.spread-crease-refined {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0,0,0,0.02) 47%, 
+    rgba(0,0,0,0.12) 49.5%, 
+    rgba(255,255,255,0.3) 50%, 
+    rgba(0,0,0,0.10) 50.5%, 
+    rgba(0,0,0,0.02) 53%, 
+    transparent 100%
+  );
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Subtle Micro-Interactions */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Navigation Link Underline */
+.nav-link-refined {
+  position: relative;
+  transition: color 0.2s ease;
+}
+.nav-link-refined::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 1.5px;
+  background-color: var(--accent);
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link-refined:hover::after, .nav-link-refined.active::after {
+  width: 100%;
+}
+
+</style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-[#FAF9F5] text-stone-900 selection:bg-amber-100 selection:text-amber-900 pb-20">
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white border-b border-stone-200">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 bg-stone-900 text-stone-100 rounded-lg flex items-center justify-center font-serif font-bold text-sm">
+            OL
+          </div>
+          <div>
+            <span class="font-serif text-base font-bold text-stone-900 block leading-tight">Oops La Book Store</span>
+            <span class="text-[10px] font-mono text-stone-400 uppercase tracking-widest block">Design System Specimen</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <a href="index.html" class="text-stone-600 hover:text-stone-900 hover:underline">← Storefront</a>
+        <span>•</span>
+        <a href="dashboard.html" class="text-stone-600 hover:text-stone-900 hover:underline">Admin CMS →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= SPECIMEN CONTAINER ================= -->
+  <main class="max-w-[1400px] mx-auto px-4 sm:px-8 py-10 space-y-16">
+    
+    <!-- Title Section -->
+    <div class="border-b border-stone-200 pb-6">
+      <span class="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-[#FFF7ED] text-[#C2410C] border border-[#FFEDD5] uppercase tracking-wider">
+        CLAUDE DESIGN SYSTEM
+      </span>
+      <h1 class="font-serif text-4xl sm:text-5xl font-bold text-stone-900 tracking-tight mt-3">
+        Thư Viện Thành Phần & Nguyên Tắc Thiết Kế
+      </h1>
+      <p class="text-sm text-stone-600 font-sans mt-2 max-w-2xl leading-relaxed">
+        Bản quy chuẩn trực quan cho toàn bộ giao diện Oops La Book Store: màu sắc hài hòa, kiểu chữ tôn trọng tỷ lệ vàng kiến trúc, bo góc tiết chế và trải nghiệm mượt mà.
+      </p>
+    </div>
+
+    <!-- 1. COLOR TOKENS -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="font-serif text-2xl font-bold text-stone-900">1. Color Palette Tokens</h2>
+        <span class="text-xs font-mono text-stone-400">Validated with validate-palette.mjs</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <!-- Canvas -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#FAF9F5] border border-stone-300 mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Canvas</span>
+          <span class="font-mono text-[11px] text-stone-500">#FAF9F5</span>
+        </div>
+
+        <!-- Surface -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#FFFFFF] border border-stone-200 mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Surface</span>
+          <span class="font-mono text-[11px] text-stone-500">#FFFFFF</span>
+        </div>
+
+        <!-- Primary Accent -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#C2410C] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Terracotta</span>
+          <span class="font-mono text-[11px] text-stone-500">#C2410C</span>
+        </div>
+
+        <!-- Arch Cyan -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#0284C7] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Blueprint Blue</span>
+          <span class="font-mono text-[11px] text-stone-500">#0284C7</span>
+        </div>
+
+        <!-- Success -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#059669] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Emerald (Stock)</span>
+          <span class="font-mono text-[11px] text-stone-500">#059669</span>
+        </div>
+
+        <!-- Warning -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#D97706] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Amber (Low)</span>
+          <span class="font-mono text-[11px] text-stone-500">#D97706</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TYPOGRAPHY HIERARCHY -->
+    <section class="space-y-6">
+      <h2 class="font-serif text-2xl font-bold text-stone-900">2. Typography Hierarchy</h2>
+      
+      <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-6">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">Cormorant Garamond — Display 64px / Leading 1.05</span>
+          <div class="font-serif text-4xl sm:text-5xl font-bold text-stone-900 leading-tight">
+            Graphic Anatomy Atelier Bow-Wow
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">Cormorant Garamond — Heading 28px</span>
+          <div class="font-serif text-2xl font-bold text-stone-900">
+            TASCHEN SUMO Edition: Vật Thể Kiến Trúc Độc Lập
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">Inter — Body Text 14px / Leading 1.6</span>
+          <p class="font-sans text-sm text-stone-600 max-w-3xl leading-relaxed">
+            Ở tỷ lệ 1:20, kiến trúc không còn là hình khối trừu tượng mà trở thành giải phẫu học không gian (Spatial Anatomy). Từng chi tiết liên kết mộng gỗ, nếp sinh hoạt và vật liệu được bóc tách với độ chuẩn xác vi mô.
+          </p>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">JetBrains Mono — Telemetry & Specs (Tabular Numerals)</span>
+          <div class="font-mono text-xs text-stone-800 space-x-6">
+            <span>ISBN 978-4-88706-278-8</span>
+            <span>260 × 260 mm</span>
+            <span class="font-bold text-[#C2410C]">1.250.000 VNĐ</span>
+            <span>ROLE: OWNER (AC-11 GUARD)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BUTTONS & CONTROLS -->
+    <section class="space-y-6">
+      <h2 class="font-serif text-2xl font-bold text-stone-900">3. Button Variants & Interactive States</h2>
+      
+      <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs flex flex-wrap gap-4 items-center">
+        <!-- Primary Solid -->
+        <button class="px-5 py-2.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono font-medium shadow-xs transition-colors">
+          Primary Action
+        </button>
+
+        <!-- Secondary Outline -->
+        <button class="px-5 py-2.5 bg-white hover:bg-stone-50 border border-stone-300 hover:border-stone-800 text-stone-900 rounded-lg text-xs font-mono font-medium transition-colors">
+          Secondary Outline
+        </button>
+
+        <!-- Accent Pill -->
+        <button class="px-4 py-2 bg-[#FFF7ED] hover:bg-[#FFEDD5] text-[#C2410C] border border-[#FFEDD5] rounded-full text-xs font-mono font-semibold transition-colors">
+          Accent Pill
+        </button>
+
+        <!-- Danger / Cancel -->
+        <button class="px-4 py-2 text-rose-700 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-mono transition-colors">
+          Hủy yêu cầu
+        </button>
+
+        <!-- Disabled -->
+        <button disabled class="px-5 py-2.5 bg-stone-100 text-stone-400 rounded-lg text-xs font-mono cursor-not-allowed">
+          Đã khóa (Owner)
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. STATUS BADGES -->
+    <section class="space-y-6">
+      <h2 class="font-serif text-2xl font-bold text-stone-900">4. Status Badges & Indicators</h2>
+      
+      <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs flex flex-wrap gap-4 items-center">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Còn hàng (3)
+        </span>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-amber-50 text-amber-800 border border-amber-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Chỉ còn 1 cuốn
+        </span>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-stone-100 text-stone-500 border border-stone-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>Tạm hết hàng
+        </span>
+
+        <span class="px-2.5 py-1 text-xs font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300 rounded uppercase">
+          Quá 48H (Stale)
+        </span>
+
+        <span class="px-2.5 py-1 text-xs font-mono font-bold bg-amber-500 text-stone-950 rounded">
+          OWNER
+        </span>
+      </div>
+    </section>
+
+  </main>
+
+  <script  data-inlined-from="./tweaks-panel.js">
+/**
+ * tweaks-panel.js — Universal In-Page Design Tweaks & Iteration Panel
+ *
+ * Replaces claude.ai's iframe-bound `postMessage({ type: '__edit_mode_available' })`
+ * with a standalone, harness-agnostic floating control panel that works in any
+ * browser (`http://localhost`, `file://`, Agy preview, or Codex browser).
+ *
+ * Usage:
+ *   <script src="./tweaks-panel.js"><\/script>
+ *   <script>
+ *     window.UDTweaks.init({
+ *       storageKey: 'my-design-tweaks',
+ *       controls: [
+ *         { id: 'theme', label: 'Theme Mode', type: 'select', options: ['dark', 'light'], default: 'dark', attr: 'data-theme' },
+ *         { id: 'accent', label: 'Primary Accent', type: 'color', default: '#3b82f6', cssVar: '--accent' },
+ *         { id: 'density', label: 'Layout Density', type: 'select', options: ['comfortable', 'compact'], default: 'comfortable', attr: 'data-density' },
+ *         { id: 'radius', label: 'Corner Radius (px)', type: 'range', min: 0, max: 24, step: 2, default: 10, cssVar: '--radius', unit: 'px' }
+ *       ],
+ *       onChange(values) { console.log('Tweaks updated:', values); }
+ *     });
+ *   <\/script>
+ */
+(function () {
+  if (window.UDTweaks) return;
+
+  function init(config = {}) {
+    const storageKey = config.storageKey || 'ud-tweaks:' + location.pathname;
+    const controls = Array.isArray(config.controls) ? config.controls : [];
+    const rootEl = config.root || document.documentElement;
+
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    } catch {
+      saved = {};
+    }
+
+    const state = {};
+    for (const c of controls) {
+      state[c.id] = saved[c.id] !== undefined ? saved[c.id] : c.default;
+    }
+
+    function applyState() {
+      for (const c of controls) {
+        const val = state[c.id];
+        if (c.cssVar) {
+          rootEl.style.setProperty(c.cssVar, c.unit ? `${val}${c.unit}` : String(val));
+        }
+        if (c.attr) {
+          rootEl.setAttribute(c.attr, String(val));
+        }
+      }
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch {}
+      if (typeof config.onChange === 'function') {
+        config.onChange({ ...state });
+      }
+      window.dispatchEvent(new CustomEvent('ud:tweaks-change', { detail: { ...state } }));
+    }
+
+    function mountUI() {
+      const existing = document.getElementById('ud-tweaks-host');
+      if (existing) existing.remove();
+
+      const host = document.createElement('div');
+      host.id = 'ud-tweaks-host';
+      const shadow = host.attachShadow({ mode: 'open' });
+
+      shadow.innerHTML = `
+        <style>
+          :host { all: initial; position: fixed; right: 16px; bottom: 16px; z-index: 99999; font-family: system-ui, -apple-system, sans-serif; }
+          .fab {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.16);
+            padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+            cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+            transition: transform 0.15s ease, background 0.15s ease;
+          }
+          .fab:hover { transform: translateY(-1px); background: #1e293b; }
+          .panel {
+            display: none; width: 290px; background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(12px); color: #f8fafc;
+            border: 1px solid rgba(255,255,255,0.14); border-radius: 14px;
+            padding: 14px; margin-bottom: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+          }
+          .panel.open { display: block; }
+          .hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+          .title { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+          .actions { display: flex; gap: 6px; }
+          .mini-btn {
+            background: rgba(255,255,255,0.08); color: #cbd5e1; border: none;
+            border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer;
+          }
+          .mini-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+          .row { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+          label { font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; }
+          select, input[type="text"], input[type="range"] {
+            width: 100%; box-sizing: border-box; background: #1e293b; color: #f8fafc;
+            border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; padding: 5px 8px; font-size: 12px;
+          }
+          input[type="color"] { width: 100%; height: 28px; border: none; border-radius: 6px; background: transparent; cursor: pointer; }
+          @media print { :host { display: none !important; } }
+        </style>
+        <div class="panel" id="panel" role="dialog" aria-label="Design Tweaks">
+          <div class="hdr">
+            <span class="title">Design Tweaks</span>
+            <div class="actions">
+              <button class="mini-btn" id="copy-btn" title="Copy JSON state">Copy</button>
+              <button class="mini-btn" id="reset-btn" title="Reset defaults">Reset</button>
+            </div>
+          </div>
+          <div id="controls-body"></div>
+        </div>
+        <button class="fab" id="toggle-btn" aria-expanded="false">
+          <span>⚙ Tweaks</span>
+        </button>
+      `;
+
+      const body = shadow.getElementById('controls-body');
+      const inputsMap = new Map();
+
+      for (const c of controls) {
+        const row = document.createElement('div');
+        row.className = 'row';
+        const lbl = document.createElement('label');
+        const valSpan = document.createElement('span');
+        valSpan.textContent = String(state[c.id]);
+        lbl.innerHTML = `<span>${c.label || c.id}</span>`;
+        lbl.appendChild(valSpan);
+        row.appendChild(lbl);
+
+        let input;
+        if (c.type === 'select') {
+          input = document.createElement('select');
+          for (const opt of c.options || []) {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.textContent = opt;
+            if (String(state[c.id]) === String(opt)) o.selected = true;
+            input.appendChild(o);
+          }
+        } else {
+          input = document.createElement('input');
+          input.type = c.type || 'text';
+          if (c.min !== undefined) input.min = c.min;
+          if (c.max !== undefined) input.max = c.max;
+          if (c.step !== undefined) input.step = c.step;
+          input.value = state[c.id];
+        }
+
+        input.addEventListener('input', (e) => {
+          const v = c.type === 'range' ? Number(e.target.value) : e.target.value;
+          state[c.id] = v;
+          valSpan.textContent = String(v);
+          applyState();
+        });
+
+        inputsMap.set(c.id, { input, valSpan });
+        row.appendChild(input);
+        body.appendChild(row);
+      }
+
+      const panel = shadow.getElementById('panel');
+      const toggleBtn = shadow.getElementById('toggle-btn');
+      toggleBtn.addEventListener('click', () => {
+        const open = panel.classList.toggle('open');
+        toggleBtn.setAttribute('aria-expanded', String(open));
+      });
+
+      shadow.getElementById('reset-btn').addEventListener('click', () => {
+        for (const c of controls) {
+          state[c.id] = c.default;
+          const entry = inputsMap.get(c.id);
+          if (entry) {
+            entry.input.value = c.default;
+            entry.valSpan.textContent = String(c.default);
+          }
+        }
+        applyState();
+      });
+
+      const copyBtn = shadow.getElementById('copy-btn');
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(state, null, 2));
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+        } catch {}
+      });
+
+      document.body.appendChild(host);
+    }
+
+    applyState();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mountUI);
+    } else {
+      mountUI();
+    }
+
+    return {
+      getState: () => ({ ...state }),
+      set: (id, value) => {
+        state[id] = value;
+        applyState();
+      },
+    };
+  }
+
+  window.UDTweaks = { init };
+})();
+
+</script>
+</body>
+</html>

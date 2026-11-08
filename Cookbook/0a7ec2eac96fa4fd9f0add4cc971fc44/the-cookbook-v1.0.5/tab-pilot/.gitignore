@@ -1,0 +1,15 @@
+node_modules
+.wrangler
+.token
+.env
+.dev.vars
+*.log
+.wrangler.gen.jsonc
+
+# never commit captured sessions or build output
+*.har
+*cookies*.json
+cookies.txt
+screenshots/
+*.png
+dist/

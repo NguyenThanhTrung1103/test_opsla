@@ -1,0 +1,123 @@
+#!/bin/bash
+# tdrive dispatcher: tdrive [global flags] <command> [args]
+# Global flags may appear anywhere before a `--` terminator; they are removed
+# from the argument list and exported as TDRIVE_* for the command script.
+set -u
+
+td_self=${BASH_SOURCE[0]}
+while [ -L "$td_self" ]; do
+  td_link=$(readlink "$td_self") || { printf 'tdrive: cannot resolve symlink %s\n' "$td_self" >&2; exit 3; }
+  case "$td_link" in
+    /*) td_self=$td_link ;;
+    *) td_self=$(dirname "$td_self")/$td_link ;;
+  esac
+done
+td_selfdir=$(cd -P "$(dirname "$td_self")" && pwd)
+if [ -d "$td_selfdir/tdrive-lib/core" ]; then
+  TD_ROOT=$td_selfdir/tdrive-lib
+else
+  TD_ROOT=$(cd -P "$td_selfdir/.." && pwd)
+fi
+TDRIVE_BIN="$td_selfdir/$(basename "$td_self")"
+export TDRIVE_BIN
+
+TD_COMMANDS="boot send watch verify govern decide report amend handoff start state sign lint trace lessons retro testlock version"
+
+usage() {
+  cat <<'EOF'
+usage: tdrive [global flags] <command> [args]
+       tdrive help | tdrive <command> --help
+
+Commands:
+  boot      start the engine session in tmux and wait until it is ready
+  send      type a sanitized message or whitelisted keys into the session
+  watch     wait for the next event (phase done, idle, question, limit, disk)
+  verify    independently verify the build branch in a temporary worktree
+  govern    report disk floors and attribution; run allowlisted cleanup
+  decide    log a decision row and optionally set a typed config key
+  report    write a stage report (done, next, heads-up, progress)
+  amend     write and send a plan amendment, then confirm its receipt
+  handoff   write a driver or orchestrator handoff brief
+  start     bootstrap a project, boot the engine and run the drive loop
+  state     print plan progress for the engine's build branch
+  sign      sign a gate under the signing policy (experimental)
+  lint      check shipped files for portability and stable-artifact rules
+  trace     record a driver event, check or backfill the run's operate trace
+  lessons   list the lessons learned across runs, or those matching a wake
+  retro     report a run's metrics, incidents, assigned models and decay
+  testlock  check a test-first phase's test lock; run its gate commands once
+  version   print the tdrive version
+
+Global flags (env equivalent):
+  --dry-run                  TDRIVE_DRY_RUN=1   print side effects as DRY lines
+  --preset NAME              TDRIVE_PRESET      use policies/presets/NAME.yaml
+  --config FILE              TDRIVE_CONFIG      extra config file layer
+  --run NAME                 TDRIVE_RUN         run-state name
+  --experimental-buildflow   TDRIVE_EXPERIMENTAL_BUILDFLOW=1
+EOF
+}
+
+die_usage() {
+  printf 'tdrive: %s\n' "$*" >&2
+  exit 2
+}
+
+cmd=""
+args=()
+while [ $# -gt 0 ]; do
+  a=$1
+  case "$a" in
+    --)
+      args+=("$@")
+      break ;;
+    --dry-run) export TDRIVE_DRY_RUN=1 ;;
+    --experimental-buildflow) export TDRIVE_EXPERIMENTAL_BUILDFLOW=1 ;;
+    --preset|--config|--run)
+      [ $# -ge 2 ] || die_usage "$a needs a value"
+      case "$a" in
+        --preset) export TDRIVE_PRESET=$2 ;;
+        --config) export TDRIVE_CONFIG=$2 ;;
+        --run) export TDRIVE_RUN=$2 ;;
+      esac
+      shift ;;
+    --preset=*) export TDRIVE_PRESET=${a#--preset=} ;;
+    --config=*) export TDRIVE_CONFIG=${a#--config=} ;;
+    --run=*) export TDRIVE_RUN=${a#--run=} ;;
+    *)
+      if [ -z "$cmd" ]; then
+        cmd=$a
+      else
+        args+=("$a")
+      fi ;;
+  esac
+  shift
+done
+
+case "$cmd" in
+  '')
+    usage >&2
+    exit 2 ;;
+  help|--help|-h)
+    usage
+    exit 0 ;;
+  version|--version)
+    if [ ! -f "$TD_ROOT/VERSION" ]; then
+      die_usage "VERSION file missing under $TD_ROOT"
+    fi
+    IFS= read -r td_version < "$TD_ROOT/VERSION" || true
+    printf 'tdrive %s\n' "$td_version"
+    exit 0 ;;
+esac
+
+case " $TD_COMMANDS " in
+  *" $cmd "*) ;;
+  *) die_usage "unknown command: $cmd (see tdrive help)" ;;
+esac
+
+# Trace attribution: the top-level command, unless a tdrive command that
+# runs others (start, boot, loop) already set it for its children.
+[ -n "${TDRIVE_CALLER:-}" ] || export TDRIVE_CALLER=$cmd
+
+td_script="$TD_ROOT/core/$cmd.sh"
+[ -f "$td_script" ] || die_usage "command not available: $cmd ($td_script missing)"
+exec "${BASH:-/bin/bash}" "$td_script" ${args[@]+"${args[@]}"}

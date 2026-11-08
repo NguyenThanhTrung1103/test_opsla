@@ -1,0 +1,1950 @@
+{
+  "books": [
+    {
+      "id": "ols-book-01",
+      "title": "Graphic Anatomy Atelier Bow-Wow",
+      "subtitle": "Sectional Perspective & Spatial Anatomy",
+      "author": "Yoshiharu Tsukamoto, Momoyo Kaijima",
+      "publisher": "TOTO Publishing (Tokyo)",
+      "isbn": "978-4-88706-278-8",
+      "publicationYear": 2007,
+      "bookSize": "STANDARD",
+      "dimensionsText": "260 × 260 mm (Square Quadrate)",
+      "priceVND": 1250000,
+      "stockCount": 2,
+      "status": "IN_STOCK",
+      "coverImage": "cover-bowwow-01.jpg",
+      "description": "Ấn bản kinh điển trình bày 43 công trình nhà ở của Atelier Bow-Wow qua các bản vẽ mặt cắt phối cảnh (Sectional Perspective) tỷ lệ 1:20 vẽ tay hoàn toàn. Từng chi tiết đồ đạc, nếp sinh hoạt và vật liệu được bóc tách với độ chuẩn xác vi mô.",
+      "category": "Monograph",
+      "featured": true,
+      "tags": [
+        "Atelier Bow-Wow",
+        "Sectional Perspective",
+        "1:20",
+        "Tokyo Housing",
+        "Japanese Architecture"
+      ]
+    },
+    {
+      "id": "ols-book-02",
+      "title": "Graphic Anatomy Atelier Bow-Wow 2",
+      "subtitle": "Collective Housing & Urban Architecture",
+      "author": "Yoshiharu Tsukamoto, Momoyo Kaijima",
+      "publisher": "TOTO Publishing (Tokyo)",
+      "isbn": "978-4-88706-340-2",
+      "publicationYear": 2014,
+      "bookSize": "STANDARD",
+      "dimensionsText": "260 × 260 mm (Square Quadrate)",
+      "priceVND": 1450000,
+      "stockCount": 10,
+      "status": "IN_STOCK",
+      "coverImage": "cover-bowwow-02.jpg",
+      "description": "Phần hai tiếp nối công trình giải phẫu không gian, mở rộng từ nhà ở riêng lẻ sang các tổ hợp nhà ở tập thể, công trình công cộng và không gian sinh hoạt cộng đồng tại Tokyo.",
+      "category": "Technical Drawings",
+      "featured": false,
+      "tags": [
+        "Atelier Bow-Wow",
+        "Collective Housing",
+        "Urban Ecology"
+      ]
+    },
+    {
+      "id": "ols-book-03",
+      "title": "Tadao Ando: Complete Works 1975–Today (XXL Collector Edition)",
+      "subtitle": "TASCHEN SUMO Edition with Architectural Stand",
+      "author": "Philip Jodidio, Tadao Ando",
+      "publisher": "TASCHEN (Köln)",
+      "isbn": "978-3-8365-5240-0",
+      "publicationYear": 2019,
+      "bookSize": "SUMO",
+      "dimensionsText": "390 × 540 mm (SUMO Ultra-Oversized, 18.5 kg)",
+      "priceVND": 38000000,
+      "stockCount": 1,
+      "status": "ONE_COPY_LEFT",
+      "coverImage": "cover-ando-sumo.jpg",
+      "description": "Ấn bản SUMO khổ cực đại có chữ ký khắc laser của Tadao Ando, đi kèm giá đỡ sách thiết kế độc bản. Tuyển tập toàn bộ công trình bê tông trần danh tiếng như Church of the Light, Naoshima Benesse House.",
+      "category": "Sumo Edition",
+      "featured": true,
+      "tags": [
+        "Tadao Ando",
+        "TASCHEN",
+        "SUMO",
+        "Collector Edition",
+        "Raw Concrete"
+      ]
+    },
+    {
+      "id": "ols-book-04",
+      "title": "Pet Architecture Guide Book",
+      "subtitle": "Living Spheres on Micro Urban Leftovers in Tokyo",
+      "author": "Atelier Bow-Wow + Tokyo Institute of Technology",
+      "publisher": "World Photo Press",
+      "isbn": "978-4-87275-103-1",
+      "publicationYear": 2002,
+      "bookSize": "STANDARD",
+      "dimensionsText": "130 × 190 mm (Pocket Manifesto)",
+      "priceVND": 850000,
+      "stockCount": 2,
+      "status": "IN_STOCK",
+      "coverImage": "cover-pet-arch.jpg",
+      "description": "Khảo sát 79 công trình kiến trúc \"thú cưng\" kỳ dị được xây dựng trên những mảnh đất thừa, kẹt giữa đường cao tốc và khe hẹp đô thị Tokyo.",
+      "category": "Urban Theory",
+      "featured": false,
+      "tags": [
+        "Micro Architecture",
+        "Tokyo",
+        "Pet Architecture",
+        "Urban Ecology"
+      ]
+    },
+    {
+      "id": "ols-book-05",
+      "title": "Made in Tokyo: Architectural Guide",
+      "subtitle": "Guide Book for Hybrid Urban Phenomenon",
+      "author": "Momoyo Kaijima, Junzo Kuroda, Yoshiharu Tsukamoto",
+      "publisher": "Kajima Institute Publishing",
+      "isbn": "978-4-306-04423-4",
+      "publicationYear": 2001,
+      "bookSize": "STANDARD",
+      "dimensionsText": "150 × 210 mm",
+      "priceVND": 720000,
+      "stockCount": 0,
+      "status": "SOLD_OUT",
+      "coverImage": "cover-made-in-tokyo.jpg",
+      "description": "Bản hướng dẫn các công trình lai ghép vô thức tại Tokyo: bãi tập golf trên nóc siêu thị, đường cao tốc đâm xuyên cao ốc. Hiện đã tạm hết hàng.",
+      "category": "Urban Theory",
+      "featured": false,
+      "tags": [
+        "Tokyo",
+        "Hybrid Architecture",
+        "Found Objects"
+      ]
+    },
+    {
+      "id": "ols-book-06",
+      "title": "Architectural Ethnography: Atelier Bow-Wow",
+      "subtitle": "16th International Architecture Exhibition La Biennale di Venezia",
+      "author": "Yoshiharu Tsukamoto, Momoyo Kaijima, Chika Kijima",
+      "publisher": "TOTO Publishing (Tokyo)",
+      "isbn": "978-4-88706-373-0",
+      "publicationYear": 2018,
+      "bookSize": "STANDARD",
+      "dimensionsText": "210 × 297 mm (A4 Landscape)",
+      "priceVND": 1650000,
+      "stockCount": 4,
+      "status": "IN_STOCK",
+      "coverImage": "cover-ethnography.jpg",
+      "description": "Ấn phẩm chính thức đại diện gian triển lãm Nhật Bản tại Venice Biennale 2018, phân tích cách thức quan sát dân tộc học kiến trúc qua các bản vẽ tay và nghiên cứu thực địa.",
+      "category": "Technical Drawings",
+      "featured": false,
+      "tags": [
+        "Venice Biennale",
+        "Ethnography",
+        "Fieldwork",
+        "Hand Drawing"
+      ]
+    }
+  ],
+  "media_assets": [
+    {
+      "id": "ols-media-01",
+      "bookId": "ols-book-01",
+      "assetType": "FRONT",
+      "sortOrder": 1,
+      "title": "Dust Jacket — Isometric Floor Plan & Red Annotations",
+      "scaleLabel": "Cover Plate",
+      "imageUrl": "",
+      "svgPlateIndex": 0
+    },
+    {
+      "id": "ols-media-02",
+      "bookId": "ols-book-01",
+      "assetType": "SPINE",
+      "sortOrder": 2,
+      "title": "Cerulean Blue Cloth Hardcover with Gold Foil Stamping",
+      "scaleLabel": "Binding Spec",
+      "imageUrl": "",
+      "svgPlateIndex": 1
+    },
+    {
+      "id": "ols-media-03",
+      "bookId": "ols-book-01",
+      "assetType": "SPREAD",
+      "sortOrder": 3,
+      "title": "Sectional Plan Perspective (1:50) & Joinery Details (1:10)",
+      "scaleLabel": "1:50 / 1:10 Detail",
+      "imageUrl": "",
+      "svgPlateIndex": 2
+    },
+    {
+      "id": "ols-media-04",
+      "bookId": "ols-book-01",
+      "assetType": "SPREAD",
+      "sortOrder": 4,
+      "title": "Steep Pitched Roof Section with Spiral Staircase (1:20)",
+      "scaleLabel": "1:20 Technical Section",
+      "imageUrl": "",
+      "svgPlateIndex": 3
+    },
+    {
+      "id": "ols-media-05",
+      "bookId": "ols-book-01",
+      "assetType": "SPREAD",
+      "sortOrder": 5,
+      "title": "Cantilever Balcony Detail (1:10) & Structural Cross-Section (1:20)",
+      "scaleLabel": "1:10 / 1:20 Anatomy",
+      "imageUrl": "",
+      "svgPlateIndex": 4
+    },
+    {
+      "id": "ols-media-06",
+      "bookId": "ols-book-01",
+      "assetType": "BACK",
+      "sortOrder": 6,
+      "title": "Exploded Isometric Axonometric (1:20) — House & Atelier Bow-Wow",
+      "scaleLabel": "1:20 Axonometric",
+      "imageUrl": "",
+      "svgPlateIndex": 5
+    }
+  ],
+  "orders": [
+    {
+      "id": "OLS-BM5PN5",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T07:58:26.820Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T07:58:26.820Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-KYZWCX",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T07:58:26.835Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T07:58:26.835Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T07:58:26.858Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T07:58:26.858Z"
+    },
+    {
+      "id": "OLS-5530YM",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T07:58:26.871Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T07:58:26.871Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T07:58:26.884Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T07:58:26.884Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-37XT80",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:54.681Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:54.761Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T08:20:55.024Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T08:20:55.024Z"
+    },
+    {
+      "id": "OLS-89UR24",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:54.878Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:54.878Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-TU0D3C",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:55.081Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:55.081Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-XSEHLK",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:55.211Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Mockup User",
+        "phone": "0911223344",
+        "address": "Can Tho"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:55.211Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-4NMAA4",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:55.421Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:55.421Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-J5B0TV",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:55.434Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:55.434Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-GJ7LXN",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:20:55.451Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:20:55.451Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T08:20:55.465Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T08:20:55.465Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-BCR59L",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:40.854Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:40.875Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T08:21:40.924Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T08:21:40.924Z"
+    },
+    {
+      "id": "OLS-Z07MEJ",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:40.892Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:40.892Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-5WS9U3",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:40.995Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:40.995Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-ED9UV9",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:41.439Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Mockup User",
+        "phone": "0911223344",
+        "address": "Can Tho"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:41.439Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-LL8ZCX",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:42.388Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:42.388Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-2R0F2Q",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:42.455Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:42.455Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T08:21:42.526Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T08:21:42.525Z"
+    },
+    {
+      "id": "OLS-FN52ZD",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T08:21:42.549Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T08:21:42.549Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T08:21:42.600Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T08:21:42.600Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-70T5HM",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:33.294Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:33.351Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:11:33.415Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T15:11:33.415Z"
+    },
+    {
+      "id": "OLS-PGJ5FM",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:33.391Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:33.391Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-28VLXG",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:33.524Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:33.524Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-2L5BXC",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:33.708Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Mockup User",
+        "phone": "0911223344",
+        "address": "Can Tho"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:33.708Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-HZJ5VK",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:33.997Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:33.997Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-YC0MLE",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:34.016Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:34.016Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:11:34.031Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T15:11:34.031Z"
+    },
+    {
+      "id": "OLS-H5BNMP",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:11:34.043Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:11:34.043Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:11:34.058Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T15:11:34.058Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-964JKH",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:26:00.472Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:26:00.513Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:26:00.548Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T15:26:00.548Z"
+    },
+    {
+      "id": "OLS-FZDNYB",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:26:00.519Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:26:00.519Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-Q63UJB",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:26:00.566Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:26:00.566Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-1R2C88",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:26:00.917Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:26:00.918Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-LGNTFW",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:26:00.935Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:26:00.936Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:26:00.957Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T15:26:00.957Z"
+    },
+    {
+      "id": "OLS-2VJTMK",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:26:00.976Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:26:00.976Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:26:01.001Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T15:26:01.001Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-PH0Q37",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:24.243Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:24.254Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:55:24.295Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T15:55:24.295Z"
+    },
+    {
+      "id": "OLS-8L3ES4",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:24.260Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:24.260Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-5DGFAP",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:24.353Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:24.353Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-CHE0SQ",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:24.594Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Mockup User",
+        "phone": "0911223344",
+        "address": "Can Tho"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:24.594Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-ELBZAN",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:24.954Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:24.954Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-UQ2N4R",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:24.972Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:24.972Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:55:24.998Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T15:55:24.998Z"
+    },
+    {
+      "id": "OLS-Q1LPZ8",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T15:55:25.024Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T15:55:25.024Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T15:55:25.044Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T15:55:25.044Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-JWNMAC",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:39.343Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:39.404Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T16:26:39.420Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T16:26:39.420Z"
+    },
+    {
+      "id": "OLS-L26UPR",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:39.408Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:39.408Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-S1UKR7",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:39.484Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:39.484Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-4HRZ7S",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:39.847Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Mockup User",
+        "phone": "0911223344",
+        "address": "Can Tho"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:39.848Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-THGA2H",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:40.300Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:40.300Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-TYABMY",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:40.331Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:40.332Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T16:26:40.352Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-07T16:26:40.352Z"
+    },
+    {
+      "id": "OLS-5RXG27",
+      "requestSource": "website",
+      "createdAt": "2026-11-07T16:26:40.369Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-07T16:26:40.369Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-07T16:26:40.392Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-07T16:26:40.392Z",
+      "cancelledByRole": "OWNER"
+    },
+    {
+      "id": "OLS-MJ69R7",
+      "requestSource": "website",
+      "createdAt": "2026-11-08T10:49:23.875Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Buyer A",
+        "phone": "0912345678",
+        "address": "Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-08T10:49:24.018Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-08T10:49:24.093Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-08T10:49:24.093Z"
+    },
+    {
+      "id": "OLS-GKLJFV",
+      "requestSource": "website",
+      "createdAt": "2026-11-08T10:49:24.054Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Buyer B",
+        "phone": "0987654321",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-08T10:49:24.054Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-M5L95V",
+      "requestSource": "website",
+      "createdAt": "2026-11-08T10:49:24.113Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Tester Status",
+        "phone": "0933221100",
+        "address": "Hue"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-08T10:49:24.113Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-E8U27B",
+      "requestSource": "website",
+      "createdAt": "2026-11-08T10:49:24.404Z",
+      "status": "PENDING_CONTACT",
+      "customer": {
+        "fullName": "Kiem Tra Gia",
+        "phone": "0988776655",
+        "address": "Saigon"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 2,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 2500000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-08T10:49:24.404Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        }
+      ]
+    },
+    {
+      "id": "OLS-LMJ1KW",
+      "requestSource": "website",
+      "createdAt": "2026-11-08T10:49:24.433Z",
+      "status": "CONFIRMED",
+      "customer": {
+        "fullName": "Nguoi Mua A",
+        "phone": "0912345678",
+        "address": "123 Ba Trieu, Hanoi"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": true,
+      "history": [
+        {
+          "timestamp": "2026-11-08T10:49:24.433Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-08T10:49:24.462Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CONFIRMED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm (Owner)",
+          "reason": "Chủ tiệm duyệt đơn"
+        }
+      ],
+      "confirmedAt": "2026-11-08T10:49:24.462Z"
+    },
+    {
+      "id": "OLS-RAH9A8",
+      "requestSource": "website",
+      "createdAt": "2026-11-08T10:49:24.480Z",
+      "status": "CANCELLED",
+      "customer": {
+        "fullName": "Khach Cancel",
+        "phone": "0933445566",
+        "address": "Da Nang"
+      },
+      "items": [
+        {
+          "bookId": "ols-book-01",
+          "bookTitle": "Graphic Anatomy Atelier Bow-Wow",
+          "quantity": 1,
+          "unitPriceVND": 1250000
+        }
+      ],
+      "subtotalVND": 1250000,
+      "stockDeducted": false,
+      "history": [
+        {
+          "timestamp": "2026-11-08T10:49:24.481Z",
+          "toStatus": "PENDING_CONTACT",
+          "role": "STAFF",
+          "actorName": "Website Guest Collector",
+          "reason": "Khách gửi yêu cầu mua sách từ website (Zero Auto-Reservation)"
+        },
+        {
+          "timestamp": "2026-11-08T10:49:24.498Z",
+          "fromStatus": "PENDING_CONTACT",
+          "toStatus": "CANCELLED",
+          "role": "OWNER",
+          "actorName": "Chủ tiệm",
+          "reason": "Khach doi y"
+        }
+      ],
+      "cancelledAt": "2026-11-08T10:49:24.498Z",
+      "cancelledByRole": "OWNER"
+    }
+  ],
+  "articles": [
+    {
+      "id": "ols-art-01",
+      "title": "Atelier Bow-Wow và Nghệ Thuật Giải Phẫu Không Gian 1:20",
+      "slug": "atelier-bow-wow-nghe-thuat-giai-phau-khong-gian-1-20",
+      "excerpt": "Tại sao bản vẽ mặt cắt phối cảnh (Sectional Perspective) tỷ lệ 1:20 lại trở thành ngôn ngữ định danh cho trường phái kiến trúc hành vi Tokyo?",
+      "content": "Trong thế giới của chuyên khảo kiến trúc, ít có cuốn sách nào tạo ra cú hích thị giác và phương pháp luận mạnh mẽ như \"Graphic Anatomy Atelier Bow-Wow\" do TOTO Publishing xuất bản năm 2007.\n\nKhông giống các bản vẽ kiến trúc thương mại trau chuốt bằng phần mềm render 3D bóng bẩy nhưng vô hồn, Yoshiharu Tsukamoto và Momoyo Kaijima chọn một lối đi khổ hạnh: vẽ tay toàn bộ mặt cắt phối cảnh với tỷ lệ cố định 1:20.\n\nỞ tỷ lệ 1:20, kiến trúc không còn là hình khối trừu tượng mà trở thành \"giải phẫu học không gian\" (Spatial Anatomy). Người đọc có thể nhìn thấy độ dày của lớp ván sàn 15mm, vị trí mối nối thép mạ kẽm, và thậm chí cả chiếc ấm đun nước trên bệ bếp. Đó là nơi kiến trúc và cuộc sống thường nhật hòa làm một thể hữu cơ.",
+      "coverImage": "art-bowwow-anatomy.jpg",
+      "author": "Giám tuyển Oops La",
+      "publishedAt": "2026-11-01T09:00:00Z",
+      "relatedBookIds": [
+        "ols-book-01",
+        "ols-book-02"
+      ],
+      "status": "PUBLISHED"
+    },
+    {
+      "id": "ols-art-02",
+      "title": "TASCHEN SUMO Edition: Khi Cuốn Sách Trở Thành Vật Thể Kiến Trúc Độc Lập",
+      "slug": "taschen-sumo-edition-vat-the-kien-truc-doc-lap",
+      "excerpt": "Khảo sát ấn bản Tadao Ando XXL nặng 18.5kg và triết lý \"Cuốn sách không chỉ để đọc, mà là một khối điêu khắc trong không gian sống\".",
+      "content": "Được sáng lập bởi Benedikt Taschen năm 1999 với ấn bản đầu tiên của Helmut Newton, định dạng SUMO đã định nghĩa lại ranh giới giữa một cuốn sách và một tác phẩm nghệ thuật trưng bày.\n\nVới ấn phẩm \"Tadao Ando: Complete Works XXL\", cuốn sách vượt qua kích thước thông thường (390 x 540 mm) để phản ánh trung thực quy mô các công trình bê tông trần của kiến trúc sư đoạt giải Pritzker. Mỗi trang mở ra như một bức tường bảo tàng thu nhỏ, đòi hỏi người xem phải tương tác vật lý bằng cả cơ thể để lật mở.",
+      "coverImage": "art-taschen-sumo.jpg",
+      "author": "KTS. Lê Quang (Khách mời)",
+      "publishedAt": "2026-11-03T14:30:00Z",
+      "relatedBookIds": [
+        "ols-book-03"
+      ],
+      "status": "PUBLISHED"
+    }
+  ],
+  "settings": []
+}

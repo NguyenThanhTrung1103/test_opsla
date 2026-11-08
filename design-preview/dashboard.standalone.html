@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Oops La Book Store — Admin CMS & Dual-Role Engine (Claude Design)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  
+  <!-- Claude Design System Styles -->
+  <style data-inlined-from="./styles.css">
+/* ==========================================================================
+   Oops La Book Store — Claude Design System
+   Architecture: Claude Code / Claude Design Inspired Editorial Commerce
+   ========================================================================== */
+
+:root {
+  /* Color Palette — Warm Paper & Refined Charcoal */
+  --bg-canvas: #FAF9F5;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F4F1EA;
+  --bg-muted: #EBE7DE;
+
+  --border-subtle: #E8E4DC;
+  --border-default: #D6D1C7;
+  --border-strong: #A8A29E;
+
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #78716C;
+  --text-faint: #A8A29E;
+
+  /* Brand Accents — Warm Terracotta / Sienna & Technical Cyan */
+  --accent: #C2410C;
+  --accent-hover: #9A3412;
+  --accent-subtle: #FFF7ED;
+  --accent-border: #FFEDD5;
+
+  --arch-blue: #0284C7;
+  --arch-blue-subtle: #F0F9FF;
+  --arch-blue-border: #BAE6FD;
+
+  --arch-ochre: #B45309;
+  --arch-ochre-subtle: #FEF3C7;
+
+  /* Semantic Status Tokens */
+  --status-success-bg: #ECFDF5;
+  --status-success-text: #065F46;
+  --status-success-border: #A7F3D0;
+
+  --status-warning-bg: #FFFBEB;
+  --status-warning-text: #92400E;
+  --status-warning-border: #FDE68A;
+
+  --status-danger-bg: #FEF2F2;
+  --status-danger-text: #991B1B;
+  --status-danger-border: #FECACA;
+
+  --status-muted-bg: #F5F5F4;
+  --status-muted-text: #78716C;
+  --status-muted-border: #E7E5E4;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(28, 25, 23, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(28, 25, 23, 0.06), 0 1px 2px -1px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(28, 25, 23, 0.06), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(28, 25, 23, 0.07), 0 4px 6px -4px rgba(28, 25, 23, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(28, 25, 23, 0.09), 0 8px 10px -6px rgba(28, 25, 23, 0.04);
+  --shadow-book: 0 12px 28px -6px rgba(28, 25, 23, 0.14), 0 6px 12px -4px rgba(28, 25, 23, 0.06), -3px 0 8px rgba(28, 25, 23, 0.04);
+  --shadow-book-hover: 0 20px 36px -8px rgba(28, 25, 23, 0.20), 0 8px 16px -4px rgba(28, 25, 23, 0.08), -4px 0 12px rgba(28, 25, 23, 0.06);
+
+  /* Typography */
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Dark Mode Overrides (for Tweaks Panel switching) */
+[data-theme="dark"] {
+  --bg-canvas: #121110;
+  --bg-surface: #1C1917;
+  --bg-subtle: #292524;
+  --bg-muted: #332E2B;
+
+  --border-subtle: #292524;
+  --border-default: #44403C;
+  --border-strong: #78716C;
+
+  --text-primary: #F5F5F4;
+  --text-secondary: #D6D3D1;
+  --text-muted: #A8A29E;
+  --text-faint: #78716C;
+
+  --accent: #EA580C;
+  --accent-hover: #F97316;
+  --accent-subtle: #431407;
+  --accent-border: #7C2D12;
+
+  --arch-blue: #38BDF8;
+  --arch-blue-subtle: #082F49;
+  --arch-blue-border: #075985;
+
+  --status-success-bg: #064E3B;
+  --status-success-text: #6EE7B7;
+  --status-success-border: #047857;
+
+  --status-warning-bg: #451A03;
+  --status-warning-text: #FCD34D;
+  --status-warning-border: #78350F;
+
+  --status-danger-bg: #450A0A;
+  --status-danger-text: #FCA5A5;
+  --status-danger-border: #7F1D1D;
+
+  --status-muted-bg: #292524;
+  --status-muted-text: #A8A29E;
+  --status-muted-border: #44403C;
+
+  --shadow-book: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+  --shadow-book-hover: 0 20px 36px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* Global Reset & Base Styling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular Numerals for Prices, Dimensions, Metrics */
+.tabular-nums, .price-tag, .spec-data, .metric-value, .order-id {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Refined Book Physical Presentation */
+.book-cover-stage {
+  perspective: 1200px;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.book-card-presentation {
+  position: relative;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.book-card-presentation:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-lg);
+}
+
+.book-spine-accent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0.08) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Architectural Subtle Blueprint Grid Background */
+.bg-arch-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(168, 162, 158, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(168, 162, 158, 0.08) 1px, transparent 1px);
+}
+
+/* Continuous Vertical Look Inside Reader */
+.spread-viewport {
+  max-height: calc(90vh - 120px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.spread-crease-refined {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0,0,0,0.02) 47%, 
+    rgba(0,0,0,0.12) 49.5%, 
+    rgba(255,255,255,0.3) 50%, 
+    rgba(0,0,0,0.10) 50.5%, 
+    rgba(0,0,0,0.02) 53%, 
+    transparent 100%
+  );
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Subtle Micro-Interactions */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Navigation Link Underline */
+.nav-link-refined {
+  position: relative;
+  transition: color 0.2s ease;
+}
+.nav-link-refined::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 1.5px;
+  background-color: var(--accent);
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link-refined:hover::after, .nav-link-refined.active::after {
+  width: 100%;
+}
+
+</style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-[#FAF9F5] text-stone-900 selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white border-b border-stone-200">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-6">
+      
+      <!-- Brand & Admin Indicator -->
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 bg-stone-900 text-stone-100 rounded-lg flex items-center justify-center font-serif font-bold text-sm">
+            OL
+          </div>
+          <div>
+            <span class="font-serif text-base font-bold text-stone-900 block leading-tight">Oops La CMS</span>
+            <span class="text-[10px] font-mono text-stone-400 uppercase tracking-widest block">Operations Console</span>
+          </div>
+        </a>
+
+        <div class="h-4 w-px bg-stone-200 hidden sm:block"></div>
+
+        <!-- Return to Storefront link -->
+        <a href="index.html" class="text-xs font-mono text-stone-500 hover:text-stone-900 flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          <span>Xem Storefront Khách Hàng</span>
+        </a>
+      </div>
+
+      <!-- Center Dual Role Engine Control -->
+      <div class="flex items-center gap-3 bg-stone-100 p-1.5 rounded-lg border border-stone-200 shadow-xs">
+        <span class="text-[11px] font-mono text-stone-500 px-2 font-medium">Ca trực:</span>
+        <button id="roleBtnOwner" onclick="switchAdminRole('OWNER')" class="px-3 py-1 text-xs font-mono font-bold bg-amber-500 text-stone-950 rounded shadow-xs transition">
+          Chủ tiệm (OWNER)
+        </button>
+        <button id="roleBtnStaff" onclick="switchAdminRole('STAFF')" class="px-3 py-1 text-xs font-mono text-stone-600 hover:text-stone-900 rounded transition">
+          Nhân viên (STAFF)
+        </button>
+      </div>
+
+      <!-- Right Tokens link -->
+      <div class="flex items-center gap-3">
+        <a href="components.html" class="px-3 py-1.5 text-xs font-mono text-stone-600 hover:text-stone-900 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Design Tokens</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN ADMIN WORKSPACE ================= -->
+  <div class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-8 py-8 flex flex-col md:flex-row gap-8">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 shrink-0 space-y-6">
+      
+      <!-- Current Role Status Card -->
+      <div class="bg-white border border-stone-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400">PHÂN QUYỀN HIỆN TẠI</span>
+          <span id="adminCurrentRoleLabel" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded bg-amber-100 text-amber-900 border border-amber-300/60">
+            OWNER
+          </span>
+        </div>
+        <p id="adminRoleDesc" class="text-xs text-stone-600 leading-relaxed">
+          Toàn quyền duyệt đơn, trừ tồn kho (AC-11), hủy đơn đã duyệt và chỉnh sửa chuyên mục.
+        </p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <nav class="space-y-1.5">
+        <button id="adminNavBtn-dashboard" onclick="switchAdminTab('dashboard')" class="w-full text-left px-4 py-3 flex items-center gap-3 bg-stone-800 text-white font-medium rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          <span>Bảng Chỉ Số (Dashboard)</span>
+        </button>
+
+        <button id="adminNavBtn-orders" onclick="switchAdminTab('orders')" class="w-full text-left px-4 py-3 flex items-center gap-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div class="flex-1 flex items-center justify-between">
+            <span>Quản Lý Đơn Yêu Cầu</span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-100 text-amber-800 font-bold">3</span>
+          </div>
+        </button>
+
+        <button id="adminNavBtn-products" onclick="switchAdminTab('products')" class="w-full text-left px-4 py-3 flex items-center gap-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+          <span>Kho Ấn Bản Chuyên Khảo</span>
+        </button>
+
+        <button id="adminNavBtn-editorial" onclick="switchAdminTab('editorial')" class="w-full text-left px-4 py-3 flex items-center gap-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg text-xs font-mono transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <span>Bài Luận & Chuyên Đề</span>
+        </button>
+      </nav>
+
+    </aside>
+
+    <!-- Main Workspace Content -->
+    <main class="flex-1 space-y-8">
+      
+      <!-- ================= TAB 1: DASHBOARD ================= -->
+      <section id="adminTab-dashboard" class="space-y-8">
+        
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">DOANH THU ĐÃ CHỐT</span>
+            <div id="adminKpiRevenue" class="font-mono text-2xl font-bold text-stone-900 tabular-nums">2.300.000 VNĐ</div>
+            <span class="text-[11px] font-mono text-emerald-600 mt-2 block">✓ 100% Tiền tệ chuẩn VNĐ (CURR-01)</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">ĐƠN CHỜ LIÊN HỆ</span>
+            <div id="adminKpiPending" class="font-mono text-2xl font-bold text-amber-700 tabular-nums">1</div>
+            <span class="text-[11px] font-mono text-amber-600 mt-2 block">Cần nhân viên liên hệ xác thực</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">CẢNH BÁO QUÁ 48 GIỜ</span>
+            <div id="adminKpiStale" class="font-mono text-2xl font-bold text-rose-700 tabular-nums">1</div>
+            <span class="text-[11px] font-mono text-rose-600 mt-2 block">Cần ưu tiên xử lý gấp</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">ẤN PHẨM CÒN 1 CUỐN</span>
+            <div id="adminKpiLowStock" class="font-mono text-2xl font-bold text-stone-900 tabular-nums">2</div>
+            <span class="text-[11px] font-mono text-stone-500 mt-2 block">Bow-Wow 2 & Tadao Ando XXL</span>
+          </div>
+
+        </div>
+
+        <!-- Invariants & Security Health Indicator -->
+        <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-4">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+            <h3 class="font-serif text-lg font-bold text-stone-900">Bảo Chứng Bất Biến Nghiệp Vụ (Tri-Pillar Governance)</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+              ● 100% Invariants Verified
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+              <strong class="font-mono text-stone-900 block mb-1">AC-11 & AC-15 Guard</strong>
+              <p class="text-stone-600">Chỉ tài khoản OWNER mới được kích hoạt lệnh trừ kho một lần duy nhất khi duyệt đơn.</p>
+            </div>
+            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+              <strong class="font-mono text-stone-900 block mb-1">BD-04 Auto-Reservation</strong>
+              <p class="text-stone-600">Khách hàng gửi yêu cầu giữ bản trên website không tự ý làm giảm số lượng tồn kho.</p>
+            </div>
+            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+              <strong class="font-mono text-stone-900 block mb-1">OD-01 Cancellation Guard</strong>
+              <p class="text-stone-600">Nhân viên STAFF không được phép hủy đơn hàng sau khi Owner đã duyệt chốt.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 2: ORDERS WORKFLOW ================= -->
+      <section id="adminTab-orders" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-stone-900">Quản Lý Đơn Yêu Cầu Sưu Tầm</h3>
+            <p class="text-xs font-mono text-stone-500 mt-1">Quy trình: PENDING_CONTACT → CONTACTED → CONFIRMED (hoặc CANCELLED)</p>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-stone-400">Xem:</span>
+            <button class="px-3 py-1.5 text-xs font-mono bg-white border border-stone-300 rounded-md hover:border-stone-800 transition">Tất cả đơn</button>
+            <button class="px-3 py-1.5 text-xs font-mono bg-white border border-stone-300 rounded-md hover:border-stone-800 transition">Chờ xử lý</button>
+          </div>
+        </div>
+
+        <!-- Orders Table Card -->
+        <div class="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-stone-50 border-b border-stone-200 text-[11px] font-mono text-stone-500 uppercase">
+                  <th class="px-4 py-3 font-semibold">Mã đơn & Tag</th>
+                  <th class="px-4 py-3 font-semibold">Người sưu tầm</th>
+                  <th class="px-4 py-3 font-semibold">Ấn bản & Giá trị</th>
+                  <th class="px-4 py-3 font-semibold">Trạng thái</th>
+                  <th class="px-4 py-3 font-semibold text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersTableBody">
+                <!-- Rendered by preview.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 3: PRODUCTS INVENTORY ================= -->
+      <section id="adminTab-products" class="hidden space-y-6">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-stone-900">Kho Ấn Phẩm Kiến Trúc</h3>
+            <p class="text-xs font-mono text-stone-500 mt-1">Cập nhật số lượng tồn kho tức thì với cơ chế bảo toàn</p>
+          </div>
+        </div>
+
+        <div class="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-stone-50 border-b border-stone-200 text-[11px] font-mono text-stone-500 uppercase">
+                  <th class="px-4 py-3 font-semibold">Ấn phẩm & ISBN</th>
+                  <th class="px-4 py-3 font-semibold">Giá niêm yết</th>
+                  <th class="px-4 py-3 font-semibold">Tồn kho</th>
+                  <th class="px-4 py-3 font-semibold">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody id="adminProductsTableBody">
+                <!-- Rendered by preview.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 4: EDITORIAL ESSAYS ================= -->
+      <section id="adminTab-editorial" class="hidden space-y-6">
+        <div>
+          <h3 class="font-serif text-2xl font-bold text-stone-900">Bài Luận Chuyên Đề & Nghiên Cứu</h3>
+          <p class="text-xs font-mono text-stone-500 mt-1">Nội dung giám tuyển và khảo cứu học thuật</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-mono text-stone-400 uppercase">01 Thg 11, 2026 • Giám tuyển Oops La</span>
+              <h4 class="font-serif text-lg font-bold text-stone-900 mt-1">Atelier Bow-Wow và Nghệ Thuật Giải Phẫu Không Gian 1:20</h4>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-mono rounded bg-emerald-50 text-emerald-800 border border-emerald-200">Đã xuất bản</span>
+          </div>
+
+          <div class="bg-white border border-stone-200 rounded-xl p-5 shadow-xs flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-mono text-stone-400 uppercase">03 Thg 11, 2026 • KTS. Lê Quang</span>
+              <h4 class="font-serif text-lg font-bold text-stone-900 mt-1">TASCHEN SUMO Edition: Khi Cuốn Sách Trở Thành Khối Điêu Khắc Độc Lập</h4>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-mono rounded bg-emerald-50 text-emerald-800 border border-emerald-200">Đã xuất bản</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Global Toast Notification -->
+  <div id="globalToast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 bg-stone-900 text-stone-50 px-4 py-3 rounded-xl shadow-xl text-xs font-mono border border-stone-800">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="globalToastMessage">Thao tác thành công</span>
+  </div>
+
+  <!-- Scripts -->
+  <script  data-inlined-from="./tweaks-panel.js">
+/**
+ * tweaks-panel.js — Universal In-Page Design Tweaks & Iteration Panel
+ *
+ * Replaces claude.ai's iframe-bound `postMessage({ type: '__edit_mode_available' })`
+ * with a standalone, harness-agnostic floating control panel that works in any
+ * browser (`http://localhost`, `file://`, Agy preview, or Codex browser).
+ *
+ * Usage:
+ *   <script src="./tweaks-panel.js"><\/script>
+ *   <script>
+ *     window.UDTweaks.init({
+ *       storageKey: 'my-design-tweaks',
+ *       controls: [
+ *         { id: 'theme', label: 'Theme Mode', type: 'select', options: ['dark', 'light'], default: 'dark', attr: 'data-theme' },
+ *         { id: 'accent', label: 'Primary Accent', type: 'color', default: '#3b82f6', cssVar: '--accent' },
+ *         { id: 'density', label: 'Layout Density', type: 'select', options: ['comfortable', 'compact'], default: 'comfortable', attr: 'data-density' },
+ *         { id: 'radius', label: 'Corner Radius (px)', type: 'range', min: 0, max: 24, step: 2, default: 10, cssVar: '--radius', unit: 'px' }
+ *       ],
+ *       onChange(values) { console.log('Tweaks updated:', values); }
+ *     });
+ *   <\/script>
+ */
+(function () {
+  if (window.UDTweaks) return;
+
+  function init(config = {}) {
+    const storageKey = config.storageKey || 'ud-tweaks:' + location.pathname;
+    const controls = Array.isArray(config.controls) ? config.controls : [];
+    const rootEl = config.root || document.documentElement;
+
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    } catch {
+      saved = {};
+    }
+
+    const state = {};
+    for (const c of controls) {
+      state[c.id] = saved[c.id] !== undefined ? saved[c.id] : c.default;
+    }
+
+    function applyState() {
+      for (const c of controls) {
+        const val = state[c.id];
+        if (c.cssVar) {
+          rootEl.style.setProperty(c.cssVar, c.unit ? `${val}${c.unit}` : String(val));
+        }
+        if (c.attr) {
+          rootEl.setAttribute(c.attr, String(val));
+        }
+      }
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch {}
+      if (typeof config.onChange === 'function') {
+        config.onChange({ ...state });
+      }
+      window.dispatchEvent(new CustomEvent('ud:tweaks-change', { detail: { ...state } }));
+    }
+
+    function mountUI() {
+      const existing = document.getElementById('ud-tweaks-host');
+      if (existing) existing.remove();
+
+      const host = document.createElement('div');
+      host.id = 'ud-tweaks-host';
+      const shadow = host.attachShadow({ mode: 'open' });
+
+      shadow.innerHTML = `
+        <style>
+          :host { all: initial; position: fixed; right: 16px; bottom: 16px; z-index: 99999; font-family: system-ui, -apple-system, sans-serif; }
+          .fab {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.16);
+            padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+            cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+            transition: transform 0.15s ease, background 0.15s ease;
+          }
+          .fab:hover { transform: translateY(-1px); background: #1e293b; }
+          .panel {
+            display: none; width: 290px; background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(12px); color: #f8fafc;
+            border: 1px solid rgba(255,255,255,0.14); border-radius: 14px;
+            padding: 14px; margin-bottom: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+          }
+          .panel.open { display: block; }
+          .hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+          .title { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+          .actions { display: flex; gap: 6px; }
+          .mini-btn {
+            background: rgba(255,255,255,0.08); color: #cbd5e1; border: none;
+            border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer;
+          }
+          .mini-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+          .row { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+          label { font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; }
+          select, input[type="text"], input[type="range"] {
+            width: 100%; box-sizing: border-box; background: #1e293b; color: #f8fafc;
+            border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; padding: 5px 8px; font-size: 12px;
+          }
+          input[type="color"] { width: 100%; height: 28px; border: none; border-radius: 6px; background: transparent; cursor: pointer; }
+          @media print { :host { display: none !important; } }
+        </style>
+        <div class="panel" id="panel" role="dialog" aria-label="Design Tweaks">
+          <div class="hdr">
+            <span class="title">Design Tweaks</span>
+            <div class="actions">
+              <button class="mini-btn" id="copy-btn" title="Copy JSON state">Copy</button>
+              <button class="mini-btn" id="reset-btn" title="Reset defaults">Reset</button>
+            </div>
+          </div>
+          <div id="controls-body"></div>
+        </div>
+        <button class="fab" id="toggle-btn" aria-expanded="false">
+          <span>⚙ Tweaks</span>
+        </button>
+      `;
+
+      const body = shadow.getElementById('controls-body');
+      const inputsMap = new Map();
+
+      for (const c of controls) {
+        const row = document.createElement('div');
+        row.className = 'row';
+        const lbl = document.createElement('label');
+        const valSpan = document.createElement('span');
+        valSpan.textContent = String(state[c.id]);
+        lbl.innerHTML = `<span>${c.label || c.id}</span>`;
+        lbl.appendChild(valSpan);
+        row.appendChild(lbl);
+
+        let input;
+        if (c.type === 'select') {
+          input = document.createElement('select');
+          for (const opt of c.options || []) {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.textContent = opt;
+            if (String(state[c.id]) === String(opt)) o.selected = true;
+            input.appendChild(o);
+          }
+        } else {
+          input = document.createElement('input');
+          input.type = c.type || 'text';
+          if (c.min !== undefined) input.min = c.min;
+          if (c.max !== undefined) input.max = c.max;
+          if (c.step !== undefined) input.step = c.step;
+          input.value = state[c.id];
+        }
+
+        input.addEventListener('input', (e) => {
+          const v = c.type === 'range' ? Number(e.target.value) : e.target.value;
+          state[c.id] = v;
+          valSpan.textContent = String(v);
+          applyState();
+        });
+
+        inputsMap.set(c.id, { input, valSpan });
+        row.appendChild(input);
+        body.appendChild(row);
+      }
+
+      const panel = shadow.getElementById('panel');
+      const toggleBtn = shadow.getElementById('toggle-btn');
+      toggleBtn.addEventListener('click', () => {
+        const open = panel.classList.toggle('open');
+        toggleBtn.setAttribute('aria-expanded', String(open));
+      });
+
+      shadow.getElementById('reset-btn').addEventListener('click', () => {
+        for (const c of controls) {
+          state[c.id] = c.default;
+          const entry = inputsMap.get(c.id);
+          if (entry) {
+            entry.input.value = c.default;
+            entry.valSpan.textContent = String(c.default);
+          }
+        }
+        applyState();
+      });
+
+      const copyBtn = shadow.getElementById('copy-btn');
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(state, null, 2));
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+        } catch {}
+      });
+
+      document.body.appendChild(host);
+    }
+
+    applyState();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mountUI);
+    } else {
+      mountUI();
+    }
+
+    return {
+      getState: () => ({ ...state }),
+      set: (id, value) => {
+        state[id] = value;
+        applyState();
+      },
+    };
+  }
+
+  window.UDTweaks = { init };
+})();
+
+</script>
+  <script  data-inlined-from="./preview.js">
+/**
+ * Oops La Book Store — Claude Design System Interactive Controller
+ * High-fidelity Prototype & Preview Engine
+ */
+
+// 1. Domain Data & Seed Assets
+const SEED_BOOKS = [
+  {
+    id: 'ols-book-01',
+    title: 'Graphic Anatomy Atelier Bow-Wow',
+    subtitle: 'Sectional Perspective & Spatial Anatomy',
+    author: 'Yoshiharu Tsukamoto, Momoyo Kaijima',
+    publisher: 'TOTO Publishing (Tokyo)',
+    isbn: '978-4-88706-278-8',
+    publicationYear: 2007,
+    bookSize: 'STANDARD',
+    dimensionsText: '260 × 260 mm (Square Quadrate)',
+    priceVND: 1250000,
+    stockCount: 3,
+    status: 'IN_STOCK',
+    coverImage: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+    description: 'Ấn bản kinh điển trình bày 43 công trình nhà ở của Atelier Bow-Wow qua các bản vẽ mặt cắt phối cảnh (Sectional Perspective) tỷ lệ 1:20 vẽ tay hoàn toàn. Từng chi tiết đồ đạc, nếp sinh hoạt và vật liệu được bóc tách với độ chuẩn xác vi mô.',
+    category: 'Monograph',
+    featured: true,
+    condition: 'Ấn bản nhập khẩu mới 100% nguyên màng co nhiệt (shrink-wrapped). Bìa áo in dập nổi hoàn hảo, ruột giấy mỹ thuật Nhật Bản không tì vết.',
+    tags: ['Atelier Bow-Wow', 'Sectional Perspective', '1:20', 'Tokyo Housing', 'Japanese Architecture'],
+    spreads: [
+      {
+        title: '01. Cover Plate — Dust Jacket & Isometric Plan',
+        scale: 'Cover Spec',
+        type: 'isometric',
+        description: 'Bản vẽ phối cảnh đẳng cự toàn bộ cụm nhà phố Tokyo với hệ số sử dụng đất siêu vi mô.'
+      },
+      {
+        title: '02. Sectional Perspective 1:20 — House & Atelier Bow-Wow',
+        scale: '1:20 Technical Section',
+        type: 'section',
+        description: 'Mặt cắt phối cảnh xuyên suốt 4 tầng hầm và nổi, bộc lộ kết cấu khung thép và các bậc thang lệch tầng.'
+      },
+      {
+        title: '03. Joinery Details & Living Anatomy 1:10',
+        scale: '1:10 Detail',
+        type: 'detail',
+        description: 'Chi tiết mối nối mộng gỗ truyền thống kết hợp hệ bulong cường độ cao neo vào dầm thép I.'
+      }
+    ]
+  },
+  {
+    id: 'ols-book-02',
+    title: 'Graphic Anatomy Atelier Bow-Wow 2',
+    subtitle: 'Collective Housing & Urban Architecture',
+    author: 'Yoshiharu Tsukamoto, Momoyo Kaijima',
+    publisher: 'TOTO Publishing (Tokyo)',
+    isbn: '978-4-88706-340-2',
+    publicationYear: 2014,
+    bookSize: 'STANDARD',
+    dimensionsText: '260 × 260 mm (Square Quadrate)',
+    priceVND: 1450000,
+    stockCount: 1,
+    status: 'ONE_COPY_LEFT',
+    coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80',
+    description: 'Phần hai tiếp nối công trình giải phẫu không gian, mở rộng từ nhà ở riêng lẻ sang các tổ hợp nhà ở tập thể, công trình công cộng và không gian sinh hoạt cộng đồng tại Tokyo.',
+    category: 'Technical Drawings',
+    featured: false,
+    condition: 'Chỉ còn 01 bản duy nhất tại kho lưu trữ. Góc gáy sách sắc nét, giấy trắng nguyên bản.',
+    tags: ['Atelier Bow-Wow', 'Collective Housing', 'Urban Ecology']
+  },
+  {
+    id: 'ols-book-03',
+    title: 'Tadao Ando: Complete Works 1975–Today (XXL Collector Edition)',
+    subtitle: 'TASCHEN SUMO Edition with Architectural Stand',
+    author: 'Philip Jodidio, Tadao Ando',
+    publisher: 'TASCHEN (Köln)',
+    isbn: '978-3-8365-5240-0',
+    publicationYear: 2019,
+    bookSize: 'SUMO',
+    dimensionsText: '390 × 540 mm (SUMO Oversized, 18.5 kg)',
+    priceVND: 38000000,
+    stockCount: 1,
+    status: 'ONE_COPY_LEFT',
+    coverImage: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=800&q=80',
+    description: 'Ấn bản SUMO khổ cực đại có chữ ký khắc laser của Tadao Ando, đi kèm giá đỡ sách thiết kế độc bản. Tuyển tập toàn bộ công trình bê tông trần danh tiếng như Church of the Light, Naoshima Benesse House.',
+    category: 'Sumo Edition',
+    featured: true,
+    condition: 'Nguyên kiện thùng gỗ bảo hiểm TASCHEN chính hãng, số thứ tự lưu trữ No. 0482/1000 có chứng thư xác thực.',
+    tags: ['Tadao Ando', 'TASCHEN', 'SUMO', 'Collector Edition', 'Raw Concrete']
+  },
+  {
+    id: 'ols-book-04',
+    title: 'Pet Architecture Guide Book',
+    subtitle: 'Living Spheres on Micro Urban Leftovers in Tokyo',
+    author: 'Atelier Bow-Wow + Tokyo Institute of Technology',
+    publisher: 'World Photo Press',
+    isbn: '978-4-87275-103-1',
+    publicationYear: 2002,
+    bookSize: 'STANDARD',
+    dimensionsText: '130 × 190 mm (Pocket Manifesto)',
+    priceVND: 850000,
+    stockCount: 2,
+    status: 'IN_STOCK',
+    coverImage: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80',
+    description: 'Khảo sát 79 công trình kiến trúc "thú cưng" kỳ dị được xây dựng trên những mảnh đất thừa, kẹt giữa đường cao tốc và khe hẹp đô thị Tokyo.',
+    category: 'Urban Theory',
+    featured: false,
+    condition: 'Tình trạng bảo quản xuất sắc trong phòng kiểm soát độ ẩm 50% RH. Ruột sách nguyên vẹn.',
+    tags: ['Micro Architecture', 'Tokyo', 'Pet Architecture', 'Urban Ecology']
+  },
+  {
+    id: 'ols-book-05',
+    title: 'Made in Tokyo: Architectural Guide',
+    subtitle: 'Guide Book for Hybrid Urban Phenomenon',
+    author: 'Momoyo Kaijima, Junzo Kuroda, Yoshiharu Tsukamoto',
+    publisher: 'Kajima Institute Publishing',
+    isbn: '978-4-306-04423-4',
+    publicationYear: 2001,
+    bookSize: 'STANDARD',
+    dimensionsText: '150 × 210 mm',
+    priceVND: 720000,
+    stockCount: 0,
+    status: 'SOLD_OUT',
+    coverImage: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=800&q=80',
+    description: 'Bản hướng dẫn các công trình lai ghép vô thức tại Tokyo: bãi tập golf trên nóc siêu thị, đường cao tốc đâm xuyên cao ốc. Đã bán hết bản in cuối cùng.',
+    category: 'Urban Theory',
+    featured: false,
+    condition: 'Đã tạm hết hàng tại kho Oops La. Quý nhà sưu tầm có thể để lại yêu cầu tìm kiếm.',
+    tags: ['Tokyo', 'Hybrid Architecture', 'Found Objects']
+  },
+  {
+    id: 'ols-book-06',
+    title: 'Architectural Ethnography: Atelier Bow-Wow',
+    subtitle: '16th International Architecture Exhibition La Biennale di Venezia',
+    author: 'Yoshiharu Tsukamoto, Momoyo Kaijima, Chika Kijima',
+    publisher: 'TOTO Publishing (Tokyo)',
+    isbn: '978-4-88706-373-0',
+    publicationYear: 2018,
+    bookSize: 'STANDARD',
+    dimensionsText: '210 × 297 mm (A4 Landscape)',
+    priceVND: 1650000,
+    stockCount: 4,
+    status: 'IN_STOCK',
+    coverImage: 'https://images.unsplash.com/photo-1532012164546-f432f2e3777a?auto=format&fit=crop&w=800&q=80',
+    description: 'Ấn phẩm chính thức đại diện gian triển lãm Nhật Bản tại Venice Biennale 2018, phân tích cách thức quan sát dân tộc học kiến trúc qua các bản vẽ tay và nghiên cứu thực địa.',
+    category: 'Technical Drawings',
+    featured: false,
+    condition: 'Bản in khổ ngang tiêu chuẩn triển lãm, giấy nặng không tráng phủ, độ mở 180 độ phẳng tuyệt đối.',
+    tags: ['Venice Biennale', 'Ethnography', 'Fieldwork', 'Hand Drawing']
+  }
+];
+
+const SEED_ARTICLES = [
+  {
+    id: 'ols-art-01',
+    title: 'Atelier Bow-Wow và Nghệ Thuật Giải Phẫu Không Gian 1:20',
+    date: '01 Thg 11, 2026',
+    readTime: '6 phút đọc',
+    author: 'Giám tuyển Oops La',
+    excerpt: 'Tại sao bản vẽ mặt cắt phối cảnh (Sectional Perspective) tỷ lệ 1:20 lại trở thành ngôn ngữ định danh cho trường phái kiến trúc hành vi Tokyo?',
+    content: `Trong thế giới của chuyên khảo kiến trúc, ít có cuốn sách nào tạo ra cú hích thị giác và phương pháp luận mạnh mẽ như "Graphic Anatomy Atelier Bow-Wow" do TOTO Publishing xuất bản năm 2007.
+
+Không giống các bản vẽ kiến trúc thương mại trau chuốt bằng phần mềm render 3D bóng bẩy nhưng vô hồn, Yoshiharu Tsukamoto và Momoyo Kaijima chọn một lối đi khổ hạnh: vẽ tay toàn bộ mặt cắt phối cảnh với tỷ lệ cố định 1:20.
+
+Ở tỷ lệ 1:20, kiến trúc không còn là hình khối trừu tượng mà trở thành "giải phẫu học không gian" (Spatial Anatomy). Người đọc có thể nhìn thấy độ dày của lớp ván sàn 15mm, vị trí mối nối thép mạ kẽm, và thậm chí cả chiếc ấm đun nước trên bệ bếp. Đó là nơi kiến trúc và cuộc sống thường nhật hòa làm một thể hữu cơ.`
+  },
+  {
+    id: 'ols-art-02',
+    title: 'TASCHEN SUMO Edition: Khi Cuốn Sách Trở Thành Khối Điêu Khắc Độc Lập',
+    date: '03 Thg 11, 2026',
+    readTime: '8 phút đọc',
+    author: 'KTS. Lê Quang (Khách mời)',
+    excerpt: 'Khảo sát ấn bản Tadao Ando XXL nặng 18.5kg và triết lý "Cuốn sách không chỉ để đọc, mà là một vật thể kiến trúc trong không gian sống".',
+    content: `Được sáng lập bởi Benedikt Taschen năm 1999 với ấn bản đầu tiên của Helmut Newton, định dạng SUMO đã định nghĩa lại ranh giới giữa một cuốn sách và một tác phẩm nghệ thuật trưng bày.
+
+Với ấn phẩm "Tadao Ando: Complete Works XXL", cuốn sách vượt qua kích thước thông thường (390 x 540 mm) để phản ánh trung thực quy mô các công trình bê tông trần của kiến trúc sư đoạt giải Pritzker. Mỗi trang mở ra như một bức tường bảo tàng thu nhỏ, đòi hỏi người xem phải tương tác vật lý bằng cả cơ thể để lật mở.`
+  }
+];
+
+const SEED_ORDERS = [
+  {
+    id: 'OLS-261101',
+    createdAt: '2026-11-04T10:15:00Z',
+    customer: {
+      fullName: 'Trần Minh Hoàng',
+      phone: '0912345678',
+      address: 'Phòng 402, Tòa nhà Indochina, 4 Nguyễn Đình Chiểu, Quận 1, TP. Hồ Chí Minh',
+      notes: 'Giao giờ hành chính, gọi trước 15 phút để bảo vệ nhận.'
+    },
+    items: [
+      { bookId: 'ols-book-01', bookTitle: 'Graphic Anatomy Atelier Bow-Wow', quantity: 1, unitPriceVND: 1250000 }
+    ],
+    subtotalVND: 1250000,
+    status: 'PENDING_CONTACT',
+    stale48h: true // Created >48h ago and still uncontacted
+  },
+  {
+    id: 'OLS-261102',
+    createdAt: '2026-11-06T14:20:00Z',
+    customer: {
+      fullName: 'Nguyễn Thị Bích Ngọc',
+      phone: '0988765432',
+      address: 'Biệt thự 12A, Khu đô thị Ciputra, Tây Hồ, Hà Nội',
+      notes: 'Đóng gói cẩn thận 2 lớp bóng khí bảo vệ góc sách.'
+    },
+    items: [
+      { bookId: 'ols-book-03', bookTitle: 'Tadao Ando: Complete Works XXL', quantity: 1, unitPriceVND: 38000000 }
+    ],
+    subtotalVND: 38000000,
+    status: 'CONTACTED',
+    stale48h: false
+  },
+  {
+    id: 'OLS-261103',
+    createdAt: '2026-11-07T09:30:00Z',
+    customer: {
+      fullName: 'Vũ Đức Thành',
+      phone: '0903112233',
+      address: 'Studio Kiến Trúc V+A, 84 Pasteur, P. Bến Nghé, Quận 1, TP. Hồ Chí Minh',
+      notes: 'Xuất hóa đơn VAT cho công ty kiến trúc.'
+    },
+    items: [
+      { bookId: 'ols-book-02', bookTitle: 'Graphic Anatomy Atelier Bow-Wow 2', quantity: 1, unitPriceVND: 1450000 },
+      { bookId: 'ols-book-04', bookTitle: 'Pet Architecture Guide Book', quantity: 1, unitPriceVND: 850000 }
+    ],
+    subtotalVND: 2300000,
+    status: 'CONFIRMED',
+    stale48h: false
+  }
+];
+
+// 2. Application State Store
+const state = {
+  books: [...SEED_BOOKS],
+  articles: [...SEED_ARTICLES],
+  orders: [...SEED_ORDERS],
+  cart: [
+    { bookId: 'ols-book-01', quantity: 1 }
+  ],
+  activeCategory: 'ALL',
+  activeSize: 'ALL',
+  searchQuery: '',
+  heroFeaturedBookId: 'ols-book-01',
+  heroActivePlate: 'jacket', // 'jacket' | 'blue' | 'section'
+  activeModalBook: null,
+  activeSpreadIndex: 0,
+  spreadZoomLevel: 1.0,
+  adminRole: 'OWNER', // 'OWNER' | 'STAFF'
+  activeAdminTab: 'dashboard'
+};
+
+// 3. Currency Formatter (Strict Single Currency VNĐ - CURR-01)
+function formatVND(amount) {
+  if (amount === null || amount === undefined) return '0 VNĐ';
+  return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
+}
+
+// 4. Hero Section Handlers
+function switchHeroFeaturedBook(bookId) {
+  state.heroFeaturedBookId = bookId;
+  state.heroActivePlate = 'jacket';
+  renderHeroShowcase();
+}
+
+function switchHeroPlate(plateKey) {
+  state.heroActivePlate = plateKey;
+  renderHeroPlateVisual();
+}
+
+function renderHeroShowcase() {
+  const book = state.books.find(b => b.id === state.heroFeaturedBookId) || state.books[0];
+  const titleEl = document.getElementById('heroBookTitle');
+  const quoteEl = document.getElementById('heroBookQuote');
+  const dimsEl = document.getElementById('heroSpecDims');
+  const pagesEl = document.getElementById('heroSpecPages');
+  const priceEl = document.getElementById('heroSpecPrice');
+  const publisherEl = document.getElementById('heroPublisherBadge');
+
+  if (titleEl) titleEl.textContent = book.title;
+  if (quoteEl) quoteEl.textContent = book.description;
+  if (dimsEl) dimsEl.textContent = book.dimensionsText;
+  if (pagesEl) pagesEl.textContent = book.bookSize === 'SUMO' ? '740 Pages / 18.5 kg' : '156 Pages / 24 Houses';
+  if (priceEl) priceEl.textContent = formatVND(book.priceVND);
+  if (publisherEl) publisherEl.textContent = book.publisher.toUpperCase();
+
+  renderHeroPlateVisual();
+}
+
+function renderHeroPlateVisual() {
+  const container = document.getElementById('heroStageVisualContainer');
+  if (!container) return;
+
+  const book = state.books.find(b => b.id === state.heroFeaturedBookId) || state.books[0];
+  const plate = state.heroActivePlate;
+
+  // Active buttons state
+  ['jacket', 'blue', 'section'].forEach(p => {
+    const btn = document.getElementById('heroBtn-' + p);
+    if (btn) {
+      if (p === plate) {
+        btn.className = 'px-3 py-1.5 text-xs font-mono font-medium bg-stone-900 text-stone-50 rounded-md transition-all shadow-xs';
+      } else {
+        btn.className = 'px-3 py-1.5 text-xs font-mono font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-md transition-all';
+      }
+    }
+  });
+
+  let svgContent = '';
+  if (plate === 'jacket') {
+    svgContent = `
+      <div class="relative w-full h-full flex items-center justify-center p-6 bg-stone-100/60 rounded-xl overflow-hidden border border-stone-200/80">
+        <div class="relative w-72 h-72 sm:w-80 sm:h-80 bg-stone-50 rounded-md shadow-book transition-transform duration-300 hover:scale-[1.02] flex flex-col justify-between p-6 border border-stone-300/80">
+          <div class="book-spine-accent"></div>
+          <div class="flex justify-between items-start">
+            <span class="text-[10px] font-mono tracking-widest text-stone-400">TOTO PUBLISHING</span>
+            <span class="text-[9px] font-mono bg-amber-50 text-amber-800 border border-amber-200/70 px-1.5 py-0.5 rounded">1:20 SCALE</span>
+          </div>
+          <div class="text-center my-auto">
+            <div class="text-[13px] font-mono tracking-widest text-stone-500 mb-1">図解 アトリエ・ワン</div>
+            <h3 class="font-serif text-2xl font-bold tracking-tight text-stone-900 leading-snug">GRAPHIC ANATOMY<br/>ATELIER BOW-WOW</h3>
+          </div>
+          <div class="pt-4 border-t border-stone-200 flex justify-between items-end text-[11px] font-mono text-stone-500">
+            <span>ISBN 978-4-88706</span>
+            <span class="font-semibold text-stone-900 tabular-nums">260 × 260 mm</span>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (plate === 'blue') {
+    svgContent = `
+      <div class="relative w-full h-full flex items-center justify-center p-6 bg-sky-950/5 rounded-xl overflow-hidden border border-sky-100">
+        <div class="relative w-72 h-72 sm:w-80 sm:h-80 bg-sky-900 rounded-md shadow-book flex flex-col justify-between p-6 border border-sky-950/40 text-sky-100">
+          <div class="book-spine-accent"></div>
+          <span class="text-[10px] font-mono tracking-widest text-sky-300/80 uppercase">Cerulean Cloth Hardcover</span>
+          <div class="text-center my-auto">
+            <div class="w-16 h-16 mx-auto mb-3 border border-amber-300/40 rounded-full flex items-center justify-center text-amber-300">
+              <span class="font-serif text-lg italic">弓</span>
+            </div>
+            <div class="font-serif text-xl tracking-wider text-amber-200 font-medium">ATELIER BOW-WOW</div>
+            <div class="text-[11px] font-mono text-sky-200/70 mt-1">COLLECTOR ARCHIVE CLOTH</div>
+          </div>
+          <div class="text-[10px] font-mono text-sky-300/60 text-center">TOTO ARCHITECTURAL MONOGRAPHS</div>
+        </div>
+      </div>
+    `;
+  } else {
+    svgContent = `
+      <div class="relative w-full h-full flex items-center justify-center p-6 bg-stone-100/60 rounded-xl overflow-hidden border border-stone-200/80">
+        <div class="relative w-full max-w-md h-72 sm:h-80 bg-white rounded-md shadow-book flex flex-col p-4 border border-stone-300/80">
+          <div class="flex justify-between items-center text-[10px] font-mono text-stone-500 pb-2 border-b border-stone-200">
+            <span class="text-rose-600 font-semibold">SECTION 1:20 — HOUSE & ATELIER</span>
+            <span>PLATE NO. 04</span>
+          </div>
+          <div class="flex-1 my-2 border border-dashed border-stone-200 rounded flex items-center justify-center bg-stone-50/50 p-2 relative overflow-hidden">
+            <svg class="w-full h-full text-stone-700" viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M20 100 L20 40 L60 20 L140 20 L180 40 L180 100 Z" stroke-dasharray="2 1" />
+              <line x1="20" y1="70" x2="180" y2="70" stroke-width="1" />
+              <line x1="60" y1="20" x2="60" y2="100" stroke-width="0.8" />
+              <line x1="100" y1="20" x2="100" y2="100" stroke-width="0.8" />
+              <line x1="140" y1="20" x2="140" y2="100" stroke-width="0.8" />
+              <circle cx="80" cy="55" r="4" stroke="#C2410C" />
+              <text x="90" y="58" font-size="6" font-family="monospace" fill="#C2410C">Joinery 1:10</text>
+            </svg>
+          </div>
+          <div class="text-[10px] font-mono text-stone-400 text-center">CLICK TO OPEN CONTINUOUS VERTICAL VIEWER</div>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = svgContent;
+}
+
+// 5. Catalog Search & Filter Engine
+function setCategory(cat) {
+  state.activeCategory = cat;
+  renderCatalogPills();
+  renderBooksGrid();
+}
+
+function setSizeFilter(size) {
+  state.activeSize = size;
+  renderCatalogPills();
+  renderBooksGrid();
+}
+
+function handleSearch(query) {
+  state.searchQuery = (query || '').trim().toLowerCase();
+  renderBooksGrid();
+}
+
+function renderCatalogPills() {
+  const categories = ['ALL', 'Monograph', 'Technical Drawings', 'Urban Theory', 'Sumo Edition'];
+  const catContainer = document.getElementById('catalogCategoryPills');
+  if (catContainer) {
+    catContainer.innerHTML = categories.map(cat => {
+      const active = state.activeCategory === cat;
+      const label = cat === 'ALL' ? 'Tất cả ấn bản' : cat;
+      return `
+        <button onclick="setCategory('${cat}')" class="px-3.5 py-1.5 text-xs font-mono font-medium rounded-full transition-all ${
+          active 
+            ? 'bg-stone-900 text-white shadow-xs' 
+            : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70 hover:text-stone-900'
+        }">
+          ${label}
+        </button>
+      `;
+    }).join('');
+  }
+
+  const sizes = ['ALL', 'STANDARD', 'SUMO'];
+  const sizeContainer = document.getElementById('catalogSizePills');
+  if (sizeContainer) {
+    sizeContainer.innerHTML = sizes.map(size => {
+      const active = state.activeSize === size;
+      const label = size === 'ALL' ? 'Mọi kích thước' : size === 'SUMO' ? 'Khổ lớn SUMO' : 'Khổ tiêu chuẩn';
+      return `
+        <button onclick="setSizeFilter('${size}')" class="px-3 py-1 text-xs font-mono font-medium rounded-md transition-all ${
+          active
+            ? 'border border-stone-800 bg-stone-50 text-stone-900 font-semibold'
+            : 'border border-stone-200 text-stone-500 hover:border-stone-400 hover:text-stone-800'
+        }">
+          ${label}
+        </button>
+      `;
+    }).join('');
+  }
+}
+
+function renderBooksGrid() {
+  const gridContainer = document.getElementById('booksGridContainer');
+  if (!gridContainer) return;
+
+  const filtered = state.books.filter(book => {
+    // Category match
+    if (state.activeCategory !== 'ALL' && book.category !== state.activeCategory) return false;
+    // Size match
+    if (state.activeSize !== 'ALL' && book.bookSize !== state.activeSize) return false;
+    // Search match
+    if (state.searchQuery) {
+      const q = state.searchQuery;
+      const matchTitle = book.title.toLowerCase().includes(q);
+      const matchAuthor = book.author.toLowerCase().includes(q);
+      const matchIsbn = book.isbn.toLowerCase().includes(q);
+      const matchTag = book.tags.some(t => t.toLowerCase().includes(q));
+      if (!matchTitle && !matchAuthor && !matchIsbn && !matchTag) return false;
+    }
+    return true;
+  });
+
+  const countBadge = document.getElementById('catalogCountLabel');
+  if (countBadge) {
+    countBadge.textContent = `HIỂN THỊ ${filtered.length} / ${state.books.length} ẤN BẢN KIẾN TRÚC`;
+  }
+
+  if (filtered.length === 0) {
+    gridContainer.innerHTML = `
+      <div class="col-span-full py-16 text-center bg-stone-50 rounded-xl border border-stone-200">
+        <p class="font-serif text-xl text-stone-600 mb-2">Không tìm thấy ấn phẩm kiến trúc phù hợp</p>
+        <p class="text-xs font-mono text-stone-400">Thử tìm bằng tên kiến trúc sư, số ISBN hoặc xóa bộ lọc.</p>
+        <button onclick="setCategory('ALL'); setSizeFilter('ALL'); handleSearch('');" class="mt-4 px-4 py-2 text-xs font-mono bg-stone-900 text-white rounded-md hover:bg-stone-800 transition">
+          Xóa tất cả bộ lọc
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  gridContainer.innerHTML = filtered.map(book => {
+    let stockBadge = '';
+    if (book.status === 'IN_STOCK') {
+      stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Còn hàng (${book.stockCount})</span>`;
+    } else if (book.status === 'ONE_COPY_LEFT') {
+      stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-amber-50 text-amber-700 border border-amber-200/80"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Chỉ còn 1 cuốn</span>`;
+    } else {
+      stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-stone-100 text-stone-500 border border-stone-200"><span class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>Tạm hết</span>`;
+    }
+
+    const isSumo = book.bookSize === 'SUMO';
+
+    return `
+      <article class="book-card-presentation flex flex-col justify-between group">
+        <!-- Visual Cover Container -->
+        <div class="relative bg-stone-100 aspect-4/3 sm:aspect-square overflow-hidden cursor-pointer flex items-center justify-center p-6" onclick="openLookInsideModal('${book.id}')">
+          <img src="${book.coverImage}" alt="${book.title}" class="max-h-full max-w-full object-contain shadow-book transition-transform duration-300 group-hover:scale-105 group-hover:shadow-book-hover rounded-xs" />
+          <div class="absolute top-3 left-3 flex flex-col gap-1">
+            ${stockBadge}
+            ${isSumo ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-stone-900 text-amber-200 border border-amber-300/30 uppercase">TASCHEN SUMO</span>' : ''}
+          </div>
+          <button class="absolute bottom-3 right-3 px-3 py-1.5 text-xs font-mono font-medium bg-white/90 hover:bg-white text-stone-900 rounded-md shadow-sm backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            Xem bản vẽ 1:20
+          </button>
+        </div>
+
+        <!-- Book Meta -->
+        <div class="p-5 flex-1 flex flex-col justify-between bg-white">
+          <div>
+            <div class="flex items-center justify-between text-[11px] font-mono text-stone-400 uppercase tracking-wider mb-1.5">
+              <span>${book.category}</span>
+              <span class="tabular-nums">${book.publicationYear}</span>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-stone-900 leading-snug line-clamp-2 mb-1 group-hover:text-amber-800 transition-colors cursor-pointer" onclick="openLookInsideModal('${book.id}')">
+              ${book.title}
+            </h3>
+            <p class="text-xs text-stone-500 font-sans line-clamp-1 mb-2">${book.author}</p>
+            <p class="text-[11px] font-mono text-stone-400 line-clamp-1 mb-4">${book.dimensionsText}</p>
+          </div>
+
+          <!-- Price & Action Footer -->
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-[10px] font-mono text-stone-400 uppercase tracking-widest">Giá niêm yết</span>
+              <span class="font-mono text-sm font-bold text-stone-900 tabular-nums">${formatVND(book.priceVND)}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openLookInsideModal('${book.id}')" title="Xem thông tin chi tiết và bản vẽ" class="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </button>
+              ${book.stockCount > 0 ? `
+                <button onclick="addToBag('${book.id}')" class="px-3 py-2 text-xs font-mono font-medium bg-stone-900 hover:bg-amber-900 text-white rounded-lg transition-colors flex items-center gap-1.5 shadow-xs">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  <span>Thêm vào túi</span>
+                </button>
+              ` : `
+                <button disabled class="px-3 py-2 text-xs font-mono font-medium bg-stone-100 text-stone-400 rounded-lg cursor-not-allowed">
+                  Hết hàng
+                </button>
+              `}
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+// 6. Look Inside Continuous Vertical Viewer Modal
+function openLookInsideModal(bookId) {
+  const book = state.books.find(b => b.id === bookId);
+  if (!book) return;
+  state.activeModalBook = book;
+  state.spreadZoomLevel = 1.0;
+
+  const modal = document.getElementById('lookInsideModal');
+  if (!modal) return;
+
+  document.getElementById('modalBookTitle').textContent = book.title;
+  document.getElementById('modalBookSubtitle').textContent = book.subtitle;
+  document.getElementById('modalBookMeta').textContent = `${book.publisher} • ${book.isbn} • ${book.dimensionsText}`;
+  document.getElementById('modalBookPrice').textContent = formatVND(book.priceVND);
+  document.getElementById('modalPhysicalCondition').textContent = book.condition;
+
+  // Render continuous vertical spreads
+  const spreadsContainer = document.getElementById('modalSpreadsContainer');
+  if (spreadsContainer) {
+    spreadsContainer.innerHTML = `
+      <div class="space-y-8 p-6 flex flex-col items-center">
+        <!-- Spread 1: Cover Isometric -->
+        <div class="w-full max-w-3xl bg-white border border-stone-200 rounded-xl p-8 shadow-sm flex flex-col items-center text-center">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-stone-400 border-b border-stone-100 pb-3 mb-6">
+            <span class="font-semibold text-stone-800">PLATE 01 — DUST JACKET & ISOMETRIC MATRIX</span>
+            <span>TOTO ARCHITECTURAL ARCHIVE</span>
+          </div>
+          <img src="${book.coverImage}" alt="Cover Plate" class="max-h-96 object-contain rounded shadow-book mb-4" />
+          <p class="font-serif italic text-stone-600 text-sm max-w-xl">Bản vẽ phối cảnh đẳng cự toàn cảnh cấu trúc vi mô Tokyo, tỷ lệ chuẩn xác và hệ thống chú dẫn tay.</p>
+        </div>
+
+        <!-- Spread 2: Sectional Perspective 1:20 -->
+        <div class="w-full max-w-3xl bg-white border border-stone-200 rounded-xl p-8 shadow-sm flex flex-col items-center text-center">
+          <div class="w-full flex justify-between items-center text-xs font-mono text-stone-400 border-b border-stone-100 pb-3 mb-6">
+            <span class="font-semibold text-amber-800">PLATE 02 — SECTIONAL PERSPECTIVE 1:20 (BẢN VẼ MẶT CẮT PHỐI CẢNH)</span>
+            <span class="bg-amber-50 text-amber-800 px-2 py-0.5 rounded text-[10px]">TỶ LỆ 1:20</span>
+          </div>
+          <div class="w-full bg-stone-50 border border-stone-200 rounded-lg p-6 flex items-center justify-center min-h-[300px] relative overflow-hidden">
+            <svg class="w-full max-w-xl h-64 text-stone-800" viewBox="0 0 400 240" fill="none" stroke="currentColor" stroke-width="1.2">
+              <!-- Architectural 1:20 Blueprint Mock -->
+              <rect x="40" y="30" width="320" height="180" stroke="#78716C" stroke-width="1" stroke-dasharray="4 2" />
+              <line x1="40" y1="90" x2="360" y2="90" stroke="#1C1917" stroke-width="1.5" />
+              <line x1="40" y1="150" x2="360" y2="150" stroke="#1C1917" stroke-width="1.5" />
+              <!-- Stairs and furniture -->
+              <path d="M120 150 L120 120 L150 120 L150 90" stroke="#C2410C" stroke-width="1.5" />
+              <line x1="180" y1="90" x2="180" y2="30" stroke="#1C1917" stroke-width="2" />
+              <circle cx="240" cy="120" r="12" stroke="#0284C7" stroke-width="1" />
+              <text x="240" y="123" font-size="8" font-family="monospace" text-anchor="middle" fill="#0284C7">Spiral Core</text>
+              <text x="60" y="55" font-size="9" font-family="monospace" fill="#57534E">Level 3: Atelier Studio (+6.200)</text>
+              <text x="60" y="115" font-size="9" font-family="monospace" fill="#57534E">Level 2: Living & Library (+3.100)</text>
+              <text x="60" y="175" font-size="9" font-family="monospace" fill="#57534E">Level 1: Entry & Foundation (±0.000)</text>
+            </svg>
+          </div>
+          <p class="font-serif italic text-stone-600 text-sm max-w-xl mt-4">Chi tiết cắt dọc bộc lộ giải phẫu không gian của Atelier Bow-Wow: sự đan xen giữa không gian ở và không gian làm việc.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLookInsideModal() {
+  const modal = document.getElementById('lookInsideModal');
+  if (modal) modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function zoomSpread(delta) {
+  state.spreadZoomLevel = Math.max(1.0, Math.min(3.0, state.spreadZoomLevel + delta));
+  const container = document.getElementById('modalSpreadsContainer');
+  if (container) {
+    container.style.transform = `scale(${state.spreadZoomLevel})`;
+    container.style.transformOrigin = 'top center';
+  }
+}
+
+function resetSpreadZoom() {
+  state.spreadZoomLevel = 1.0;
+  const container = document.getElementById('modalSpreadsContainer');
+  if (container) {
+    container.style.transform = 'scale(1)';
+  }
+}
+
+// 7. Shopping Bag & Collector Request Flow
+function toggleCartDrawer() {
+  const drawer = document.getElementById('cartDrawerBackdrop');
+  if (drawer) {
+    drawer.classList.toggle('hidden');
+    renderCart();
+  }
+}
+
+function addToBag(bookId) {
+  const existing = state.cart.find(item => item.bookId === bookId);
+  const book = state.books.find(b => b.id === bookId);
+  if (!book || book.stockCount <= 0) {
+    showToast('Ấn bản này hiện tạm hết hàng');
+    return;
+  }
+
+  if (existing) {
+    if (existing.quantity < book.stockCount) {
+      existing.quantity += 1;
+      showToast(`Đã cập nhật số lượng: ${book.title}`);
+    } else {
+      showToast(`Kho chỉ còn ${book.stockCount} ấn bản`);
+    }
+  } else {
+    state.cart.push({ bookId, quantity: 1 });
+    showToast(`Đã thêm vào túi: ${book.title}`);
+  }
+
+  updateCartBadge();
+  renderCart();
+  toggleCartDrawer();
+}
+
+function updateCartQty(bookId, delta) {
+  const item = state.cart.find(i => i.bookId === bookId);
+  const book = state.books.find(b => b.id === bookId);
+  if (!item || !book) return;
+
+  item.quantity += delta;
+  if (item.quantity > book.stockCount) {
+    item.quantity = book.stockCount;
+    showToast(`Kho chỉ còn ${book.stockCount} ấn bản`);
+  }
+  if (item.quantity <= 0) {
+    state.cart = state.cart.filter(i => i.bookId !== bookId);
+    showToast('Đã xóa ấn phẩm khỏi túi sưu tầm');
+  }
+
+  updateCartBadge();
+  renderCart();
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById('cartCountBadge');
+  const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+  if (badge) badge.textContent = totalItems;
+}
+
+function renderCart() {
+  const list = document.getElementById('cartItemsList');
+  const subtotalEl = document.getElementById('cartSubtotalAmount');
+  if (!list || !subtotalEl) return;
+
+  if (state.cart.length === 0) {
+    list.innerHTML = `
+      <div class="py-16 text-center">
+        <div class="w-12 h-12 mx-auto mb-3 text-stone-300 flex items-center justify-center border border-dashed border-stone-300 rounded-full">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </div>
+        <p class="font-serif text-lg text-stone-600">Túi sưu tầm đang trống</p>
+        <p class="text-xs font-mono text-stone-400 mt-1">Chọn ấn bản kiến trúc trong thư mục để yêu cầu giữ bản.</p>
+      </div>
+    `;
+    subtotalEl.textContent = '0 VNĐ';
+    return;
+  }
+
+  let subtotal = 0;
+  list.innerHTML = state.cart.map(item => {
+    const book = state.books.find(b => b.id === item.bookId);
+    if (!book) return '';
+    const itemTotal = (book.priceVND || 0) * item.quantity;
+    subtotal += itemTotal;
+
+    return `
+      <div class="flex gap-4 py-4 border-b border-stone-100 last:border-b-0">
+        <img src="${book.coverImage}" alt="${book.title}" class="w-16 h-16 object-contain bg-stone-50 rounded border border-stone-200 p-1" />
+        <div class="flex-1 flex flex-col justify-between">
+          <div>
+            <h4 class="font-serif text-sm font-semibold text-stone-900 leading-tight">${book.title}</h4>
+            <span class="text-[11px] font-mono text-stone-500">${formatVND(book.priceVND)}</span>
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <div class="flex items-center border border-stone-200 rounded-md">
+              <button onclick="updateCartQty('${book.id}', -1)" class="px-2 py-0.5 text-stone-500 hover:text-stone-900 text-xs font-mono">-</button>
+              <span class="px-2.5 py-0.5 text-xs font-mono font-semibold tabular-nums text-stone-800">${item.quantity}</span>
+              <button onclick="updateCartQty('${book.id}', 1)" class="px-2 py-0.5 text-stone-500 hover:text-stone-900 text-xs font-mono">+</button>
+            </div>
+            <span class="font-mono text-xs font-semibold text-stone-900 tabular-nums">${formatVND(itemTotal)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  subtotalEl.textContent = formatVND(subtotal);
+}
+
+// 8. Checkout Modal & Messenger Copy
+function openCheckoutModal() {
+  if (state.cart.length === 0) {
+    showToast('Vui lòng chọn ít nhất một ấn bản');
+    return;
+  }
+  toggleCartDrawer();
+  const modal = document.getElementById('checkoutModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeCheckoutModal() {
+  const modal = document.getElementById('checkoutModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function submitCollectorRequest(event) {
+  if (event) event.preventDefault();
+  const name = document.getElementById('checkoutFullName')?.value?.trim();
+  const phone = document.getElementById('checkoutPhone')?.value?.trim();
+  const address = document.getElementById('checkoutAddress')?.value?.trim();
+  const notes = document.getElementById('checkoutNotes')?.value?.trim();
+
+  // Vietnamese phone regex validation
+  const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/;
+  if (!name) {
+    alert('Vui lòng nhập họ tên người sưu tầm.');
+    return;
+  }
+  if (!phone || !phoneRegex.test(phone.replace(/\s+/g, ''))) {
+    alert('Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại Việt Nam hợp lệ (VD: 0912345678).');
+    return;
+  }
+  if (!address) {
+    alert('Vui lòng nhập địa chỉ nhận ấn phẩm.');
+    return;
+  }
+
+  // Calculate order subtotal
+  let subtotal = 0;
+  const items = state.cart.map(i => {
+    const b = state.books.find(book => book.id === i.bookId);
+    const unitPrice = b?.priceVND || 0;
+    subtotal += unitPrice * i.quantity;
+    return {
+      bookId: i.bookId,
+      bookTitle: b?.title || '',
+      quantity: i.quantity,
+      unitPriceVND: unitPrice
+    };
+  });
+
+  const orderId = 'OLS-' + Math.floor(100000 + Math.random() * 900000);
+  const newOrder = {
+    id: orderId,
+    createdAt: new Date().toISOString(),
+    customer: { fullName: name, phone, address, notes },
+    items,
+    subtotalVND: subtotal,
+    status: 'PENDING_CONTACT',
+    stale48h: false
+  };
+
+  // Invariant BD-04 Guarantee: Zero auto-decrement upon submission
+  state.orders.unshift(newOrder);
+  state.cart = [];
+  updateCartBadge();
+  closeCheckoutModal();
+
+  // Open Messenger Export Confirmation
+  openMessengerModal(newOrder);
+}
+
+function openMessengerModal(order) {
+  const modal = document.getElementById('messengerModal');
+  if (!modal) return;
+
+  document.getElementById('messengerOrderId').textContent = order.id;
+  const itemsList = order.items.map(i => `• ${i.bookTitle} (x${i.quantity}) — ${formatVND(i.unitPriceVND * i.quantity)}`).join('\n');
+
+  const messengerText = 
+`[ĐƠN YÊU CẦU SƯU TẦM KTS — OOPS LA BOOK STORE]
+Mã yêu cầu: ${order.id}
+Người nhận: ${order.customer.fullName}
+Số điện thoại: ${order.customer.phone}
+Địa chỉ: ${order.customer.address}
+${order.customer.notes ? 'Ghi chú: ' + order.customer.notes + '\n' : ''}
+Danh mục ấn bản:
+${itemsList}
+
+Tổng giá trị niêm yết: ${formatVND(order.subtotalVND)}
+(Cam kết giữ ấn bản sau khi Chủ tiệm xác nhận qua hotline/Messenger)`;
+
+  const textarea = document.getElementById('messengerCopyBox');
+  if (textarea) textarea.value = messengerText;
+
+  modal.classList.remove('hidden');
+}
+
+function closeMessengerModal() {
+  const modal = document.getElementById('messengerModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function copyMessengerText() {
+  const textarea = document.getElementById('messengerCopyBox');
+  if (textarea) {
+    textarea.select();
+    navigator.clipboard.writeText(textarea.value).then(() => {
+      showToast('Đã sao chép nội dung đơn hàng vào bộ nhớ tạm');
+    });
+  }
+}
+
+// 9. Admin CMS & Dual-Role Permission Engine (AC-11, OD-01)
+function switchAdminRole(role) {
+  state.adminRole = role;
+  const roleLabel = document.getElementById('adminCurrentRoleLabel');
+  const descEl = document.getElementById('adminRoleDesc');
+  const roleBtnOwner = document.getElementById('roleBtnOwner');
+  const roleBtnStaff = document.getElementById('roleBtnStaff');
+
+  if (roleLabel) roleLabel.textContent = role;
+  if (descEl) {
+    if (role === 'OWNER') {
+      descEl.textContent = 'Toàn quyền duyệt đơn, trừ tồn kho (AC-11), hủy đơn đã duyệt và chỉnh sửa chuyên mục.';
+    } else {
+      descEl.textContent = 'Chỉ được liên hệ và hủy đơn chưa xác nhận. Quyền xác nhận đơn (CONFIRMED) bị khóa (AC-11).';
+    }
+  }
+
+  if (roleBtnOwner && roleBtnStaff) {
+    if (role === 'OWNER') {
+      roleBtnOwner.className = 'px-3 py-1 text-xs font-mono font-bold bg-amber-500 text-stone-950 rounded shadow-xs';
+      roleBtnStaff.className = 'px-3 py-1 text-xs font-mono text-stone-400 hover:text-stone-100 rounded';
+    } else {
+      roleBtnStaff.className = 'px-3 py-1 text-xs font-mono font-bold bg-stone-700 text-white rounded shadow-xs';
+      roleBtnOwner.className = 'px-3 py-1 text-xs font-mono text-stone-400 hover:text-stone-100 rounded';
+    }
+  }
+
+  renderAdminOrders();
+  showToast(`Đã chuyển ca trực: ${role}`);
+}
+
+function switchAdminTab(tab) {
+  state.activeAdminTab = tab;
+  ['dashboard', 'products', 'editorial', 'orders'].forEach(t => {
+    const panel = document.getElementById('adminTab-' + t);
+    const navBtn = document.getElementById('adminNavBtn-' + t);
+    if (panel) {
+      if (t === tab) panel.classList.remove('hidden');
+      else panel.classList.add('hidden');
+    }
+    if (navBtn) {
+      if (t === tab) {
+        navBtn.className = 'w-full text-left px-4 py-3 flex items-center gap-3 bg-stone-800 text-white font-medium rounded-lg text-xs font-mono transition';
+      } else {
+        navBtn.className = 'w-full text-left px-4 py-3 flex items-center gap-3 text-stone-400 hover:text-white hover:bg-stone-800/50 rounded-lg text-xs font-mono transition';
+      }
+    }
+  });
+
+  if (tab === 'orders') renderAdminOrders();
+  if (tab === 'products') renderAdminProducts();
+  if (tab === 'dashboard') renderAdminDashboard();
+}
+
+function renderAdminDashboard() {
+  const totalRev = state.orders.filter(o => o.status === 'CONFIRMED').reduce((s, o) => s + o.subtotalVND, 0);
+  const pendingCount = state.orders.filter(o => o.status === 'PENDING_CONTACT').length;
+  const staleCount = state.orders.filter(o => o.stale48h && o.status === 'PENDING_CONTACT').length;
+  const lowStockCount = state.books.filter(b => b.stockCount === 1).length;
+
+  const revEl = document.getElementById('adminKpiRevenue');
+  const pendingEl = document.getElementById('adminKpiPending');
+  const staleEl = document.getElementById('adminKpiStale');
+  const lowStockEl = document.getElementById('adminKpiLowStock');
+
+  if (revEl) revEl.textContent = formatVND(totalRev);
+  if (pendingEl) pendingEl.textContent = pendingCount;
+  if (staleEl) staleEl.textContent = staleCount;
+  if (lowStockEl) lowStockEl.textContent = lowStockCount;
+}
+
+function renderAdminOrders() {
+  const tbody = document.getElementById('adminOrdersTableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = state.orders.map(order => {
+    let statusBadge = '';
+    if (order.status === 'PENDING_CONTACT') {
+      statusBadge = `<span class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-amber-50 text-amber-800 border border-amber-200">Chờ liên hệ</span>`;
+    } else if (order.status === 'CONTACTED') {
+      statusBadge = `<span class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-sky-50 text-sky-800 border border-sky-200">Đã liên hệ</span>`;
+    } else if (order.status === 'CONFIRMED') {
+      statusBadge = `<span class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">Đã chốt (Trừ kho)</span>`;
+    } else {
+      statusBadge = `<span class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-rose-50 text-rose-800 border border-rose-200">Đã hủy</span>`;
+    }
+
+    const staleBadge = (order.stale48h && order.status === 'PENDING_CONTACT')
+      ? `<span class="ml-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300 rounded uppercase">Quá 48H</span>`
+      : '';
+
+    // AC-11 Guard: Only Owner can confirm orders
+    const isOwner = state.adminRole === 'OWNER';
+    const canConfirm = isOwner && (order.status === 'PENDING_CONTACT' || order.status === 'CONTACTED');
+    // OD-01 Guard: Staff cannot cancel confirmed orders
+    const canCancel = (isOwner || order.status !== 'CONFIRMED') && order.status !== 'CANCELLED';
+
+    return `
+      <tr class="hover:bg-stone-50/80 transition-colors border-b border-stone-200/70">
+        <td class="px-4 py-3.5 font-mono text-xs font-semibold text-stone-900">
+          ${order.id}
+          ${staleBadge}
+        </td>
+        <td class="px-4 py-3.5 text-xs">
+          <div class="font-medium text-stone-900">${order.customer.fullName}</div>
+          <div class="text-[11px] font-mono text-stone-500">${order.customer.phone}</div>
+        </td>
+        <td class="px-4 py-3.5 text-xs">
+          <div class="text-stone-700 line-clamp-1 max-w-xs">${order.items.map(i => `${i.bookTitle} (x${i.quantity})`).join(', ')}</div>
+          <div class="font-mono font-semibold text-stone-900 tabular-nums">${formatVND(order.subtotalVND)}</div>
+        </td>
+        <td class="px-4 py-3.5">${statusBadge}</td>
+        <td class="px-4 py-3.5 text-right space-x-1.5">
+          ${canConfirm ? `
+            <button onclick="confirmOrder('${order.id}')" class="px-2.5 py-1.5 text-[11px] font-mono font-semibold bg-emerald-700 hover:bg-emerald-800 text-white rounded transition">
+              Duyệt chốt
+            </button>
+          ` : `
+            <button disabled title="${!isOwner ? 'AC-11: Chỉ Chủ tiệm (Owner) có quyền duyệt chốt đơn' : 'Đơn đã xác nhận'}" class="px-2.5 py-1.5 text-[11px] font-mono bg-stone-100 text-stone-400 rounded cursor-not-allowed">
+              ${!isOwner ? 'Khóa (Owner)' : 'Đã chốt'}
+            </button>
+          `}
+          ${canCancel ? `
+            <button onclick="cancelOrder('${order.id}')" class="px-2.5 py-1.5 text-[11px] font-mono text-rose-700 hover:bg-rose-50 border border-rose-200 rounded transition">
+              Hủy
+            </button>
+          ` : ''}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function confirmOrder(orderId) {
+  if (state.adminRole !== 'OWNER') {
+    alert('AC-11 Vi phạm phân quyền: Chỉ tài khoản OWNER mới được phép xác nhận đơn hàng.');
+    return;
+  }
+  const order = state.orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  // Single inventory decrement guarantee (AC-15 & OD-02)
+  order.status = 'CONFIRMED';
+  order.items.forEach(item => {
+    const book = state.books.find(b => b.id === item.bookId);
+    if (book && book.stockCount > 0) {
+      book.stockCount = Math.max(0, book.stockCount - item.quantity);
+      if (book.stockCount === 0) book.status = 'SOLD_OUT';
+      else if (book.stockCount === 1) book.status = 'ONE_COPY_LEFT';
+    }
+  });
+
+  renderAdminOrders();
+  renderAdminDashboard();
+  renderBooksGrid();
+  showToast(`Đã duyệt đơn ${orderId} & trừ tồn kho thành công`);
+}
+
+function cancelOrder(orderId) {
+  const order = state.orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  if (order.status === 'CONFIRMED' && state.adminRole !== 'OWNER') {
+    alert('OD-01 Vi phạm phân quyền: Nhân viên (STAFF) không được hủy đơn hàng đã được Owner xác nhận.');
+    return;
+  }
+
+  order.status = 'CANCELLED';
+  renderAdminOrders();
+  renderAdminDashboard();
+  showToast(`Đã hủy đơn hàng ${orderId}`);
+}
+
+function renderAdminProducts() {
+  const tbody = document.getElementById('adminProductsTableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = state.books.map(book => {
+    return `
+      <tr class="hover:bg-stone-50 transition-colors border-b border-stone-200">
+        <td class="px-4 py-3 flex items-center gap-3">
+          <img src="${book.coverImage}" class="w-10 h-10 object-contain rounded border border-stone-200" />
+          <div>
+            <div class="font-serif font-bold text-stone-900 text-sm leading-tight">${book.title}</div>
+            <div class="text-[11px] font-mono text-stone-400">${book.isbn} • ${book.category}</div>
+          </div>
+        </td>
+        <td class="px-4 py-3 font-mono text-xs tabular-nums text-stone-900">${formatVND(book.priceVND)}</td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-xs font-semibold tabular-nums">${book.stockCount}</span>
+            <button onclick="adjustStock('${book.id}', 1)" class="w-5 h-5 flex items-center justify-center bg-stone-100 hover:bg-stone-200 rounded text-xs font-mono">+</button>
+            <button onclick="adjustStock('${book.id}', -1)" class="w-5 h-5 flex items-center justify-center bg-stone-100 hover:bg-stone-200 rounded text-xs font-mono">-</button>
+          </div>
+        </td>
+        <td class="px-4 py-3 text-xs">
+          <span class="px-2 py-0.5 rounded text-[11px] font-mono ${
+            book.status === 'IN_STOCK' ? 'bg-emerald-50 text-emerald-800' : book.status === 'ONE_COPY_LEFT' ? 'bg-amber-50 text-amber-800' : 'bg-stone-100 text-stone-600'
+          }">${book.status}</span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function adjustStock(bookId, delta) {
+  const book = state.books.find(b => b.id === bookId);
+  if (!book) return;
+  book.stockCount = Math.max(0, book.stockCount + delta);
+  if (book.stockCount === 0) book.status = 'SOLD_OUT';
+  else if (book.stockCount === 1) book.status = 'ONE_COPY_LEFT';
+  else book.status = 'IN_STOCK';
+
+  renderAdminProducts();
+  renderBooksGrid();
+  showToast(`Đã cập nhật tồn kho ${book.title}: ${book.stockCount}`);
+}
+
+// 10. Toast Notification System
+function showToast(msg) {
+  const toast = document.getElementById('globalToast');
+  const toastText = document.getElementById('globalToastMessage');
+  if (!toast || !toastText) return;
+
+  toastText.textContent = msg;
+  toast.classList.remove('hidden');
+  toast.classList.add('flex');
+
+  setTimeout(() => {
+    toast.classList.add('hidden');
+    toast.classList.remove('flex');
+  }, 3200);
+}
+
+// 11. Initial Mount & Event Setup
+document.addEventListener('DOMContentLoaded', () => {
+  renderHeroShowcase();
+  renderCatalogPills();
+  renderBooksGrid();
+  updateCartBadge();
+
+  // Setup Tweaks Panel if available
+  if (window.UDTweaks) {
+    window.UDTweaks.init({
+      storageKey: 'oops-la-claude-design-tweaks',
+      controls: [
+        { id: 'theme', label: 'Theme Mode', type: 'select', options: ['light', 'dark'], default: 'light', attr: 'data-theme' },
+        { id: 'accent', label: 'Primary Accent', type: 'color', default: '#C2410C', cssVar: '--accent' },
+        { id: 'radius', label: 'Corner Radius (px)', type: 'range', min: 0, max: 20, step: 2, default: 8, cssVar: '--radius-md', unit: 'px' }
+      ]
+    });
+  }
+
+  // Keyboard shortcut: Escape closes modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeLookInsideModal();
+      closeCheckoutModal();
+      closeMessengerModal();
+      const drawer = document.getElementById('cartDrawerBackdrop');
+      if (drawer && !drawer.classList.contains('hidden')) drawer.classList.add('hidden');
+    }
+  });
+});
+
+</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto switch to orders on start if requested
+      renderAdminDashboard();
+      renderAdminOrders();
+      renderAdminProducts();
+    });
+  </script>
+</body>
+</html>

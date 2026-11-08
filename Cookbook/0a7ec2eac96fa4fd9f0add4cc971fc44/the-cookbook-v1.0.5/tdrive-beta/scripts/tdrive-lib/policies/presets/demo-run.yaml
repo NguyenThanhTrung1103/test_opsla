@@ -1,0 +1,13 @@
+name: demo-run
+description: "Short supervised demo: one implementer, fast plan, stop after the first phase, 3-hour budget."
+values:
+  run.effort: medium
+  run.max_implementers: 1
+  run.stop_after_phases: 1
+  run.max_minutes: 180
+  plan.command: "/ak:plan --fast @docs/BRIEF.md"
+  watch.tick_s: 20
+  watch.backstop_min: 30
+  govern.mode: dry-run
+  verify.target_timeout_min: 10
+  models.table: default

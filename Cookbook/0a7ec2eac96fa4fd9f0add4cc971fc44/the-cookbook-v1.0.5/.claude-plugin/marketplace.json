@@ -1,0 +1,14 @@
+{
+  "name": "the-cookbook",
+  "owner": { "name": "Tony" },
+  "metadata": { "description": "The Cookbook: Intent Studio plugin (idea to plan, plan check, hand-off to a builder, and Claude-ChatGPT discussion by rules).", "version": "1.0.0" },
+  "plugins": [
+    {
+      "name": "intent-studio",
+      "description": "Turn an idea into a one-page plan an AI builder can run with, check it, and hand it to your builder.",
+      "version": "0.2.0",
+      "author": { "name": "Tony" },
+      "source": "./plugin"
+    }
+  ]
+}

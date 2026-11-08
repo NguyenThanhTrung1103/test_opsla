@@ -1,0 +1,16 @@
+# Harness core maintenance binary
+scripts/bin/harness
+scripts/bin/harness.exe
+
+# Local SQLite State
+harness.db
+*.db
+
+# Disposable Cookbook Sandbox
+.cookbook-sandbox/
+
+# Dependencies & Build
+node_modules/
+dist/
+.gemini/
+

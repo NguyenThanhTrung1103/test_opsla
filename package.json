@@ -1,0 +1,20 @@
+{
+  "name": "oops-la-bookstore",
+  "version": "1.0.0",
+  "description": "Editorial Commerce Platform for Architectural Monographs & Atelier Bow-Wow 1:20 Drawings",
+  "type": "module",
+  "scripts": {
+    "build": "node -e \"import('node:fs').then(fs => { fs.mkdirSync('dist', { recursive: true }); fs.copyFileSync('oops_la_book_store_uxui_fixed.html', 'dist/index.html'); console.log('[Build] dist/index.html created successfully.'); });\"",
+    "start": "node --experimental-strip-types src/server/app.ts",
+    "test": "node --experimental-strip-types --test tests/**/*.test.ts",
+    "check-tri-pillar": "powershell -ExecutionPolicy Bypass -File scripts/check-tri-pillar.ps1"
+  },
+  "keywords": [
+    "editorial-commerce",
+    "architecture",
+    "monographs",
+    "indexeddb"
+  ],
+  "author": "Oops La Book Store",
+  "license": "UNLICENSED"
+}

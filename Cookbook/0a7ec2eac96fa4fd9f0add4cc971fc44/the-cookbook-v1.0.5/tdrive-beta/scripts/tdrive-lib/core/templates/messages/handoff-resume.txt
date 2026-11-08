@@ -1,0 +1,1 @@
+Resume from the handoff brief {{path}} on {{branch}}: read it fully, then continue the plan where it stopped without redoing finished phases.

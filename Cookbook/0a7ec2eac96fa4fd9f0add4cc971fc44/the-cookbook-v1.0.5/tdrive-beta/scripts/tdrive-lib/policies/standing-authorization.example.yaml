@@ -1,0 +1,45 @@
+# Example standing authorization (experimental Buildflow engine).
+#
+# The real file lives in the driven repo at .tdrive/standing-authorization.yaml
+# next to its ssh signature .tdrive/standing-authorization.yaml.sig. Both are
+# committed. Do not copy this example by hand: an unsigned or hand-edited file
+# is refused (tdrive sign exits 11 with reason=unsigned or sha-mismatch).
+#
+# Create it at a real terminal (needs a TTY; you type the project name):
+#   tdrive --experimental-buildflow sign --authorize --repo <repo> \
+#     --gates look,mock,build,intent-*,spec-* --days 7 \
+#     --signer you@example.com --ssh-key ~/.ssh/id_ed25519
+# ssh-keygen -Y sign asks for the key passphrase on that terminal. Then commit
+# both files on the branch the engine builds on:
+#   git -C <repo> add .tdrive/standing-authorization.yaml .tdrive/standing-authorization.yaml.sig
+#   git -C <repo> commit -m "chore: standing authorization for authorized-tier gates"
+#
+# allowed_signers (one-time setup) lives in your user config dir, never in a
+# repo (signing.allowed_signers, default
+# ${XDG_CONFIG_HOME:-~/.config}/tdrive/allowed_signers). One line per signer:
+#   you@example.com namespaces="tdrive-auth" ssh-ed25519 AAAAC3Nza...your-public-key
+# A missing allowed_signers file means every authorization is unsigned.
+# An allowed_signers path inside a git work tree is refused (exit 2).
+#
+# Validity, checked on every authorized-tier signing: the file and its .sig are
+# tracked and clean at HEAD; body_sha256 matches; issued <= now < expires;
+# expires - issued <= signing.max_auth_days; project equals the repo dir
+# name; signer differs from signing.driver_identity; the gate is listed; the
+# ssh signature verifies for the signer against allowed_signers.
+#
+# Threat model:
+#   1. It stops an agent from granting itself authorized-tier scope: every check except
+#      the ssh signature can be satisfied by any writer, the signature cannot.
+#   2. It does not stop a local process that can use your ssh key: protect the
+#      key with a passphrase, or load it with `ssh-agent -c` (confirm each use).
+#   3. Halt-tier gates are never signed by tdrive, with or without this file;
+#      halt-tier tags signed by anyone but the operator are reported as policy
+#      violations (detected, not prevented: sign.sh belongs to the repo).
+#
+# Fields (written by --authorize, in this order):
+signer: "you@example.com"          # ssh principal; must not be signing.driver_identity
+issued: "2026-10-09T00:00:00Z"     # UTC; the authorization is not valid before this
+expires: "2026-10-16T00:00:00Z"    # UTC; at most signing.max_auth_days after issued
+project: "my-project"              # the driven repo's directory name
+gates: ["look", "mock", "build", "intent-*", "spec-*"]   # authorized-tier gates or authorized patterns only; halt entries are ignored
+body_sha256: "<sha256 of this file without the body_sha256 line>"

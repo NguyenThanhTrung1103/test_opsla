@@ -1,0 +1,13 @@
+name: pair-run
+description: "Operator nearby: full plan, two implementers, hourly backstop, cleanup in dry-run only."
+values:
+  run.effort: high
+  run.max_implementers: 2
+  run.stop_after_phases: 0
+  run.max_minutes: 0
+  run.operator_present: true
+  watch.tick_s: 60
+  watch.backstop_min: 60
+  govern.mode: dry-run
+  verify.target_timeout_min: 20
+  models.table: default

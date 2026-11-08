@@ -1,0 +1,205 @@
+# Allowlisted cleanup for `tdrive govern clean` (data only; entries run in order).
+# Only regenerable caches are listed. Docker volumes and containers are never
+# pruned: docker is limited to dangling images and the builder cache.
+#
+# Entry fields:
+#   id            unique name, printed as CLEAN id=<id>
+#   platform      any | darwin | linux (other platforms: skipped reason=platform)
+#   requires      tools that must be on PATH (else skipped reason=tool-absent)
+#   root          fixed root dir; `~`, $HOME and $TMPDIR are expanded
+#   root_darwin / root_linux    per-platform fixed root (wins over root)
+#   root_cmd      argv printing one path, run with cwd=$HOME
+#   target_self   true: the root_cmd path is the single target, its parent the root
+#   root_env      env var naming a root; used only when every child of it
+#                 matches root_env_children (a regex), else the fixed root
+#   match         basename glob every target must match
+#   paths         globs under the root that name the targets
+#   find          {name, min_age_min}: dirs directly under the root whose
+#                 basename matches name and whose mtime is older than min_age_min
+#   source        recorded-worktrees: verify worktrees from
+#                 runs/*/verify/worktrees.tsv whose pid is dead and that are
+#                 older than max_age_min
+#   clean         remove-paths | remove-worktrees (used when clean_cmd is absent)
+#   clean_cmd     argv run instead of removing paths
+#   version_cmd + clean_cmd_min_major: run clean_cmd only when the tool's major
+#                 version is at least that, else fall back to `clean`
+#   measure       du (du -sk of the targets, before and after) |
+#                 docker-reclaimed (docker's reported total)
+#   guard         process_absent: [pgrep -f regex]; exact_process_absent:
+#                 [pgrep -x name]; process_args_absent: [python regex searched
+#                 in the full args of every process from `ps -Aww -o
+#                 pid,ppid,etime,args`, tdrive and its ancestors excluded];
+#                 targets_not_in_use: true (no process args name a target);
+#                 app_not_running: true (per target, bundle id = target
+#                 basename minus its .ShipIt suffix); docker: true (daemon
+#                 reachable). A matching process skips the entry with
+#                 reason=in-use:<pid>:<cmd>; an unreadable process table
+#                 skips it with reason=guard:<key>.
+#   items         app-caches only: list of {name, platform, process,
+#                 bundle_id, root, paths, match}; each item is guarded by its
+#                 app not running and prints CLEAN id=app-caches:<name>
+# Every removal target must resolve strictly under its root, match its glob
+# and stay off the denylist ($HOME, its direct children, ~/Library,
+# ~/Library/Caches, /, any dir holding .git); symlinks are unlinked, not followed.
+entries:
+  - id: npm-cache
+    platform: any
+    requires: [npm]
+    root_cmd: [npm, config, get, cache]
+    match: _cacache
+    paths: [_cacache]
+    clean_cmd: [npm, cache, clean, --force]
+    measure: du
+    guard:
+      process_absent:
+        - '(^|/)npm( |$)'
+        - '(^|/)npx( |$)'
+  - id: npx-cache
+    platform: any
+    requires: [npm]
+    root_cmd: [npm, config, get, cache]
+    match: _npx
+    paths: [_npx]
+    version_cmd: [npm, --version]
+    clean_cmd_min_major: 11
+    clean_cmd: [npm, cache, npx, rm]
+    clean: remove-paths
+    measure: du
+    guard:
+      process_absent:
+        - '(^|/)npx( |$)'
+        - 'npm exec'
+  - id: go-build-cache
+    platform: any
+    requires: [go]
+    root_cmd: [go, env, GOCACHE]
+    target_self: true
+    match: "*"
+    clean_cmd: [go, clean, -cache]
+    measure: du
+    guard:
+      # go (exact name), toolchain tools (compile, link, asm, cgo, vet ...),
+      # go-build temp binaries and golangci-lint; gopls (editor LSP) is fine.
+      process_args_absent:
+        - '^([^ ]*/)?go( |$)'
+        - '/pkg/tool/'
+        - '/go-build[0-9]*/'
+        - 'golangci-lint'
+  - id: go-build-temp
+    platform: any
+    requires: []
+    root: $TMPDIR
+    match: "go-build*"
+    find:
+      name: "go-build*"
+      min_age_min: 60
+    clean: remove-paths
+    measure: du
+    guard:
+      # go (exact name), toolchain tools (compile, link, asm, cgo, vet ...),
+      # go-build temp binaries and golangci-lint; gopls (editor LSP) is fine.
+      process_args_absent:
+        - '^([^ ]*/)?go( |$)'
+        - '/pkg/tool/'
+        - '/go-build[0-9]*/'
+        - 'golangci-lint'
+  - id: pnpm-store
+    platform: any
+    requires: [pnpm]
+    root_cmd: [pnpm, store, path]
+    target_self: true
+    match: "*"
+    clean_cmd: [pnpm, store, prune]
+    measure: du
+    guard:
+      process_absent:
+        - 'pnpm (install|i|add)( |$)'
+  - id: shipit-caches
+    platform: darwin
+    requires: []
+    root: ~/Library/Caches
+    match: "*.ShipIt"
+    paths: ["*.ShipIt"]
+    clean: remove-paths
+    measure: du
+    guard:
+      app_not_running: true
+  - id: app-caches
+    platform: any
+    requires: []
+    clean: remove-paths
+    measure: du
+    items:
+      - name: chrome
+        platform: darwin
+        process: Google Chrome
+        bundle_id: com.google.Chrome
+        root: ~/Library/Caches/Google/Chrome
+        paths: ["*"]
+        match: "*"
+      - name: vscode
+        platform: darwin
+        process: Electron
+        bundle_id: com.microsoft.VSCode
+        root: ~/Library/Application Support/Code
+        paths: [Cache, CachedData, Code Cache, CachedExtensionVSIXs]
+        match: "*Cache*"
+      - name: chrome
+        platform: linux
+        process: chrome
+        root: ~/.cache/google-chrome
+        paths: ["*"]
+        match: "*"
+      - name: vscode
+        platform: linux
+        process: code
+        root: ~/.config/Code
+        paths: [Cache, CachedData, Code Cache, CachedExtensionVSIXs]
+        match: "*Cache*"
+  - id: playwright-browsers
+    platform: any
+    requires: []
+    root_env: PLAYWRIGHT_BROWSERS_PATH
+    root_env_children: '^(chromium|chromium_headless_shell|firefox|webkit|ffmpeg)[-_]'
+    root_darwin: ~/Library/Caches
+    root_linux: ~/.cache
+    match: ms-playwright
+    paths: [ms-playwright]
+    clean: remove-paths
+    measure: du
+    guard:
+      # browsers launched from the cache (tests, Lighthouse, visual checks)
+      targets_not_in_use: true
+      process_args_absent:
+        - 'ms-playwright/'
+        - 'chrome-headless-shell'
+        - 'headless_shell'
+        - 'playwright test'
+        - 'playwright-core'
+        - 'lighthouse'
+  - id: stale-verify-worktrees
+    platform: any
+    requires: [git]
+    root: $TMPDIR
+    match: "tdrive-verify-*"
+    source: recorded-worktrees
+    max_age_min: 120
+    clean: remove-worktrees
+    measure: du
+  - id: docker-dangling-images
+    platform: any
+    requires: [docker]
+    clean_cmd: [docker, image, prune, -f]
+    measure: docker-reclaimed
+    guard:
+      docker: true
+  - id: docker-builder-cache
+    platform: any
+    requires: [docker]
+    clean_cmd: [docker, builder, prune, -f]
+    measure: docker-reclaimed
+    guard:
+      docker: true
+      process_absent:
+        - 'docker (build|buildx)'
+        - 'buildx'

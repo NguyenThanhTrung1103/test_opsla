@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# tp <tool> ['<json args>'] — call a tab-pilot tool over HTTP (reads .env: TAB_PILOT_URL, TAB_PILOT_TOKEN)
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"; [[ -f "$here/.env" ]] && set -a && . "$here/.env" && set +a
+: "${TAB_PILOT_URL:?set TAB_PILOT_URL (run scripts/setup.sh)}"; : "${TAB_PILOT_TOKEN:?set TAB_PILOT_TOKEN}"
+[[ $# -ge 1 ]] || { echo "usage: tp <tool> ['{json args}']   (tp tools = list)"; exit 1; }
+if [[ "$1" == tools ]]; then
+  curl -s "$TAB_PILOT_URL/mcp" -H "authorization: Bearer $TAB_PILOT_TOKEN" -H 'content-type: application/json' -A tab-pilot-cli \
+    -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 -c "import json,sys;[print(f\"{t['name']:28} {t['description'][:90]}\") for t in json.load(sys.stdin)['result']['tools']]"
+  exit
+fi
+curl -s "$TAB_PILOT_URL/rpc" -H "authorization: Bearer $TAB_PILOT_TOKEN" -H 'content-type: application/json' -A tab-pilot-cli \
+  -d "{\"tool\":\"$1\",\"args\":${2:-null}}"
+echo

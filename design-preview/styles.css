@@ -1,0 +1,239 @@
+/* ==========================================================================
+   Oops La Book Store — Claude Design System
+   Architecture: Claude Code / Claude Design Inspired Editorial Commerce
+   ========================================================================== */
+
+:root {
+  /* Color Palette — Warm Paper & Refined Charcoal */
+  --bg-canvas: #FAF9F5;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F4F1EA;
+  --bg-muted: #EBE7DE;
+
+  --border-subtle: #E8E4DC;
+  --border-default: #D6D1C7;
+  --border-strong: #A8A29E;
+
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #78716C;
+  --text-faint: #A8A29E;
+
+  /* Brand Accents — Warm Terracotta / Sienna & Technical Cyan */
+  --accent: #C2410C;
+  --accent-hover: #9A3412;
+  --accent-subtle: #FFF7ED;
+  --accent-border: #FFEDD5;
+
+  --arch-blue: #0284C7;
+  --arch-blue-subtle: #F0F9FF;
+  --arch-blue-border: #BAE6FD;
+
+  --arch-ochre: #B45309;
+  --arch-ochre-subtle: #FEF3C7;
+
+  /* Semantic Status Tokens */
+  --status-success-bg: #ECFDF5;
+  --status-success-text: #065F46;
+  --status-success-border: #A7F3D0;
+
+  --status-warning-bg: #FFFBEB;
+  --status-warning-text: #92400E;
+  --status-warning-border: #FDE68A;
+
+  --status-danger-bg: #FEF2F2;
+  --status-danger-text: #991B1B;
+  --status-danger-border: #FECACA;
+
+  --status-muted-bg: #F5F5F4;
+  --status-muted-text: #78716C;
+  --status-muted-border: #E7E5E4;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(28, 25, 23, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(28, 25, 23, 0.06), 0 1px 2px -1px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(28, 25, 23, 0.06), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(28, 25, 23, 0.07), 0 4px 6px -4px rgba(28, 25, 23, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(28, 25, 23, 0.09), 0 8px 10px -6px rgba(28, 25, 23, 0.04);
+  --shadow-book: 0 12px 28px -6px rgba(28, 25, 23, 0.14), 0 6px 12px -4px rgba(28, 25, 23, 0.06), -3px 0 8px rgba(28, 25, 23, 0.04);
+  --shadow-book-hover: 0 20px 36px -8px rgba(28, 25, 23, 0.20), 0 8px 16px -4px rgba(28, 25, 23, 0.08), -4px 0 12px rgba(28, 25, 23, 0.06);
+
+  /* Typography */
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Dark Mode Overrides (for Tweaks Panel switching) */
+[data-theme="dark"] {
+  --bg-canvas: #121110;
+  --bg-surface: #1C1917;
+  --bg-subtle: #292524;
+  --bg-muted: #332E2B;
+
+  --border-subtle: #292524;
+  --border-default: #44403C;
+  --border-strong: #78716C;
+
+  --text-primary: #F5F5F4;
+  --text-secondary: #D6D3D1;
+  --text-muted: #A8A29E;
+  --text-faint: #78716C;
+
+  --accent: #EA580C;
+  --accent-hover: #F97316;
+  --accent-subtle: #431407;
+  --accent-border: #7C2D12;
+
+  --arch-blue: #38BDF8;
+  --arch-blue-subtle: #082F49;
+  --arch-blue-border: #075985;
+
+  --status-success-bg: #064E3B;
+  --status-success-text: #6EE7B7;
+  --status-success-border: #047857;
+
+  --status-warning-bg: #451A03;
+  --status-warning-text: #FCD34D;
+  --status-warning-border: #78350F;
+
+  --status-danger-bg: #450A0A;
+  --status-danger-text: #FCA5A5;
+  --status-danger-border: #7F1D1D;
+
+  --status-muted-bg: #292524;
+  --status-muted-text: #A8A29E;
+  --status-muted-border: #44403C;
+
+  --shadow-book: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+  --shadow-book-hover: 0 20px 36px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* Global Reset & Base Styling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular Numerals for Prices, Dimensions, Metrics */
+.tabular-nums, .price-tag, .spec-data, .metric-value, .order-id {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Refined Book Physical Presentation */
+.book-cover-stage {
+  perspective: 1200px;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.book-card-presentation {
+  position: relative;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.book-card-presentation:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-lg);
+}
+
+.book-spine-accent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0.08) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Architectural Subtle Blueprint Grid Background */
+.bg-arch-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(168, 162, 158, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(168, 162, 158, 0.08) 1px, transparent 1px);
+}
+
+/* Continuous Vertical Look Inside Reader */
+.spread-viewport {
+  max-height: calc(90vh - 120px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.spread-crease-refined {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0,0,0,0.02) 47%, 
+    rgba(0,0,0,0.12) 49.5%, 
+    rgba(255,255,255,0.3) 50%, 
+    rgba(0,0,0,0.10) 50.5%, 
+    rgba(0,0,0,0.02) 53%, 
+    transparent 100%
+  );
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Subtle Micro-Interactions */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Navigation Link Underline */
+.nav-link-refined {
+  position: relative;
+  transition: color 0.2s ease;
+}
+.nav-link-refined::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 1.5px;
+  background-color: var(--accent);
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link-refined:hover::after, .nav-link-refined.active::after {
+  width: 100%;
+}

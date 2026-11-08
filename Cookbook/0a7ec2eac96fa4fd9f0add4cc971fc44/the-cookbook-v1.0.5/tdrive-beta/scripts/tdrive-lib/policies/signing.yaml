@@ -1,0 +1,20 @@
+# Signing tiers for Buildflow gates (experimental engine).
+#
+# The halt tier is decided in code before this file is read: frame, market,
+# offer, wishlist, signal, launch-plan and launch (each with an optional -N
+# suffix) are always halt, and so is any name that is not a Buildflow gate tag.
+# tdrive never signs a halt gate; it stops and asks the operator.
+# This file can only ADD halt gates (halt_extra); it cannot remove one.
+#
+# Order of evaluation for a valid gate name: halt_extra, then auto_notify, then
+# authorized; a gate that matches none of them is halt (unlisted).
+# Patterns are shell-style (`*` matches any text), matched case-sensitively
+# against the whole gate name.
+#
+# auto_notify: tdrive signs with `sign.sh <gate> --auto`, then sends a heads-up.
+# authorized:  tdrive signs only when a valid, ssh-signed standing authorization
+#              (see standing-authorization.example.yaml) lists the gate.
+version: 1
+halt_extra: []
+auto_notify: ["fix-*", "tweak-*"]
+authorized: ["look", "look-*", "mock", "mock-*", "build", "build-*", "intent-*", "spec-*", "plan-*", "proof-*", "distill-*"]

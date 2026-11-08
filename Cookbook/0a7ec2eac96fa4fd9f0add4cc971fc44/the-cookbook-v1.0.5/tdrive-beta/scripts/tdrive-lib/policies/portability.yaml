@@ -1,0 +1,130 @@
+# Lint rules for `tdrive lint` (data only).
+# This file holds the banned patterns, so lint never scans it (exact paths in
+# exclude_files). Patterns are Python regular expressions.
+#
+# scope:    shipped (shipped dirs only) | code (shipped dirs plus tests/)
+# files:    text | shell | python
+# allow_files (optional): exact paths the rule does not apply to.
+# position: any (every line) | code (non-comment lines) |
+#           command (non-comment, pattern in command position, `command X` counts) |
+#           command-strict (as command, but a `command` prefix does not count)
+shipped: [bin, core, adapters, policies, methods, kits/tony-drive, VERSION]
+code_also: [tests]
+exclude_prefixes: [tests/fixtures/]
+exclude_files: [policies/portability.yaml, kits/tony-drive/scripts/tdrive-lib/policies/portability.yaml]
+skip_dirs: [.git, __pycache__, node_modules]
+
+cmd_prefix: '(?:^|[;&|({`!]|\b(?:then|do|else|elif|if|while|until|exec|command|time)\s)\s*'
+cmd_prefix_strict: '(?:^|[;&|({`!]|\b(?:then|do|else|elif|if|while|until|exec|time)\s)\s*'
+
+# stable-artifacts: comment text and test case names must not carry plan,
+# phase or decision ids.
+id_pattern: '\b(P[0-9]{2}|phase-[0-9]{2}|D-[0-9]{2})\b'
+# Test case lines are the lines in tests/ that name a case.
+case_line_pattern: '\bcase_(ok|fail|skip)\b|(^|[^a-z])(not )?ok - '
+
+# no-eval: `source`/`.` is allowed only for library files.
+source_pattern: '(?:^|[;&|]|\b(?:then|do|else)\s)\s*(?:source|\.)\s+(\S+)'
+source_allowed: '(^|/)lib/[A-Za-z0-9_.-]+\.sh$'
+
+rules:
+  - id: portability
+    scope: shipped
+    files: text
+    position: any
+    message: "personal path or name"
+    patterns:
+      - '/Users/'
+      - 'tony-os'
+      - '\bvault\b'
+      - '(^|[^A-Za-z0-9_.-])me\.md\b'
+      - 'Documents/tony'
+  - id: bash32
+    scope: code
+    files: shell
+    position: command
+    message: "bash 4+ construct"
+    patterns:
+      - '(?:declare|typeset|local)\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*[An]'
+      - 'mapfile\b'
+      - 'readarray\b'
+      - 'coproc\b'
+      - 'wait\s+-n\b'
+  - id: bash32
+    scope: code
+    files: shell
+    position: code
+    message: "bash 4+ construct"
+    patterns:
+      - '\$\{[A-Za-z_][A-Za-z0-9_]*(?:\[[^]]*\])?(?:,|\^)'
+      - '&>>'
+      - ';;&'
+      - '(^|[^;]);&'
+      - '\|&'
+      - '\$\{[A-Za-z_][A-Za-z0-9_]*\[-[0-9]+\]\}'
+      - '\bglobstar\b'
+      - '\$\{?(?:EPOCHSECONDS|EPOCHREALTIME|BASHPID)\b'
+  - id: gnu-only
+    scope: code
+    files: shell
+    position: command
+    message: "GNU/BSD-only construct"
+    patterns:
+      - 'sed\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*i'
+      - 'grep\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*P'
+      - 'readlink\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*f'
+      - 'date\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*[drj]'
+      - 'stat\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*[cf]'
+      - 'find\s.*\s-printf\b'
+      - 'xargs\s+(?:-[A-Za-z0-9]+\s+)*-[A-Za-z]*r'
+      - 'tac\b'
+      - 'head\s+(?:-[A-Za-z]+\s+)*-n\s*-[0-9]'
+      - 'df\s+(?:-[A-Za-z]+\s+)*-(?:g|[A-Za-z]*BG)'
+      - 'du\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*b'
+      - 'mktemp\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*t'
+      - 'base64\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*D'
+      - 'sort\s+(?:-[A-Za-z]+\s+)*-[A-Za-z]*V'
+      - 'g?timeout\s'
+  - id: bare-grep
+    scope: code
+    files: shell
+    position: command-strict
+    message: "call grep as: command grep -E"
+    patterns:
+      - '[ef]?grep\b'
+  - id: no-eval
+    scope: code
+    files: shell
+    position: command
+    message: "eval is banned"
+    patterns:
+      - 'eval\b'
+  - id: no-eval
+    scope: code
+    files: python
+    position: code
+    message: "eval/exec is banned"
+    patterns:
+      - '(?<![A-Za-z0-9_.])(?:eval|exec)\s*\('
+  # learn-store: cross-run store paths are resolved only by the store
+  # resolver, so its "never inside a project repo" guard cannot be bypassed.
+  - id: learn-store
+    scope: shipped
+    files: shell
+    position: code
+    message: "learn-store path outside core/lib/learnstore.py"
+    allow_files: [core/lib/learnstore.py, kits/tony-drive/scripts/tdrive-lib/core/lib/learnstore.py]
+    patterns:
+      - 'lessons/'
+      - 'retros/'
+      - 'proposals/'
+  - id: learn-store
+    scope: shipped
+    files: python
+    position: code
+    message: "learn-store path outside core/lib/learnstore.py"
+    allow_files: [core/lib/learnstore.py, kits/tony-drive/scripts/tdrive-lib/core/lib/learnstore.py]
+    patterns:
+      - 'lessons/'
+      - 'retros/'
+      - 'proposals/'

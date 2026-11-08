@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Oops La Book Store — Design System & Component Library (Claude Design)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  
+  <!-- Claude Design System Styles -->
+  <link rel="stylesheet" href="./styles.css"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-[#FAF9F5] text-stone-900 selection:bg-amber-100 selection:text-amber-900 pb-20">
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white border-b border-stone-200">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 bg-stone-900 text-stone-100 rounded-lg flex items-center justify-center font-serif font-bold text-sm">
+            OL
+          </div>
+          <div>
+            <span class="font-serif text-base font-bold text-stone-900 block leading-tight">Oops La Book Store</span>
+            <span class="text-[10px] font-mono text-stone-400 uppercase tracking-widest block">Design System Specimen</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <a href="index.html" class="text-stone-600 hover:text-stone-900 hover:underline">← Storefront</a>
+        <span>•</span>
+        <a href="dashboard.html" class="text-stone-600 hover:text-stone-900 hover:underline">Admin CMS →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= SPECIMEN CONTAINER ================= -->
+  <main class="max-w-[1400px] mx-auto px-4 sm:px-8 py-10 space-y-16">
+    
+    <!-- Title Section -->
+    <div class="border-b border-stone-200 pb-6">
+      <span class="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-[#FFF7ED] text-[#C2410C] border border-[#FFEDD5] uppercase tracking-wider">
+        CLAUDE DESIGN SYSTEM
+      </span>
+      <h1 class="font-serif text-4xl sm:text-5xl font-bold text-stone-900 tracking-tight mt-3">
+        Thư Viện Thành Phần & Nguyên Tắc Thiết Kế
+      </h1>
+      <p class="text-sm text-stone-600 font-sans mt-2 max-w-2xl leading-relaxed">
+        Bản quy chuẩn trực quan cho toàn bộ giao diện Oops La Book Store: màu sắc hài hòa, kiểu chữ tôn trọng tỷ lệ vàng kiến trúc, bo góc tiết chế và trải nghiệm mượt mà.
+      </p>
+    </div>
+
+    <!-- 1. COLOR TOKENS -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="font-serif text-2xl font-bold text-stone-900">1. Color Palette Tokens</h2>
+        <span class="text-xs font-mono text-stone-400">Validated with validate-palette.mjs</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <!-- Canvas -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#FAF9F5] border border-stone-300 mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Canvas</span>
+          <span class="font-mono text-[11px] text-stone-500">#FAF9F5</span>
+        </div>
+
+        <!-- Surface -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#FFFFFF] border border-stone-200 mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Surface</span>
+          <span class="font-mono text-[11px] text-stone-500">#FFFFFF</span>
+        </div>
+
+        <!-- Primary Accent -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#C2410C] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Terracotta</span>
+          <span class="font-mono text-[11px] text-stone-500">#C2410C</span>
+        </div>
+
+        <!-- Arch Cyan -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#0284C7] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Blueprint Blue</span>
+          <span class="font-mono text-[11px] text-stone-500">#0284C7</span>
+        </div>
+
+        <!-- Success -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#059669] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Emerald (Stock)</span>
+          <span class="font-mono text-[11px] text-stone-500">#059669</span>
+        </div>
+
+        <!-- Warning -->
+        <div class="bg-white border border-stone-200 rounded-xl p-3 shadow-xs">
+          <div class="h-16 rounded-lg bg-[#D97706] mb-2"></div>
+          <span class="font-mono text-xs font-bold block text-stone-900">Amber (Low)</span>
+          <span class="font-mono text-[11px] text-stone-500">#D97706</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TYPOGRAPHY HIERARCHY -->
+    <section class="space-y-6">
+      <h2 class="font-serif text-2xl font-bold text-stone-900">2. Typography Hierarchy</h2>
+      
+      <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-6">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">Cormorant Garamond — Display 64px / Leading 1.05</span>
+          <div class="font-serif text-4xl sm:text-5xl font-bold text-stone-900 leading-tight">
+            Graphic Anatomy Atelier Bow-Wow
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">Cormorant Garamond — Heading 28px</span>
+          <div class="font-serif text-2xl font-bold text-stone-900">
+            TASCHEN SUMO Edition: Vật Thể Kiến Trúc Độc Lập
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">Inter — Body Text 14px / Leading 1.6</span>
+          <p class="font-sans text-sm text-stone-600 max-w-3xl leading-relaxed">
+            Ở tỷ lệ 1:20, kiến trúc không còn là hình khối trừu tượng mà trở thành giải phẫu học không gian (Spatial Anatomy). Từng chi tiết liên kết mộng gỗ, nếp sinh hoạt và vật liệu được bóc tách với độ chuẩn xác vi mô.
+          </p>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1">JetBrains Mono — Telemetry & Specs (Tabular Numerals)</span>
+          <div class="font-mono text-xs text-stone-800 space-x-6">
+            <span>ISBN 978-4-88706-278-8</span>
+            <span>260 × 260 mm</span>
+            <span class="font-bold text-[#C2410C]">1.250.000 VNĐ</span>
+            <span>ROLE: OWNER (AC-11 GUARD)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BUTTONS & CONTROLS -->
+    <section class="space-y-6">
+      <h2 class="font-serif text-2xl font-bold text-stone-900">3. Button Variants & Interactive States</h2>
+      
+      <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs flex flex-wrap gap-4 items-center">
+        <!-- Primary Solid -->
+        <button class="px-5 py-2.5 bg-stone-900 hover:bg-[#C2410C] text-white rounded-lg text-xs font-mono font-medium shadow-xs transition-colors">
+          Primary Action
+        </button>
+
+        <!-- Secondary Outline -->
+        <button class="px-5 py-2.5 bg-white hover:bg-stone-50 border border-stone-300 hover:border-stone-800 text-stone-900 rounded-lg text-xs font-mono font-medium transition-colors">
+          Secondary Outline
+        </button>
+
+        <!-- Accent Pill -->
+        <button class="px-4 py-2 bg-[#FFF7ED] hover:bg-[#FFEDD5] text-[#C2410C] border border-[#FFEDD5] rounded-full text-xs font-mono font-semibold transition-colors">
+          Accent Pill
+        </button>
+
+        <!-- Danger / Cancel -->
+        <button class="px-4 py-2 text-rose-700 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-mono transition-colors">
+          Hủy yêu cầu
+        </button>
+
+        <!-- Disabled -->
+        <button disabled class="px-5 py-2.5 bg-stone-100 text-stone-400 rounded-lg text-xs font-mono cursor-not-allowed">
+          Đã khóa (Owner)
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. STATUS BADGES -->
+    <section class="space-y-6">
+      <h2 class="font-serif text-2xl font-bold text-stone-900">4. Status Badges & Indicators</h2>
+      
+      <div class="bg-white border border-stone-200 rounded-xl p-6 shadow-xs flex flex-wrap gap-4 items-center">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Còn hàng (3)
+        </span>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-amber-50 text-amber-800 border border-amber-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Chỉ còn 1 cuốn
+        </span>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-stone-100 text-stone-500 border border-stone-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>Tạm hết hàng
+        </span>
+
+        <span class="px-2.5 py-1 text-xs font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300 rounded uppercase">
+          Quá 48H (Stale)
+        </span>
+
+        <span class="px-2.5 py-1 text-xs font-mono font-bold bg-amber-500 text-stone-950 rounded">
+          OWNER
+        </span>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="./tweaks-panel.js"></script>
+</body>
+</html>

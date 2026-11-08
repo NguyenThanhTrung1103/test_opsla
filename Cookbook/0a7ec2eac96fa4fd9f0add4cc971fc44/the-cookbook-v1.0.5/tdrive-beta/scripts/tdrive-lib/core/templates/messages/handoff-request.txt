@@ -1,0 +1,1 @@
+Handoff requested: write a handoff brief to {{path}} covering scope, stop conditions, current phase state, DONE/NEXT/HEADS-UP, in-flight subagents and the files they own, pending decisions and resume steps; commit it on {{branch}}, then reply HANDOFF-READY.

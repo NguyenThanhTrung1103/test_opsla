@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-50">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>200Lab MCP Technical Audit & Compatibility Report — Oops La Book Store</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet"/>
+  
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col antialiased selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- ================= TOP HEADER ================= -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-slate-900 text-white rounded-lg flex items-center justify-center font-bold text-sm">
+          200L
+        </div>
+        <div>
+          <h1 class="text-sm font-semibold text-slate-900">200Lab MCP Technical Audit Report</h1>
+          <p class="text-[11px] font-mono text-slate-500">Target Repository: Oops La Book Store (Editorial Commerce MVP)</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Audit Ready
+        </span>
+        <span class="text-xs font-mono text-slate-400">Endpoint: mcp.200lab.io/mcp/learner</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI & Status Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">MCP Server Status</span>
+        <div class="text-xl font-bold text-slate-900 mt-1 flex items-center gap-2">
+          <span>HTTP/SSE Live</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </div>
+        <span class="text-xs text-slate-500 mt-1 block">Yêu cầu Bearer Token (OAuth)</span>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Discovered Tools</span>
+        <div class="text-xl font-bold text-slate-900 mt-1 tabular-nums">8 Tools</div>
+        <span class="text-xs text-slate-500 mt-1 block">skill_find, ai_tutor, search...</span>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">High Value Skills</span>
+        <div class="text-xl font-bold text-amber-700 mt-1 tabular-nums">4 Core Skills</div>
+        <span class="text-xs text-slate-500 mt-1 block">Reliability, Debugging, Diagram, Design</span>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Repository Health</span>
+        <div class="text-xl font-bold text-emerald-700 mt-1">68/68 Tests Pass</div>
+        <span class="text-xs text-slate-500 mt-1 block">Zero-Trust Tri-Pillar Verified</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Overview & Stack Alignment -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+      <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+        <span>1. Đối Chiếu Kiến Trúc Repository với Năng Lực 200Lab</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+        <div class="space-y-3">
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="font-mono text-xs text-slate-900 block mb-1">Hiện trạng Repository (Oops La Bookstore):</strong>
+            <ul class="text-xs text-slate-600 space-y-1 list-disc list-inside">
+              <li><strong>Frontend:</strong> Vanilla ES Modules + Tailwind CSS (Claude Design Tokens) tại <code>oops_la_book_store_uxui_fixed.html</code> → <code>dist/index.html</code>.</li>
+              <li><strong>Backend:</strong> Node.js Native HTTP server thuần túy (`src/server/app.ts`), không dùng Express/NestJS, zero-dependency.</li>
+              <li><strong>Storage:</strong> IndexedDB Adapter giả lập trình duyệt và lưu bền vững vào `data/oopsla-storage.json`.</li>
+              <li><strong>Invariants Cốt lõi:</strong> AC-11 (Duyệt đơn chỉ dành cho Owner), AC-15 (Trừ kho 1 lần), OD-01 (Chặn Staff hủy đơn đã chốt), BD-04 (Zero auto-decrement), CURR-01 (100% VNĐ).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="p-3 bg-amber-50/50 rounded-lg border border-amber-200">
+            <strong class="font-mono text-xs text-amber-950 block mb-1">Năng Lực Trọng Tâm của 200Lab MCP:</strong>
+            <ul class="text-xs text-amber-900 space-y-1 list-disc list-inside">
+              <li><strong>Backend Reliability Review:</strong> Rà soát timeout, retry, idempotency, race conditions và deadlocks.</li>
+              <li><strong>Systematic Debugging:</strong> Thiết kế regression test, bóc tách root cause và chứng minh bằng log.</li>
+              <li><strong>Diagram Director:</strong> Vẽ sơ đồ kiến trúc động (animated HTML/SVG) trực quan không cần cài thêm công cụ.</li>
+              <li><strong>System Design & Scaling:</strong> Đánh giá ranh giới module, chiến lược chuyển từ JSON storage sang PostgreSQL/SQLite khi mở rộng.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive MCP Tools & Skills Table -->
+    <section class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+      <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">2. Ma Trận Tương Thích & Đánh Giá Năng Lực 200Lab MCP</h2>
+          <p class="text-xs text-slate-500 font-mono mt-0.5">Lọc theo trạng thái và nhóm chức năng để xem chi tiết</p>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="filterTable('ALL')" class="filter-btn px-3 py-1 text-xs font-mono rounded-md bg-slate-900 text-white font-medium">Tất cả</button>
+          <button onclick="filterTable('READY')" class="filter-btn px-3 py-1 text-xs font-mono rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700">READY</button>
+          <button onclick="filterTable('APPLICABLE')" class="filter-btn px-3 py-1 text-xs font-mono rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700">APPLICABLE</button>
+          <button onclick="filterTable('CONDITIONAL')" class="filter-btn px-3 py-1 text-xs font-mono rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700">CONDITIONAL</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 font-mono text-slate-500 uppercase text-[11px]">
+              <th class="px-4 py-3">#</th>
+              <th class="px-4 py-3">MCP Tool / Skill</th>
+              <th class="px-4 py-3">Nhóm</th>
+              <th class="px-4 py-3">Chức năng chính</th>
+              <th class="px-4 py-3">Áp dụng vào Repo</th>
+              <th class="px-4 py-3">Mức ưu tiên</th>
+              <th class="px-4 py-3">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody" class="divide-y divide-slate-100 font-sans">
+            <!-- Row 1 -->
+            <tr data-status="APPLICABLE" class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono">01</td>
+              <td class="px-4 py-3 font-mono font-semibold text-slate-900">Backend Reliability</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-mono text-[10px]">Reliability</span></td>
+              <td class="px-4 py-3">Kiểm tra timeout, retry, idempotency, race condition</td>
+              <td class="px-4 py-3">Kiểm định `orderService.ts` AsyncLock và `app.ts` Rate Limiter</td>
+              <td class="px-4 py-3"><span class="text-rose-600 font-semibold font-mono">P1 — Cao</span></td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-[10px] font-medium">APPLICABLE</span></td>
+            </tr>
+            <!-- Row 2 -->
+            <tr data-status="APPLICABLE" class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono">02</td>
+              <td class="px-4 py-3 font-mono font-semibold text-slate-900">Diagram Director</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-mono text-[10px]">Visualization</span></td>
+              <td class="px-4 py-3">Vẽ sơ đồ kiến trúc động dạng HTML/SVG chạy được</td>
+              <td class="px-4 py-3">Vẽ trực quan luồng đặt hàng OLS-xxxxxx, trừ kho và rào chắn AC-11</td>
+              <td class="px-4 py-3"><span class="text-rose-600 font-semibold font-mono">P1 — Cao</span></td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-[10px] font-medium">APPLICABLE</span></td>
+            </tr>
+            <!-- Row 3 -->
+            <tr data-status="READY" class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono">03</td>
+              <td class="px-4 py-3 font-mono font-semibold text-slate-900">skill_find & skill_get</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px]">Discovery</span></td>
+              <td class="px-4 py-3">Tra cứu danh mục skill và rubric chấm chuẩn mực của 200Lab</td>
+              <td class="px-4 py-3">Tải rubric chuẩn để kiểm định code chất lượng cao</td>
+              <td class="px-4 py-3"><span class="text-amber-600 font-semibold font-mono">P2 — Trung bình</span></td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-mono text-[10px] font-medium">READY</span></td>
+            </tr>
+            <!-- Row 4 -->
+            <tr data-status="APPLICABLE" class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono">04</td>
+              <td class="px-4 py-3 font-mono font-semibold text-slate-900">Systematic Debugging</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-mono text-[10px]">Quality</span></td>
+              <td class="px-4 py-3">Quy trình cô lập root cause, tái hiện lỗi và thiết kế regression test</td>
+              <td class="px-4 py-3">Tối ưu các test case concurrency và xử lý bẫy TDD Trap</td>
+              <td class="px-4 py-3"><span class="text-amber-600 font-semibold font-mono">P2 — Trung bình</span></td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-[10px] font-medium">APPLICABLE</span></td>
+            </tr>
+            <!-- Row 5 -->
+            <tr data-status="CONDITIONAL" class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono">05</td>
+              <td class="px-4 py-3 font-mono font-semibold text-slate-900">ai_tutor & recommend</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono text-[10px]">Learning</span></td>
+              <td class="px-4 py-3">Lấy bài học và giải pháp chuyên sâu từ các khóa học đã sở hữu</td>
+              <td class="px-4 py-3">Tham chiếu bài học về Clean Architecture và Repository Pattern</td>
+              <td class="px-4 py-3"><span class="text-slate-500 font-semibold font-mono">P3 — Tùy chọn</span></td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-mono text-[10px] font-medium">CONDITIONAL</span></td>
+            </tr>
+            <!-- Row 6 -->
+            <tr data-status="CONDITIONAL" class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono">06</td>
+              <td class="px-4 py-3 font-mono font-semibold text-slate-900">get_artifact_download_url</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px]">Artifacts</span></td>
+              <td class="px-4 py-3">Tải bộ kit công cụ (diagram-director-kit, starter repos)</td>
+              <td class="px-4 py-3">Chạy kit tạo animated diagram cục bộ bằng Python 3</td>
+              <td class="px-4 py-3"><span class="text-slate-500 font-semibold font-mono">P3 — Tùy chọn</span></td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-mono text-[10px] font-medium">CONDITIONAL</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 3: Synergy with Universal-Design -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+      <h2 class="text-lg font-bold text-slate-900">3. Chiến Lược Phối Hợp: 200Lab MCP + Universal Design</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+          <strong class="font-mono text-xs text-slate-900 flex items-center gap-1.5 mb-2">
+            <span class="w-2 h-2 rounded-full bg-[#C2410C]"></span>
+            Vai trò của universal-design (Presentation & UX/UI)
+          </strong>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Phụ trách toàn bộ trải nghiệm người dùng, bảng màu ấm Claude Design, phân cấp kiểu chữ kiến trúc, responsive layouts, Look Inside 1:20 viewer và kiểm định thẩm mỹ toán học (OKLCH, APCA).
+          </p>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+          <strong class="font-mono text-xs text-slate-900 flex items-center gap-1.5 mb-2">
+            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+            Vai trò của 200Lab MCP (Engineering & Architecture)
+          </strong>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Phụ trách kiểm tra độ tin cậy backend, audit các điểm nghẽn concurrency, bảo vệ bất biến kinh doanh (AC-11, OD-01, BD-04) và xuất sơ đồ động Diagram Director trực quan để đối soát kiến trúc.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Authentication Setup Guide -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+      <h2 class="text-lg font-bold text-slate-900">4. Hướng Dẫn Kích Hoạt Kết Nối 200Lab MCP</h2>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Do Quý khách đã đăng nhập tài khoản thành viên 200Lab trên Firefox, việc kết nối rất đơn giản:
+      </p>
+
+      <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-x-auto space-y-2">
+        <div class="text-slate-400">// Bước 1: Mở Firefox (tab 200lab.io đã login) → Nhấn F12 (Developer Tools) → Tab Console</div>
+        <div class="text-amber-300">localStorage.getItem('token') || document.cookie</div>
+        <div class="text-slate-400">// Bước 2: Cấu hình mcp_config.json trong agent của bạn:</div>
+        <pre class="text-emerald-400">
+{
+  "mcpServers": {
+    "200lab-ai-tutor": {
+      "url": "https://mcp.200lab.io/mcp/learner",
+      "headers": {
+        "Authorization": "Bearer &lt;PASTE_YOUR_TOKEN_HERE&gt;"
+      }
+    }
+  }
+}
+        </pre>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs font-mono text-slate-400">
+    Oops La Book Store • 200Lab MCP Technical Audit Document • Zero-Trust Tri-Pillar Compliant
+  </footer>
+
+  <script>
+    function filterTable(status) {
+      const rows = document.querySelectorAll('#auditTableBody tr');
+      const buttons = document.querySelectorAll('.filter-btn');
+      
+      buttons.forEach(b => {
+        if (b.textContent === status || (status === 'ALL' && b.textContent === 'Tất cả')) {
+          b.className = 'filter-btn px-3 py-1 text-xs font-mono rounded-md bg-slate-900 text-white font-medium';
+        } else {
+          b.className = 'filter-btn px-3 py-1 text-xs font-mono rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700';
+        }
+      });
+
+      rows.forEach(r => {
+        if (status === 'ALL' || r.getAttribute('data-status') === status) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

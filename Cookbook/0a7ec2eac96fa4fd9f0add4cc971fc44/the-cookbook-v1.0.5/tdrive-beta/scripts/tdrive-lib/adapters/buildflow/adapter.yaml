@@ -1,0 +1,4 @@
+# Buildflow engine adapter. Experimental: refused unless --experimental-buildflow
+# (or TDRIVE_EXPERIMENTAL_BUILDFLOW=1) is set; see PROTOCOL.md before promoting it.
+name: buildflow
+experimental: true

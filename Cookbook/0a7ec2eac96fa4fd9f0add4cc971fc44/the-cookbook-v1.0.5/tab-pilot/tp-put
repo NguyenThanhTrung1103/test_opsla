@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""tp-put <path> [--mime m] — upload a file to the tab-pilot relay (R2, expires in 1 day).
+Prints {"file_id","name","mime","size"} for use as a tool `file` argument. Multipart above 90 MB."""
+import json, mimetypes, os, sys, urllib.parse, urllib.request
+# config: env vars, else .env next to this script (written by scripts/setup.sh)
+_env = os.path.join(os.path.dirname(os.path.realpath(__file__)), ".env")
+if os.path.exists(_env):
+    for _l in open(_env):
+        if "=" in _l and not _l.lstrip().startswith("#"): _k, _v = _l.strip().split("=", 1); os.environ.setdefault(_k, _v)
+RELAY = os.environ["TAB_PILOT_URL"].rstrip("/"); TOKEN = os.environ["TAB_PILOT_TOKEN"]
+SINGLE_MAX, PART = 90 * 2**20, 64 * 2**20
+
+def call(method, path, data=None, ctype=None):
+    req = urllib.request.Request(RELAY + path, data=data, method=method, headers={"user-agent": "tab-pilot-put/1.0", "authorization": "Bearer " + TOKEN, **({"content-type": ctype} if ctype else {})})
+    with urllib.request.urlopen(req, timeout=600) as r: return json.load(r)
+
+path = sys.argv[1]; mime = sys.argv[sys.argv.index("--mime") + 1] if "--mime" in sys.argv else (mimetypes.guess_type(path)[0] or "application/octet-stream")
+name, size = os.path.basename(path), os.path.getsize(path)
+q = "name=" + urllib.parse.quote(name) + "&mime=" + urllib.parse.quote(mime)
+with open(path, "rb") as f:
+    if size <= SINGLE_MAX:
+        r = call("PUT", "/files?" + q, f.read(), mime); fid = r["id"]
+    else:
+        m = call("POST", "/files/mpu?" + q); fid, up = m["id"], urllib.parse.quote(m["uploadId"]); parts = []
+        for n in range(1, (size + PART - 1) // PART + 1):
+            p = call("PUT", f"/files/mpu/{fid}?uploadId={up}&part={n}", f.read(PART), "application/octet-stream"); parts.append(p)
+            print(f"part {n} ok", file=sys.stderr)
+        r = call("POST", f"/files/mpu/{fid}/complete?uploadId={up}", json.dumps({"parts": parts}).encode(), "application/json")
+print(json.dumps({"file_id": fid, "name": name, "mime": mime, "size": r.get("size", size)}))

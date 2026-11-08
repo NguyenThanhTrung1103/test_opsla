@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "200lab-ai-tutor": {
+      "url": "https://mcp.200lab.io/mcp/learner"
+    },
+    "cookbook": {
+      "command": "node",
+      "args": [
+        "D:\\VibeCode\\Oops La Bookstore\\scripts\\mcp\\cookbook-server.js"
+      ]
+    },
+    "ard": {
+      "url": "https://mcp.arealisticdreamer.com/mcp"
+    }
+  }
+}
