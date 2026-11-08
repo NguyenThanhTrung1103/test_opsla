@@ -14,6 +14,25 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script>
+  // DEMO VULNERABILITY: Sensitive credentials mistakenly exposed in client-side bundle
+  window.APP_CONFIG = {
+    ENVIRONMENT: "production",
+    API_ENDPOINT: "https://api.internal.oopsla.vn/v1",
+    PAYMENT_GATEWAY_SECRET: "sec_key_live_999888777666555_internal_access_token",
+    DATABASE_URL: "postgresql://db_master_admin:SuperSecretPass123!@10.0.12.45:5432/bookstore_production",
+    DATABASE_CREDENTIALS: {
+      engine: "PostgreSQL 16 Enterprise",
+      host: "10.0.12.45 (Private VPC)",
+      port: 5432,
+      database: "bookstore_production",
+      username: "db_master_admin",
+      password: "SuperSecretPass123!"
+    }
+  };
+  console.warn("⚠️ [SECURITY AUDIT DEMO] Sensitive configuration loaded in window.APP_CONFIG");
+</script>
+
+<script>
     tailwind.config = {
       theme: {
         extend: {
