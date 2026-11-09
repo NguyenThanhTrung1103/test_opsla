@@ -373,3 +373,29 @@ Tài liệu lưu vết toàn bộ các quyết định kiến trúc, lý do kỹ
 - **Hạng mục chờ xử lý (Pending)**:
   - **Secret Rotation & Redeploy**: Chờ xác nhận từ người dùng để cấu hình `ADMIN_SECRET_KEY` mới trong GitHub Secrets và chạy trigger deploy.
   - **Actionlint**: Chưa thể chạy actionlint cục bộ bằng Docker do Docker daemon không bật trên máy trạm Windows hiện tại.
+
+
+## [2026-11-09 20:30] Hoàn Tất Security CI Validation Workflow, Kiểm Thử Thực Tế GitHub Actions PR #1, Xuất Bản Diagram & Handoff Runbook
+- **Bối cảnh & Lý do kỹ thuật (WHY)**:
+  - Cần một quy trình kiểm thử bảo mật độc lập tự động trên Pull Request (không cần quyền write, không deploy production, không phụ thuộc vào `main`) trước khi hợp nhất.
+  - Chuyển đổi và chuẩn hóa pipeline Jenkins thành GitHub Actions native workflow `security-ci-validation.yml`.
+  - Minh họa trực quan luồng CI/CD bảo mật và biên soạn tài liệu bàn giao vận hành hoàn chỉnh cho hệ thống Cloudflare Edge.
+- **Hành động đã thực hiện**:
+  1. **Tạo workflow kiểm thử độc lập `.github/workflows/security-ci-validation.yml`**:
+     - Hỗ trợ trigger `pull_request` (đến `main`, `master`) và `workflow_dispatch`.
+     - Phân quyền tối thiểu: `permissions: contents: read`.
+     - Bao gồm 7 jobs: `actionlint`, `tests-build`, `static-guards`, `trivy` (filesystem + positive control), `api-security` (Node & Worker fail-closed, 5 routes admin), `zap` (OWASP ZAP Baseline DAST trên 127.0.0.1:3900), `summary` (Step summary trực tiếp trên PR).
+  2. **Giải quyết triệt để các rào cản CI / Scanner**:
+     - *Actionlint*: Chạy thành công trên container Linux `rhysd/actionlint:1.7.12`, khắc phục cảnh báo shellcheck SC2034 và SC2129.
+     - *Trivy Positive Control & GitHub Push Protection (GH013)*: Không lưu token giả dạng mẫu Stripe sk_live trong git; tạo động trong runner memory khi quét fixture và xóa ngay sau đó.
+     - *Trivy Self-Scan*: Tránh quét trùng chuỗi regex mẫu trong file yaml bằng kỹ thuật tách chuỗi `P="ghp_"; S="..."; "$P$S"`.
+  3. **Thực thi và Nghiệm thu Thực Tế trên GitHub Actions (PR #1 - Run 42624535131)**:
+     - 100% jobs kiểm thử đều PASS xanh.
+     - Job deploy trên `deploy.yml` (Run 42624535137) được SKIPPED an toàn theo đúng thiết kế fail-closed.
+  4. **Biên dịch Sơ đồ Luồng bằng `ak-diagram`**:
+     - Khởi tạo JSON IR: `docs/diagrams/pipeline-security-deploy.json` (4 lanes: Triggers, Static/SAST, Dynamic/DAST, Edge Deploy).
+     - Biên dịch ra file vector SVG `docs/diagrams/pipeline-security-deploy.svg` và ứng dụng web HTML tương tác `docs/diagrams/pipeline-security-deploy.html` (Signal-flow dark theme).
+  5. **Biên soạn Tài Liệu Bàn Giao `docs/HANDOFF_PIPELINE_SECURITY_DEPLOY.md`**:
+     - Bao gồm kiến trúc luồng, sơ đồ Mermaid chi tiết, phân tích 4 lane, runbook xoay vòng secret, hướng dẫn merge PR #1 và đánh giá kiến trúc cho 2 vấn đề bảo mật mở rộng (`X-Forwarded-For` và `body.role`).
+- **Trạng thái**: Toàn bộ hệ thống kiểm thử tự động, sơ đồ và tài liệu bàn giao đã hoàn tất và sẵn sàng nghiệm thu.
+

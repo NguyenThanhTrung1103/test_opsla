@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Oops La Bookstore — CI/CD Security Validation & Edge Deployment Pipeline",
+    "description": "Luồng kiểm thử an ninh đa tầng (Trivy, ZAP, Fail-Closed API) và triển khai Cloudflare Workers",
+    "theme": "dark",
+    "preset": "signal-flow",
+    "views": [
+      {
+        "id": "ch1",
+        "title": "Giai đoạn 1: Pull Request & Thẩm định An ninh",
+        "narrative": "Khi PR được tạo, hệ thống kích hoạt đồng thời kiểm thử đơn vị và bộ quét an ninh không deploy.",
+        "focus_nodes": ["pr_event", "deploy_yml_pr", "unit_tests", "sec_ci_val", "trivy_fs", "zap_dast", "api_security", "summary_gate"]
+      },
+      {
+        "id": "ch2",
+        "title": "Giai đoạn 2: Khóa an toàn Deploy trên PR",
+        "narrative": "Job Deploy tại deploy.yml tự động bỏ qua (SKIPPED), đảm bảo 0% nguy cơ deploy từ nhánh thử nghiệm.",
+        "focus_nodes": ["deploy_branch_check", "deploy_skipped"]
+      },
+      {
+        "id": "ch3",
+        "title": "Giai đoạn 3: Merge Main & Triển khai Fail-Closed",
+        "narrative": "Sau khi merge vào main, quy trình deploy bắt buộc kiểm tra ADMIN_SECRET_KEY, áp dụng D1 migrations và phát hành lên Cloudflare Edge.",
+        "focus_nodes": ["merge_main", "secret_verify_gate", "d1_migrate", "cf_worker_deploy"]
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "lane_dev", "label": "Developer & GitHub PR", "role": "user" },
+    { "id": "lane_ci", "label": "GitHub Actions (CI Runner)", "role": "system" },
+    { "id": "lane_sec", "label": "Security Scanners (Docker)", "role": "worker" },
+    { "id": "lane_edge", "label": "Cloudflare Edge & Production", "role": "approver" }
+  ],
+  "steps": [
+    { "id": "pr_event", "lane": "lane_dev", "label": "Mở PR vào main (test/security-ci-validation)", "kind": "start" },
+    
+    { "id": "deploy_yml_pr", "lane": "lane_ci", "label": "Trigger: deploy.yml (pull_request)", "kind": "action" },
+    { "id": "unit_tests", "lane": "lane_ci", "label": "Run Automated Tests (81/81 PASS)", "kind": "action" },
+    { "id": "deploy_branch_check", "lane": "lane_ci", "label": "Kiểm tra Event & Branch (main/master only)", "kind": "decision" },
+    { "id": "deploy_skipped", "lane": "lane_ci", "label": "Deploy Job SKIPPED (An toàn 100%)", "kind": "subprocess" },
+    
+    { "id": "sec_ci_val", "lane": "lane_ci", "label": "Trigger: security-ci-validation.yml", "kind": "action" },
+    { "id": "static_guards", "lane": "lane_ci", "label": "Static Guards: Audit Demo & Secret Fallback", "kind": "action" },
+    { "id": "actionlint", "lane": "lane_ci", "label": "Actionlint + Shellcheck (YAML check)", "kind": "action" },
+    
+    { "id": "trivy_fs", "lane": "lane_sec", "label": "Trivy FS Scan (Repo 0 CVE + Fixture Positive Control)", "kind": "action" },
+    { "id": "api_security", "lane": "lane_sec", "label": "API Security Check (Fail-closed & 5 Admin Routes)", "kind": "action" },
+    { "id": "zap_dast", "lane": "lane_sec", "label": "OWASP ZAP Baseline DAST (Target 127.0.0.1:3900)", "kind": "action" },
+    
+    { "id": "summary_gate", "lane": "lane_ci", "label": "Validation Summary & Final Gate (PASS 100%)", "kind": "decision" },
+    { "id": "pr_approved", "lane": "lane_dev", "label": "Xem Step Summary & Duyệt Merge PR", "kind": "wait" },
+    
+    { "id": "merge_main", "lane": "lane_dev", "label": "Merge vào branch main", "kind": "action" },
+    { "id": "deploy_yml_push", "lane": "lane_ci", "label": "Trigger: deploy.yml (push main)", "kind": "action" },
+    { "id": "secret_verify_gate", "lane": "lane_ci", "label": "Verify ADMIN_SECRET_KEY rỗng?", "kind": "decision" },
+    { "id": "deploy_fail_closed", "lane": "lane_ci", "label": "Exit 1: Chặn đứng deploy (Fail-Closed)", "kind": "terminal-failure" },
+    
+    { "id": "d1_migrate", "lane": "lane_edge", "label": "Apply Cloudflare D1 Migrations (oopsla-db)", "kind": "action" },
+    { "id": "cf_worker_deploy", "lane": "lane_edge", "label": "Deploy Worker & Assets to Cloudflare Edge", "kind": "terminal-success" }
+  ],
+  "transitions": [
+    { "from": "pr_event", "to": "deploy_yml_pr", "kind": "normal", "label": "Event: pull_request" },
+    { "from": "pr_event", "to": "sec_ci_val", "kind": "normal", "label": "Event: pull_request" },
+    
+    { "from": "deploy_yml_pr", "to": "unit_tests", "kind": "normal" },
+    { "from": "unit_tests", "to": "deploy_branch_check", "kind": "normal" },
+    { "from": "deploy_branch_check", "to": "deploy_skipped", "kind": "branch-false", "label": "is PR (not push)" },
+    
+    { "from": "sec_ci_val", "to": "static_guards", "kind": "normal" },
+    { "from": "sec_ci_val", "to": "actionlint", "kind": "normal" },
+    { "from": "sec_ci_val", "to": "trivy_fs", "kind": "normal" },
+    { "from": "sec_ci_val", "to": "api_security", "kind": "normal" },
+    { "from": "sec_ci_val", "to": "zap_dast", "kind": "normal" },
+    
+    { "from": "static_guards", "to": "summary_gate", "kind": "normal" },
+    { "from": "actionlint", "to": "summary_gate", "kind": "normal" },
+    { "from": "trivy_fs", "to": "summary_gate", "kind": "normal" },
+    { "from": "api_security", "to": "summary_gate", "kind": "normal" },
+    { "from": "zap_dast", "to": "summary_gate", "kind": "normal" },
+    
+    { "from": "summary_gate", "to": "pr_approved", "kind": "normal", "label": "Tất cả checks PASS" },
+    { "from": "pr_approved", "to": "merge_main", "kind": "normal", "label": "Merge Pull Request" },
+    
+    { "from": "merge_main", "to": "deploy_yml_push", "kind": "normal", "label": "Event: push main" },
+    { "from": "deploy_yml_push", "to": "secret_verify_gate", "kind": "normal" },
+    { "from": "secret_verify_gate", "to": "deploy_fail_closed", "kind": "branch-true", "label": "Thiếu secret (rỗng)" },
+    { "from": "secret_verify_gate", "to": "d1_migrate", "kind": "branch-false", "label": "Secret hợp lệ" },
+    { "from": "d1_migrate", "to": "cf_worker_deploy", "kind": "normal", "label": "Wrangler deploy" }
+  ]
+}

@@ -1,26 +1,25 @@
 # Shift Handoff Contract — Oops La Book Store
 
 ## 1. Trạng thái Ca trực Hiện tại
-- **Thời điểm**: 07/11/2026 - 15:25 (GMT+7)
+- **Thời điểm**: 09/11/2026 - 20:30 (GMT+7)
 - **Cột mốc**:
-  - [x] **Khắc phục triệt để 13 phát hiện R01–R13 & 5 Tử Huyệt An Ninh Cấp Production**:
-    - Dữ liệu bền vững `OopsLaDB` trên Node.js server.
-    - Contract `confirmOrder`, `cancelOrder`, API quản trị CMS (`orders`, `status`, `stock`).
-    - Build artifact `dist/index.html` và loại bỏ mô phỏng `isSimulatedDemo`.
-  - [x] **Hoàn thành Cooking Đột Phá 6 Điểm Nghẽn Concurrency & Integration (V01–V06)**:
-    - **V01**: Async Mutex Lock bảo vệ tồn kho khi 2 request cùng tranh cuốn cuối cùng.
-    - **V02**: Fail-Closed Persistence: ném lỗi và rollback bộ nhớ khi ghi file thất bại.
-    - **V03**: Runtime Allowlist cho Order Status (`PENDING_CONTACT`, `CONTACTED`, `CONFIRMED`, `CANCELLED`).
-    - **V04**: Catalog ID Aliases tự động ánh xạ mã mockup sang mã backend.
-    - **V05**: CSP Headers đồng bộ cho phép CDN Tailwind/Lucide/Google Fonts.
-    - **V06**: Storefront không nuốt lỗi mạng, bảo toàn giỏ hàng của khách.
-  - [x] **Toàn bộ 68 bài test tự động đạt 100% PASS** (17 suites, Zero Regression).
-  - [x] **Tri-Pillar Verification (Spec Kit + Harness + g8s Gatekeeper)**: 100% HEALTHY / PASS.
-  - [x] **Hoàn tất Premium UX/UI Redesign (Claude Design System)**:
-    - **Visual Mockups**: Bộ mockup trực quan hoàn chỉnh trong `design-preview/` (`index.html`, `dashboard.html`, `components.html`, `styles.css`, `preview.js`, `tweaks-panel.js`).
-    - **Production UI**: Đã áp dụng bảng màu ấm (*Warm Paper `#FAF9F5`*, *Charcoal `#1C1917`*, *Terracotta `#C2410C`*), mở khóa hệ bán kính bo cong thanh lịch thay thế `border-radius: 0px !important`, cập nhật bóng đổ sách vật lý tự nhiên.
-    - **Bảo toàn 100% logic nghiệp vụ**: Toàn bộ luồng đặt hàng, xác thực số điện thoại Việt Nam, xuất Messenger, phân quyền kép Owner vs Staff (AC-11, OD-01, BD-04) và tiền tệ VNĐ (CURR-01) hoạt động hoàn hảo.
-    - **Đồng bộ Build**: Đã chạy `npm run build` cập nhật `dist/index.html`.
+  - [x] **Fail-Closed ADMIN_SECRET_KEY & Xóa bỏ Fallback Public Key**:
+    - `.github/workflows/deploy.yml`: Thêm bước `Verify required secrets`, dừng build ngay nếu thiếu secret. Xóa fallback key mặc định công khai.
+    - `src/worker.ts`: Endpoint `/api/admin/orders` trả về `503 Service Unavailable` nếu thiếu secret; 401 nếu sai Bearer token.
+    - `src/server/app.ts`: Xóa bỏ `DEFAULT_SECRET`, chặn server khởi động (`process.exit(1)`) nếu thiếu `ADMIN_SECRET_KEY`.
+    - 4 test suites cập nhật sinh khóa ngẫu nhiên trong phiên runtime.
+  - [x] **Cô Lập Hoàn Toàn Security Demo Fixtures**:
+    - Loại bỏ credential giả lập trong `window.APP_CONFIG` khỏi `oops_la_book_store_uxui_fixed.html`.
+    - Di chuyển fixture vào `tests/fixtures/security-demo/` phục vụ positive control của máy quét bảo mật.
+    - Bổ sung rào chắn tự động `tests/security-demo-isolation.test.ts`.
+  - [x] **Thiết Lập & Nghiệm Thu Security CI/CD Pipeline (GitHub Actions)**:
+    - Tạo `.github/workflows/security-ci-validation.yml` chạy trên sự kiện PR và workflow_dispatch với quyền tối thiểu `contents: read`.
+    - Bao gồm: `actionlint`, `tests-build` (81 tests + build), `static-guards`, `trivy` (FS scan + positive control), `api-security` (Node & Worker fail-closed), `zap` (OWASP ZAP Baseline DAST trên 127.0.0.1:3900), `summary`.
+    - Đã xác thực thực tế trên PR #1 (Run 42624535131): 100% jobs PASS; Job deploy trên `deploy.yml` được SKIPPED an toàn.
+  - [x] **Xuất Bản Sơ Đồ Kiến Trúc & Tài Liệu Bàn Giao**:
+    - Đã biên dịch sơ đồ pipeline qua `ak-diagram`: `docs/diagrams/pipeline-security-deploy.svg` và `docs/diagrams/pipeline-security-deploy.html`.
+    - Đã biên soạn tài liệu bàn giao vận hành: `docs/HANDOFF_PIPELINE_SECURITY_DEPLOY.md`.
+  - [x] **Toàn bộ 81 bài test tự động đạt 100% PASS** (20 suites, 0 regressions).
 
 
 ## 2. Kỹ Năng Đã Sử Dụng (Tools & Frameworks Record)
