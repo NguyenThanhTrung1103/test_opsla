@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
 import worker, { type D1Database } from '../src/worker.ts';
 
 function createMockD1(): { db: D1Database; ordersTable: any[]; booksTable: any[] } {
@@ -157,9 +158,45 @@ describe('Cloudflare Worker & D1 Edge Integration Tests', () => {
 
   it('GET /api/admin/orders blocks unauthenticated requests with 401', async () => {
     const { db } = createMockD1();
+    const adminSecret = randomBytes(32).toString('hex');
     const req = new Request('http://localhost/api/admin/orders');
-    const res = await worker.fetch(req, { DB: db });
+    const res = await worker.fetch(req, { DB: db, ADMIN_SECRET_KEY: adminSecret });
     assert.equal(res.status, 401);
+  });
+
+  it('GET /api/admin/orders returns 503 when ADMIN_SECRET_KEY is not configured', async () => {
+    const { db } = createMockD1();
+    const req = new Request('http://localhost/api/admin/orders', {
+      headers: { Authorization: 'Bearer oopsla-secret-admin-key-change-in-prod' },
+    });
+    const res = await worker.fetch(req, { DB: db });
+    assert.equal(res.status, 503);
+    const body = (await res.json()) as any;
+    assert.match(body.error, /admin authentication is not configured/);
+  });
+
+  it('GET /api/admin/orders rejects invalid token with 401 when ADMIN_SECRET_KEY configured', async () => {
+    const { db } = createMockD1();
+    const adminSecret = randomBytes(32).toString('hex');
+    const req = new Request('http://localhost/api/admin/orders', {
+      headers: { Authorization: 'Bearer wrong-secret-token' },
+    });
+    const res = await worker.fetch(req, { DB: db, ADMIN_SECRET_KEY: adminSecret });
+    assert.equal(res.status, 401);
+    const body = (await res.json()) as any;
+    assert.match(body.error, /Unauthorized/);
+  });
+
+  it('GET /api/admin/orders succeeds with 200 when authenticated with valid Bearer token', async () => {
+    const { db } = createMockD1();
+    const adminSecret = randomBytes(32).toString('hex');
+    const req = new Request('http://localhost/api/admin/orders', {
+      headers: { Authorization: `Bearer ${adminSecret}` },
+    });
+    const res = await worker.fetch(req, { DB: db, ADMIN_SECRET_KEY: adminSecret });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as any;
+    assert.ok(Array.isArray(body.orders));
   });
 });
 

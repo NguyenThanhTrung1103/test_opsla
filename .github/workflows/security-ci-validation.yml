@@ -1,0 +1,622 @@
+name: Security CI Validation (manual, no deploy)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      run_zap:
+        description: 'Run OWASP ZAP Baseline DAST Scan'
+        type: boolean
+        default: true
+      run_sonarqube:
+        description: 'Run SonarQube Analysis via Cloudflare Tunnel'
+        type: boolean
+        default: false
+
+concurrency:
+  group: security-ci-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ========================================================
+  # JOB 1: TESTS & BUILD INTEGRITY
+  # ========================================================
+  tests-build:
+    name: Unit & Integration Tests and Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      test_outcome: ${{ steps.test_step.outcome }}
+      build_outcome: ${{ steps.build_step.outcome }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute Automated Test Suite
+        id: test_step
+        run: npm test
+
+      - name: Build Web Application
+        id: build_step
+        run: npm run build
+
+      - name: Verify Build Output Clean of Credentials
+        run: |
+          if grep -E "APP_CONFIG|PAYMENT_GATEWAY_SECRET|SuperSecretPass123" dist/index.html; then
+            echo "::error::Sensitive credential leak detected in dist/index.html"
+            exit 1
+          fi
+          echo "dist/index.html verified clean"
+
+  # ========================================================
+  # JOB 2: ACTIONLINT WORKFLOW LINTING
+  # ========================================================
+  actionlint:
+    name: GitHub Actions Workflow Lint (actionlint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/repo" --workdir /repo rhysd/actionlint:1.7.12 -color
+
+  # ========================================================
+  # JOB 3: STATIC GUARDS & INVARIANT AUDIT
+  # ========================================================
+  static-guards:
+    name: Static Guards & Separation Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies and Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Guard 1 - No Fallback Admin Secret in Production or Workflows
+        run: |
+          OLD_FALLBACK="oopsla-secret-admin-key-"
+          OLD_FALLBACK="${OLD_FALLBACK}change-in-prod"
+          echo "Scanning for forbidden fallback secret pattern..."
+          if grep -rnF "$OLD_FALLBACK" src/ .github/workflows/ oops_la_book_store_uxui_fixed.html package.json scripts/; then
+            echo "::error::Forbidden public fallback admin secret found in production code or workflows"
+            exit 1
+          fi
+          echo "Guard 1 passed: No forbidden fallback secret in production files."
+
+      - name: Guard 2 - Security Demo Fixture Isolation
+        run: |
+          echo "Verifying security demo references are restricted to test fixtures..."
+          if grep -rnE "app-config-leak|security-demo" src/ package.json wrangler.toml .github/workflows/deploy.yml; then
+            echo "::error::Security demo references leaked into production code or deployment workflow"
+            exit 1
+          fi
+          echo "Guard 2 passed: Security demo references properly isolated."
+
+      - name: Guard 3 - dist/ Build Output Purity
+        run: |
+          echo "Verifying dist/ build artifact purity..."
+          if grep -rnE "APP_CONFIG|PAYMENT_GATEWAY_SECRET|SuperSecretPass123|security-demo" dist/; then
+            echo "::error::Sensitive credential or fixture leaked into dist/ build output"
+            exit 1
+          fi
+          echo "Guard 3 passed: dist/ output is pure and clean."
+
+  # ========================================================
+  # JOB 4: TRIVY SECURITY SCAN
+  # ========================================================
+  trivy:
+    name: Trivy Security Scan (Filesystem & Positive Control)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      repo_findings: ${{ steps.trivy_eval.outputs.repo_findings }}
+      fixture_findings: ${{ steps.trivy_eval.outputs.fixture_findings }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Create Reports Directory
+        run: mkdir -p reports
+
+      - name: Trivy Filesystem Scan (Repo excluding security fixture)
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/repo" aquasec/trivy:0.76.2 fs /repo \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --skip-dirs /repo/tests/fixtures/security-demo \
+            --skip-dirs /repo/reports \
+            --format json \
+            --output /repo/reports/trivy-repo.json
+
+      - name: Generate Trivy Human Readable Report
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/repo" aquasec/trivy:0.76.2 convert \
+            --format table \
+            --output /repo/reports/trivy-repo.txt \
+            /repo/reports/trivy-repo.json
+
+      - name: Trivy Positive Control (Fixture Scan)
+        run: |
+          # Sinh token gia lap bang cach noi chuoi de file workflow khong bi Trivy repo-scan bat nham
+          P="ghp_"
+          S="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          echo "MOCK_TOKEN=\"${P}${S}\"" > tests/fixtures/security-demo/temp-positive-control.env
+          docker run --rm -v "$GITHUB_WORKSPACE:/repo" aquasec/trivy:0.76.2 fs /repo/tests/fixtures/security-demo \
+            --scanners secret \
+            --format json \
+            --output /repo/reports/trivy-fixture.json
+          rm -f tests/fixtures/security-demo/temp-positive-control.env
+
+      # Gate tuong minh: repo (HIGH/CRITICAL) phai = 0; fixture phai >= 1 (positive control)
+      - name: Evaluate Trivy Findings and Positive Control
+        id: trivy_eval
+        run: |
+          REPO_FINDINGS=$(jq '[.Results[]? | (.Vulnerabilities[]?, .Secrets[]?, (.Misconfigurations[]? | select(.Status == "FAIL")))] | length' reports/trivy-repo.json)
+          FIXTURE_SECRETS=$(jq '[.Results[]?.Secrets[]?] | length' reports/trivy-fixture.json)
+          echo "repo_findings=$REPO_FINDINGS" >> "$GITHUB_OUTPUT"
+          echo "fixture_findings=$FIXTURE_SECRETS" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Trivy"
+            echo "- Repo HIGH/CRITICAL findings (excluding fixture): **$REPO_FINDINGS**"
+            echo "- Fixture secrets (positive control, ACCEPTED - test fixture, not in production build): **$FIXTURE_SECRETS**"
+          } >> "$GITHUB_STEP_SUMMARY"
+          FAIL=0
+          if [ "$REPO_FINDINGS" -ne 0 ]; then
+            echo "::error::Trivy found $REPO_FINDINGS HIGH/CRITICAL finding(s) in repository (see trivy-repo.txt)"
+            FAIL=1
+          fi
+          if [ "$FIXTURE_SECRETS" -lt 1 ]; then
+            echo "::error::Positive control failed: Trivy detected 0 secrets in security fixture"
+            FAIL=1
+          fi
+          exit "$FAIL"
+
+      - name: Upload Trivy Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-reports
+          path: reports/
+          if-no-files-found: warn
+
+  # ========================================================
+  # JOB 5: API SECURITY CHECK
+  # ========================================================
+  api-security:
+    name: API Security & Auth Boundary Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies & Build
+        run: |
+          npm ci
+          npm run build
+          mkdir -p reports
+
+      - name: Run API Security Checks (Fail-Closed, Server & Worker)
+        shell: bash
+        run: |
+          # 1. Secret ngau nhien CHI ton tai trong step nay (khong ghi GITHUB_ENV/OUTPUT), mask ngay
+          ADMIN_SECRET_KEY=$(openssl rand -hex 32)
+          echo "::add-mask::$ADMIN_SECRET_KEY"
+          SERVER_PID=""
+
+          # Luon chay khi step ket thuc (pass hay fail): dung server, kiem tra ro ri secret
+          # truoc khi artifact duoc upload. Neu ro ri -> xoa reports va fail.
+          finish() {
+            rc=$?
+            if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
+              kill "$SERVER_PID"
+            fi
+            if grep -rqF "$ADMIN_SECRET_KEY" reports/ "$RUNNER_TEMP/server.log" "$RUNNER_TEMP/failclosed_err.log" 2>/dev/null; then
+              echo "::error::ADMIN_SECRET_KEY leaked in reports or logs - artifacts removed"
+              rm -rf reports
+              mkdir -p reports
+              exit 1
+            fi
+            if [ -f "$RUNNER_TEMP/server.log" ]; then
+              cp "$RUNNER_TEMP/server.log" reports/server.log
+            fi
+            echo "Secret leak audit: clean"
+            exit "$rc"
+          }
+          trap finish EXIT
+
+          # 2. Fail-closed startup: thieu ADMIN_SECRET_KEY -> phai exit 1
+          echo "Testing fail-closed startup when ADMIN_SECRET_KEY is omitted..."
+          set +e
+          env -u ADMIN_SECRET_KEY NODE_ENV=production PORT=3901 STORAGE_FILE="$RUNNER_TEMP/s0.json" \
+            timeout 15 node --experimental-strip-types src/server/app.ts 2> "$RUNNER_TEMP/failclosed_err.log"
+          STARTUP_RC=$?
+          set -e
+          if [ "$STARTUP_RC" -ne 1 ]; then
+            echo "::error::Server fail-closed startup expected exit code 1, got $STARTUP_RC"
+            cat "$RUNNER_TEMP/failclosed_err.log"
+            exit 1
+          fi
+          if ! grep -q "ADMIN_SECRET_KEY is not configured" "$RUNNER_TEMP/failclosed_err.log"; then
+            echo "::error::Server fail-closed startup did not log expected error message"
+            cat "$RUNNER_TEMP/failclosed_err.log"
+            exit 1
+          fi
+          echo "Fail-closed startup verified."
+
+          # 3. Server tam voi secret ngau nhien + du lieu test co lap
+          env ADMIN_SECRET_KEY="$ADMIN_SECRET_KEY" PORT=3900 STORAGE_FILE="$RUNNER_TEMP/oopsla-ci-storage.json" NODE_ENV=production \
+            node --experimental-strip-types src/server/app.ts > "$RUNNER_TEMP/server.log" 2>&1 &
+          SERVER_PID=$!
+
+          READY=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3900/api/health 2>/dev/null | grep -q "healthy"; then
+              READY=1
+              echo "Server ready after $i second(s)."
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo "::error::Server failed to start within 30 seconds"
+            cat "$RUNNER_TEMP/server.log"
+            exit 1
+          fi
+
+          # 4. Server mode (5 admin routes x 4 unauthorized variants + valid paths)
+          if ! env BASE_URL="http://127.0.0.1:3900" ADMIN_SECRET_KEY="$ADMIN_SECRET_KEY" RESULTS_FILE="reports/api-security.json" \
+              node scripts/ci/api-security-check.mjs server; then
+            echo "::error::Server API security check failed"
+            exit 1
+          fi
+
+          # 5. Worker mode (503 when secret missing)
+          if ! env RESULTS_FILE="reports/api-security.json" node --experimental-strip-types scripts/ci/api-security-check.mjs worker; then
+            echo "::error::Worker API security check failed"
+            exit 1
+          fi
+
+      - name: Upload API Security Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-security-reports
+          path: reports/
+          if-no-files-found: warn
+
+  # ========================================================
+  # JOB 6: OWASP ZAP BASELINE DAST SCAN
+  # ========================================================
+  zap:
+    name: OWASP ZAP Baseline DAST Scan
+    if: github.event_name == 'pull_request' || inputs.run_zap
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      zap_status: ${{ steps.zap_exec.outputs.zap_status }}
+      zap_alerts: ${{ steps.zap_exec.outputs.zap_alerts }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies & Build
+        run: |
+          npm ci
+          npm run build
+          mkdir -p zap && chmod 777 zap
+
+      - name: Run OWASP ZAP Baseline Scan
+        id: zap_exec
+        shell: bash
+        run: |
+          ADMIN_SECRET_KEY=$(openssl rand -hex 32)
+          echo "::add-mask::$ADMIN_SECRET_KEY"
+          SERVER_PID=""
+          finish() {
+            rc=$?
+            if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
+              kill "$SERVER_PID"
+            fi
+            if grep -rqF "$ADMIN_SECRET_KEY" zap/ "$RUNNER_TEMP/zap-server.log" 2>/dev/null; then
+              echo "::error::ADMIN_SECRET_KEY leaked in ZAP output - artifacts removed"
+              rm -rf zap
+              mkdir -p zap
+              exit 1
+            fi
+            exit "$rc"
+          }
+          trap finish EXIT
+
+          # Server tam CHI tren runner (127.0.0.1), khong bao gio scan domain production
+          env ADMIN_SECRET_KEY="$ADMIN_SECRET_KEY" PORT=3900 STORAGE_FILE="$RUNNER_TEMP/zap-storage.json" NODE_ENV=production \
+            node --experimental-strip-types src/server/app.ts > "$RUNNER_TEMP/zap-server.log" 2>&1 &
+          SERVER_PID=$!
+
+          READY=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3900/api/health 2>/dev/null | grep -q "healthy"; then
+              READY=1
+              echo "Server ready for ZAP after $i second(s)."
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo "::error::Server failed to start for ZAP within 30 seconds"
+            cat "$RUNNER_TEMP/zap-server.log"
+            exit 1
+          fi
+
+          # zap-baseline.py doc file -c tuong doi theo /zap/wrk -> copy rules vao thu muc wrk
+          cp .zap/rules.tsv zap/rules.tsv
+          # ghcr.io/zaproxy/zaproxy:stable - nen pin digest sau
+          set +e
+          docker run --rm --network host \
+            -v "$GITHUB_WORKSPACE/zap:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://127.0.0.1:3900 -c rules.tsv -r zap-baseline.html -J zap-baseline.json
+          ZAP_RC=$?
+          set -e
+
+          TOTAL_ALERTS=0
+          if [ -f zap/zap-baseline.json ]; then
+            TOTAL_ALERTS=$(jq '[.site[]?.alerts[]?] | length' zap/zap-baseline.json)
+            {
+              echo "### OWASP ZAP Baseline (target: http://127.0.0.1:3900, exit code $ZAP_RC)"
+              echo "| Alert | Risk | Instances |"
+              echo "|-------|------|-----------|"
+              jq -r '.site[]?.alerts[]? | "| \(.alert) | \(.riskdesc) | \(.count) |"' zap/zap-baseline.json
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "zap_alerts=$TOTAL_ALERTS" >> "$GITHUB_OUTPUT"
+
+          # Chinh sach tuong minh: 0 = PASS, 2 = WARN (chap nhan, liet ke o tren), 1/3 = FAIL
+          case "$ZAP_RC" in
+            0) echo "zap_status=PASS" >> "$GITHUB_OUTPUT" ;;
+            2) echo "zap_status=WARN" >> "$GITHUB_OUTPUT"
+               echo "::warning::ZAP reported $TOTAL_ALERTS WARN alert(s) - accepted per .zap/rules.tsv policy (see summary/artifact)" ;;
+            *) echo "zap_status=FAIL" >> "$GITHUB_OUTPUT"
+               echo "::error::ZAP baseline failed with exit code $ZAP_RC (1 = FAIL-level alert, 3 = scanner error)"
+               exit 1 ;;
+          esac
+
+      - name: Upload ZAP Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-reports
+          path: zap/
+
+  # ========================================================
+  # JOB 7: SONARQUBE ANALYSIS
+  # ========================================================
+  sonarqube:
+    name: SonarQube Analysis via Cloudflare Tunnel
+    if: github.event_name == 'workflow_dispatch' && inputs.run_sonarqube
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_TUNNEL_HOSTNAME: ${{ secrets.SONAR_TUNNEL_HOSTNAME }}
+      TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+      SONAR_HOST_URL: http://127.0.0.1:9000
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY || github.event.repository.name }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify SonarQube Secrets
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_TUNNEL_HOSTNAME" ] || [ -z "$TUNNEL_SERVICE_TOKEN_ID" ] || [ -z "$TUNNEL_SERVICE_TOKEN_SECRET" ]; then
+            echo "::error::SonarQube was enabled but required secrets (SONAR_TOKEN, SONAR_TUNNEL_HOSTNAME, CF_ACCESS_CLIENT_ID, CF_ACCESS_CLIENT_SECRET) are missing."
+            exit 1
+          fi
+          echo "All SonarQube secrets present."
+
+      # Token doc tu env TUNNEL_SERVICE_TOKEN_ID/SECRET (khong xuat hien trong process list / log)
+      - name: Open Cloudflare Access tunnel to 127.0.0.1:9000
+        run: |
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/cloudflared" \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+          chmod +x "$RUNNER_TEMP/cloudflared"
+          nohup "$RUNNER_TEMP/cloudflared" access tcp --hostname "$SONAR_TUNNEL_HOSTNAME" --url 127.0.0.1:9000 \
+            > "$RUNNER_TEMP/cloudflared.log" 2>&1 &
+          echo "CLOUDFLARED_PID=$!" >> "$GITHUB_ENV"
+          for i in $(seq 1 30); do
+            if curl -fsS "$SONAR_HOST_URL/api/system/status" 2>/dev/null | grep -q '"status":"UP"'; then
+              echo "SonarQube reachable via tunnel after $i attempt(s)."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::SonarQube not reachable via Cloudflare tunnel"
+          cat "$RUNNER_TEMP/cloudflared.log"
+          exit 1
+
+      - name: Execute SonarQube Scanner CLI
+        run: |
+          docker run --rm --network host \
+            -e SONAR_HOST_URL -e SONAR_TOKEN \
+            -v "$GITHUB_WORKSPACE:/usr/src" \
+            sonarsource/sonar-scanner-cli:latest \
+            -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+            -Dsonar.sources=src,tests/fixtures/security-demo \
+            -Dsonar.tests=tests \
+            -Dsonar.test.exclusions=tests/fixtures/**
+
+      # Theo dung ceTaskId cua lan scan nay; chi OK moi PASS (PENDING/NONE/timeout = FAIL)
+      - name: Check Quality Gate Status
+        run: |
+          CE_ID=$(grep '^ceTaskId=' .scannerwork/report-task.txt | cut -d= -f2-)
+          TASK_STATUS=""
+          for _ in $(seq 1 60); do
+            TASK=$(curl -fsS -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/ce/task?id=$CE_ID")
+            TASK_STATUS=$(echo "$TASK" | jq -r '.task.status')
+            case "$TASK_STATUS" in SUCCESS|FAILED|CANCELED) break ;; esac
+            sleep 5
+          done
+          if [ "$TASK_STATUS" != "SUCCESS" ]; then
+            echo "::error::SonarQube background task did not succeed (status: $TASK_STATUS)"
+            exit 1
+          fi
+          AID=$(echo "$TASK" | jq -r '.task.analysisId')
+          QG=$(curl -fsS -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$AID" | jq -r '.projectStatus.status')
+          echo "### SonarQube Quality Gate: **$QG**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$QG" != "OK" ]; then
+            echo "::error::SonarQube Quality Gate status: $QG"
+            exit 1
+          fi
+
+      - name: Clean up Cloudflare Tunnel
+        if: always()
+        run: |
+          if [ -n "${CLOUDFLARED_PID:-}" ] && kill -0 "$CLOUDFLARED_PID" 2>/dev/null; then
+            kill "$CLOUDFLARED_PID"
+          fi
+
+  # ========================================================
+  # JOB 8: AGGREGATED SUMMARY & GATE
+  # ========================================================
+  summary:
+    name: Validation Summary & Final Gate
+    needs: [tests-build, actionlint, static-guards, trivy, api-security, zap, sonarqube]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Generate Summary Table
+        run: |
+          # Helper function to map result
+          map_result() {
+            case "$1" in
+              success) echo "PASS" ;;
+              failure) echo "FAIL" ;;
+              skipped) echo "SKIPPED" ;;
+              cancelled) echo "CANCELLED" ;;
+              "") echo "NOT RUN" ;;
+              *) echo "$1" ;;
+            esac
+          }
+
+          TEST_RES=$(map_result "${{ needs.tests-build.outputs.test_outcome }}")
+          BUILD_RES=$(map_result "${{ needs.tests-build.outputs.build_outcome }}")
+          ACTIONLINT_RES=$(map_result "${{ needs.actionlint.result }}")
+          GUARDS_RES=$(map_result "${{ needs.static-guards.result }}")
+
+          # Trivy details
+          TRIVY_STATUS=$(map_result "${{ needs.trivy.result }}")
+          if [ "${{ needs.trivy.result }}" = "success" ]; then
+            TRIVY_DISPLAY="PASS (Repo HIGH/CRITICAL: ${{ needs.trivy.outputs.repo_findings }} | Fixture secrets: ${{ needs.trivy.outputs.fixture_findings }} ACCEPTED - test fixture only)"
+          else
+            TRIVY_DISPLAY="$TRIVY_STATUS (Repo HIGH/CRITICAL: ${{ needs.trivy.outputs.repo_findings || 'n/a' }} | Fixture secrets: ${{ needs.trivy.outputs.fixture_findings || 'n/a' }})"
+          fi
+
+          API_SEC_RES=$(map_result "${{ needs.api-security.result }}")
+
+          # ZAP details
+          if [ "${{ github.event_name == 'pull_request' || inputs.run_zap }}" = "true" ]; then
+            if [ "${{ needs.zap.outputs.zap_status }}" = "WARN" ]; then
+              ZAP_DISPLAY="PASS (WARN: ${{ needs.zap.outputs.zap_alerts }} alerts accepted per .zap/rules.tsv)"
+            else
+              ZAP_DISPLAY=$(map_result "${{ needs.zap.result }}")
+            fi
+          else
+            ZAP_DISPLAY="SKIPPED (not enabled)"
+          fi
+
+          # SonarQube details
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.run_sonarqube }}" = "true" ]; then
+            SONAR_DISPLAY=$(map_result "${{ needs.sonarqube.result }}")
+          else
+            SONAR_DISPLAY="SKIPPED (not enabled — not run)"
+          fi
+
+          {
+            echo "## 🛡️ Security CI Validation Summary"
+            echo "| Check / Job | Status |"
+            echo "|-------------|--------|"
+            echo "| Unit & Integration Tests | $TEST_RES |"
+            echo "| Production Build | $BUILD_RES |"
+            echo "| Workflow Lint (actionlint) | $ACTIONLINT_RES |"
+            echo "| Static Separation Guards | $GUARDS_RES |"
+            echo "| Trivy Security Scan | $TRIVY_DISPLAY |"
+            echo "| API Security & Fail-Closed | $API_SEC_RES |"
+            echo "| OWASP ZAP Baseline DAST | $ZAP_DISPLAY |"
+            echo "| SonarQube Quality Gate | $SONAR_DISPLAY |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Final Enforcement Gate
+        run: |
+          FAILED=0
+          check_job() {
+            local name="$1"
+            local res="$2"
+            if [ "$res" != "success" ]; then
+              echo "::error::Required job '$name' finished with status: $res"
+              FAILED=1
+            fi
+          }
+
+          check_job "tests-build" "${{ needs.tests-build.result }}"
+          check_job "actionlint" "${{ needs.actionlint.result }}"
+          check_job "static-guards" "${{ needs.static-guards.result }}"
+          check_job "trivy" "${{ needs.trivy.result }}"
+          check_job "api-security" "${{ needs.api-security.result }}"
+
+          if [ "${{ github.event_name == 'pull_request' || inputs.run_zap }}" = "true" ]; then
+            check_job "zap" "${{ needs.zap.result }}"
+          fi
+
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.run_sonarqube }}" = "true" ]; then
+            check_job "sonarqube" "${{ needs.sonarqube.result }}"
+          fi
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "Validation suite FAILED."
+            exit 1
+          fi
+          echo "All required validation checks passed successfully."

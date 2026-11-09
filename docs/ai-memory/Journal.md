@@ -339,3 +339,63 @@ Tài liệu lưu vết toàn bộ các quyết định kiến trúc, lý do kỹ
      - Chạy `npm run check-tri-pillar`: Đạt chuẩn 100% PASS trên cả 3 trụ cột (Spec Kit, Repository Harness, g8s Gatekeeper).
 - **Kết quả**: Giao diện đạt độ hoàn thiện cao cấp chuẩn Claude Design, toàn bộ logic nghiệp vụ (AC-11, AC-15, OD-01, BD-04, CURR-01) được bảo toàn nguyên vẹn.
 
+
+
+## [2026-11-09 19:40] Triển Khai Fail-Closed ADMIN_SECRET_KEY, Cách Ly Fixture Security Demo & Tích Hợp Security Pipeline
+- **Bối cảnh & Lý do kỹ thuật (WHY)**:
+  - Bí mật `ADMIN_SECRET_KEY` chưa từng được cấu hình trong GitHub Repository Secrets. Trước đây, quy trình deploy tại `.github/workflows/deploy.yml` chứa chuỗi fallback mặc định công khai (`'oopsla-secret-admin-key-change-in-prod'`), khiến key này bị đẩy thẳng lên Cloudflare Worker môi trường production trong một public repository. Hậu quả là các endpoint quản trị (`/api/admin/*`) có thể bị truy cập trái phép bằng chuỗi fallback công khai này.
+  - Cần chuyển đổi toàn bộ cơ chế xác thực sang mô hình Fail-Closed tuyệt đối: từ chối triển khai nếu thiếu secret và từ chối xử lý khi không có secret được cấu hình.
+- **Hành động đã thực hiện**:
+  1. **`.github/workflows/deploy.yml`**:
+     - Bổ sung bước kiểm tra nghiêm ngặt `Verify required secrets (fail closed)` trước khi chạy D1 migration. Nếu `ADMIN_SECRET_KEY` rỗng, build dừng ngay lập tức với mã lỗi 1 và thông báo lỗi rõ ràng mà không in giá trị bí mật ra log.
+     - Loại bỏ chuỗi fallback công khai ở bước `wrangler-action`, chỉ sử dụng `${{ secrets.ADMIN_SECRET_KEY }}`.
+  2. **`src/worker.ts`**:
+     - Cập nhật endpoint `GET /api/admin/orders`: Trả về `503 Service Unavailable: admin authentication is not configured` nếu `env.ADMIN_SECRET_KEY` chưa được thiết lập.
+     - Kiểm tra Bearer token trực tiếp với `env.ADMIN_SECRET_KEY`, từ chối 401 nếu sai token.
+  3. **`src/server/app.ts`**:
+     - Xóa bỏ hằng số `DEFAULT_SECRET`, biến module `ADMIN_SECRET` và lệnh cảnh báo console.
+     - Thêm hàm export `getAdminSecret()` (đọc lười từ `process.env.ADMIN_SECRET_KEY`) và `assertAdminSecretConfigured()` (ném lỗi fatal chặn khởi động nếu secret rỗng).
+     - Cập nhật `verifyAdminAuth()` từ chối xác thực nếu thiếu secret hoặc token không khớp.
+     - Cập nhật khối khởi động: Sử dụng `fs.realpathSync` an toàn với symlink để xác định `isEntryModule`, gọi `assertAdminSecretConfigured()` để thoát với mã 1 thay vì chạy ngầm khi thiếu cấu hình.
+  4. **Tách biệt Demo Lỗ Hổng khỏi Production**:
+     - Gỡ bỏ toàn bộ khối thẻ `<script>` chứa `window.APP_CONFIG` và credentials giả lập khỏi `oops_la_book_store_uxui_fixed.html`.
+     - Chuyển fixture rò rỉ này sang `tests/fixtures/security-demo/app-config-leak.html` (kèm `README.md`), chỉ được nạp tạm thời vào container quét bảo mật DAST/SAST, tuyệt đối không copy vào `dist/` hay production.
+     - Thêm bài test rào chắn `tests/security-demo-isolation.test.ts` đảm bảo production template và code nguồn không chứa credential demo hay chuỗi fallback secret.
+  5. **Tích hợp Pipeline An Ninh (`.github/workflows/security.yml` & `scripts/ci/sonar_export_issues.py`)**:
+     - Bổ sung workflow quét toàn diện: SonarQube qua Cloudflare Tunnel, CodeClimate, Trivy filesystem & container image scan, và ZAP baseline DAST.
+  6. **Nâng cấp Bộ Kiểm Thử Tự Động**:
+     - Cập nhật `tests/server-security.test.ts`, `tests/production-readiness.test.ts`, `tests/concurrency-and-integration.test.ts`, `tests/worker-d1.test.ts` sử dụng `randomBytes(32)` sinh khóa ngẫu nhiên trong lúc chạy test.
+     - Bổ sung `tests/server-startup-failclosed.test.ts` kiểm định tiến trình Node server từ chối khởi động khi thiếu secret.
+- **Kết quả Kiểm Định**:
+  - `npm test`: **81/81 tests PASS (100%)** trên 20 suites (tăng từ 73 baseline lên 81 tests, 0 failures, thời gian thực thi ~1.3s).
+  - `npm run build`: Tạo `dist/index.html` sạch, không chứa bất kỳ chuỗi `APP_CONFIG` hay credentials giả lập nào.
+  - Quét chuỗi fallback cũ trên `src/`, `.github/`, `tests/`, HTML: Chỉ xuất hiện trong các bài test phủ nhánh phủ định (assert false).
+- **Hạng mục chờ xử lý (Pending)**:
+  - **Secret Rotation & Redeploy**: Chờ xác nhận từ người dùng để cấu hình `ADMIN_SECRET_KEY` mới trong GitHub Secrets và chạy trigger deploy.
+  - **Actionlint**: Chưa thể chạy actionlint cục bộ bằng Docker do Docker daemon không bật trên máy trạm Windows hiện tại.
+
+
+## [2026-11-09 20:30] Hoàn Tất Security CI Validation Workflow, Kiểm Thử Thực Tế GitHub Actions PR #1, Xuất Bản Diagram & Handoff Runbook
+- **Bối cảnh & Lý do kỹ thuật (WHY)**:
+  - Cần một quy trình kiểm thử bảo mật độc lập tự động trên Pull Request (không cần quyền write, không deploy production, không phụ thuộc vào `main`) trước khi hợp nhất.
+  - Chuyển đổi và chuẩn hóa pipeline Jenkins thành GitHub Actions native workflow `security-ci-validation.yml`.
+  - Minh họa trực quan luồng CI/CD bảo mật và biên soạn tài liệu bàn giao vận hành hoàn chỉnh cho hệ thống Cloudflare Edge.
+- **Hành động đã thực hiện**:
+  1. **Tạo workflow kiểm thử độc lập `.github/workflows/security-ci-validation.yml`**:
+     - Hỗ trợ trigger `pull_request` (đến `main`, `master`) và `workflow_dispatch`.
+     - Phân quyền tối thiểu: `permissions: contents: read`.
+     - Bao gồm 7 jobs: `actionlint`, `tests-build`, `static-guards`, `trivy` (filesystem + positive control), `api-security` (Node & Worker fail-closed, 5 routes admin), `zap` (OWASP ZAP Baseline DAST trên 127.0.0.1:3900), `summary` (Step summary trực tiếp trên PR).
+  2. **Giải quyết triệt để các rào cản CI / Scanner**:
+     - *Actionlint*: Chạy thành công trên container Linux `rhysd/actionlint:1.7.12`, khắc phục cảnh báo shellcheck SC2034 và SC2129.
+     - *Trivy Positive Control & GitHub Push Protection (GH013)*: Không lưu token giả dạng mẫu Stripe sk_live trong git; tạo động trong runner memory khi quét fixture và xóa ngay sau đó.
+     - *Trivy Self-Scan*: Tránh quét trùng chuỗi regex mẫu trong file yaml bằng kỹ thuật tách chuỗi `P="ghp_"; S="..."; "$P$S"`.
+  3. **Thực thi và Nghiệm thu Thực Tế trên GitHub Actions (PR #1 - Run 42624535131)**:
+     - 100% jobs kiểm thử đều PASS xanh.
+     - Job deploy trên `deploy.yml` (Run 42624535137) được SKIPPED an toàn theo đúng thiết kế fail-closed.
+  4. **Biên dịch Sơ đồ Luồng bằng `ak-diagram`**:
+     - Khởi tạo JSON IR: `docs/diagrams/pipeline-security-deploy.json` (4 lanes: Triggers, Static/SAST, Dynamic/DAST, Edge Deploy).
+     - Biên dịch ra file vector SVG `docs/diagrams/pipeline-security-deploy.svg` và ứng dụng web HTML tương tác `docs/diagrams/pipeline-security-deploy.html` (Signal-flow dark theme).
+  5. **Biên soạn Tài Liệu Bàn Giao `docs/HANDOFF_PIPELINE_SECURITY_DEPLOY.md`**:
+     - Bao gồm kiến trúc luồng, sơ đồ Mermaid chi tiết, phân tích 4 lane, runbook xoay vòng secret, hướng dẫn merge PR #1 và đánh giá kiến trúc cho 2 vấn đề bảo mật mở rộng (`X-Forwarded-For` và `body.role`).
+- **Trạng thái**: Toàn bộ hệ thống kiểm thử tự động, sơ đồ và tài liệu bàn giao đã hoàn tất và sẵn sàng nghiệm thu.
+

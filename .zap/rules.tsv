@@ -1,0 +1,4 @@
+# ZAP Baseline Rules Configuration — Oops La Bookstore
+# Format: <ruleId>\t<WARN|IGNORE|FAIL>\t<comment>
+# Policy: All alerts default to WARN unless explicitly categorized. Any IGNORE must be justified by an approved security review.
+# Currently empty of IGNORE entries: all findings must be reported for evaluation.
