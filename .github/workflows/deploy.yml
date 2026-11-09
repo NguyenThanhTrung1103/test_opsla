@@ -62,7 +62,7 @@ jobs:
   deploy:
     name: Deploy to Cloudflare Workers with D1 Database
     needs: test
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -83,6 +83,16 @@ jobs:
           fi
           npm run build
 
+      - name: Verify required secrets (fail closed)
+        env:
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+        run: |
+          if [ -z "$ADMIN_SECRET_KEY" ]; then
+            echo "::error::ADMIN_SECRET_KEY secret is not configured - refusing to deploy (fail closed)"
+            exit 1
+          fi
+          echo "ADMIN_SECRET_KEY present"
+
       - name: Apply Cloudflare D1 Database Migrations
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
         env:
@@ -101,4 +111,4 @@ jobs:
           secrets: |
             ADMIN_SECRET_KEY
         env:
-          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY || 'oopsla-secret-admin-key-change-in-prod' }}
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}

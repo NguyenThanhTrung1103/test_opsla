@@ -22,12 +22,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 
-const DEFAULT_SECRET = 'oopsla-secret-admin-key-change-in-prod';
-const ADMIN_SECRET = process.env.ADMIN_SECRET_KEY || DEFAULT_SECRET;
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
-if (process.env.NODE_ENV === 'production' && (!process.env.ADMIN_SECRET_KEY || process.env.ADMIN_SECRET_KEY === DEFAULT_SECRET)) {
-  console.warn('[SECURITY WARNING] ADMIN_SECRET_KEY is using default or unset in production!');
+export function getAdminSecret(): string {
+  return process.env.ADMIN_SECRET_KEY?.trim() ?? '';
+}
+
+export function assertAdminSecretConfigured(): void {
+  if (!getAdminSecret()) {
+    throw new Error('[FATAL] ADMIN_SECRET_KEY is not configured - refusing to start (fail closed).');
+  }
 }
 
 // In-memory rate limiting map: IP -> array of timestamps
@@ -70,9 +74,11 @@ function getClientIp(req: http.IncomingMessage): string {
 }
 
 export function verifyAdminAuth(authHeader: string | undefined): boolean {
+  const secret = getAdminSecret();
+  if (!secret) return false;
   if (!authHeader || !authHeader.startsWith('Bearer ')) return false;
   const token = authHeader.slice(7).trim();
-  return token === ADMIN_SECRET && token.length > 0;
+  return token === secret && token.length > 0;
 }
 
 export const server = http.createServer(async (req, res) => {
@@ -268,7 +274,23 @@ export const server = http.createServer(async (req, res) => {
   }
 });
 
-if (process.env.NODE_ENV !== 'test' && !process.env.TEST_WORKER_INDEX) {
+function isEntry(): boolean {
+  if (!process.argv[1]) return false;
+  try {
+    return fs.realpathSync(path.resolve(process.argv[1])) === fs.realpathSync(__filename);
+  } catch {
+    return false;
+  }
+}
+const isEntryModule = isEntry();
+
+if (isEntryModule && process.env.NODE_ENV !== 'test') {
+  try {
+    assertAdminSecretConfigured();
+  } catch (e) {
+    console.error((e as Error).message);
+    process.exit(1);
+  }
   const storagePath = process.env.STORAGE_FILE || path.resolve(process.cwd(), 'data/oopsla-storage.json');
   dbAdapter.setStorageFile(storagePath);
   server.listen(PORT, '0.0.0.0', () => {

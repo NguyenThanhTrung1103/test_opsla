@@ -1,5 +1,6 @@
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
 import { server } from '../src/server/app.ts';
 import { catalogService } from '../src/services/catalogService.ts';
 import { orderService } from '../src/services/orderService.ts';
@@ -8,10 +9,11 @@ import type { AddressInfo } from 'node:net';
 
 describe('Concurrency, Persistence Fail-Closed & Storefront Integration (V01-V06)', () => {
   let baseUrl = '';
-  const adminSecret = 'oopsla-secret-admin-key-change-in-prod';
+  const adminSecret = randomBytes(32).toString('hex');
   const authHeader = `Bearer ${adminSecret}`;
 
   before(async () => {
+    process.env.ADMIN_SECRET_KEY = adminSecret;
     await catalogService.initialize();
     await orderService.initialize();
 
@@ -25,7 +27,10 @@ describe('Concurrency, Persistence Fail-Closed & Storefront Integration (V01-V06
   });
 
   after((_, done) => {
-    server.close(done);
+    server.close(() => {
+      delete process.env.ADMIN_SECRET_KEY;
+      done();
+    });
   });
 
   test('V01: Concurrency — Two concurrent confirmOrder calls for the last copy must NOT double-decrement', async () => {

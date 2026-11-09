@@ -1,0 +1,395 @@
+# =============================================================================
+# Security Pipeline — Oops La Bookstore (chuyen tu Jenkinsfile infracare-api)
+# Dich: .github/workflows/security.yml
+#
+# Kien truc (tat ca chay tren runner GitHub-hosted, mien phi):
+#   prepare -> [sonarqube | codeclimate | trivy-fs | image-scan] -> report
+#   - SonarQube LAN duoc mo qua Cloudflare Tunnel + Cloudflare Access (service token).
+#     Runner dung `cloudflared access tcp` mo cong 127.0.0.1:9000 -> scanner tro vao do.
+#   - image-scan: tao image TAM THOI tu Node server (src/server/app.ts), chay container,
+#     ZAP baseline (DAST) + Trivy image, roi XOA container/image. KHONG push, KHONG deploy.
+#
+# Secrets (Settings > Secrets and variables > Actions):
+#   SONAR_TOKEN               - token SonarQube (nen tao moi)
+#   SONAR_TUNNEL_HOSTNAME     - vd: sonar.<domain-cua-ban> (public hostname cua tunnel)
+#   CF_ACCESS_CLIENT_ID       - Cloudflare Access service token Client ID
+#   CF_ACCESS_CLIENT_SECRET   - Cloudflare Access service token Client Secret
+#   TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+# Variables (tuy chon): SONAR_PROJECT_KEY, SONAR_DASHBOARD_URL (vd https://sonar.<domain>)
+# Thieu secret -> step tuong ung SKIP voi ::notice::, khong fail pipeline.
+# =============================================================================
+name: Security Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      run_codeclimate:
+        description: 'CodeClimate source scan'
+        type: boolean
+        default: true
+      run_trivy_fs:
+        description: 'Trivy filesystem scan (vuln + secret)'
+        type: boolean
+        default: true
+      run_image_scan:
+        description: 'Build image tam -> ZAP baseline + Trivy image -> xoa'
+        type: boolean
+        default: true
+      scan_dir:
+        description: 'Thu muc scan (mac dinh src)'
+        type: string
+        default: 'src'
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  SERVICE_NAME: ${{ github.event.repository.name }}
+  SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY || github.event.repository.name }}
+  SCAN_DIR: ${{ inputs.scan_dir || 'src' }}
+  TRIVY_IMAGE: aquasec/trivy:latest            # khuyen nghi pin version/digest
+  SONAR_SCANNER_IMAGE: sonarsource/sonar-scanner-cli:latest
+  ZAP_IMAGE: ghcr.io/zaproxy/zaproxy:stable
+  SONAR_REPORT: sonarqube-report
+  CODECLIMATE_REPORT: codeclimate-report
+  TRIVYFS_REPORT: trivyfs-report
+  TRIVY_IMAGE_REPORT: trivy-image-report
+  ZAP_REPORT: zap-baseline-report
+
+jobs:
+  prepare:
+    name: Prepare tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image_tag: ${{ steps.t.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: t
+        run: |
+          test -d "$SCAN_DIR" || { echo "::error::Khong thay thu muc $SCAN_DIR"; exit 1; }
+          echo "image_tag=$(git rev-parse --short=8 HEAD)" >> "$GITHUB_OUTPUT"
+
+  # ---------------- SonarQube (LAN) qua Cloudflare Tunnel ----------------
+  sonarqube:
+    name: SonarQube via Cloudflare Tunnel
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_TUNNEL_HOSTNAME: ${{ secrets.SONAR_TUNNEL_HOSTNAME }}
+      TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+      SONAR_HOST_URL: http://127.0.0.1:9000    # cong local do cloudflared mo
+      IMAGE_TAG: ${{ needs.prepare.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: mkdir -p reports_bundle
+
+      - name: Check secrets
+        id: chk
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_TUNNEL_HOSTNAME" ] || [ -z "$TUNNEL_SERVICE_TOKEN_ID" ] || [ -z "$TUNNEL_SERVICE_TOKEN_SECRET" ]; then
+            echo "::notice::Thieu secret SonarQube/Cloudflare Access - bo qua SonarQube"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open Cloudflare Access tunnel -> 127.0.0.1:9000
+        if: steps.chk.outputs.ok == 'true'
+        run: |
+          curl -fsSL -o /tmp/cloudflared.deb \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i /tmp/cloudflared.deb
+          # Token doc tu env TUNNEL_SERVICE_TOKEN_ID/SECRET (khong lo ra process list)
+          nohup cloudflared access tcp --hostname "$SONAR_TUNNEL_HOSTNAME" --url 127.0.0.1:9000 \
+            > /tmp/cloudflared.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS "$SONAR_HOST_URL/api/system/status" | grep -q '"status":"UP"'; then
+              echo "SonarQube reachable qua tunnel"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Khong ket noi duoc SonarQube qua tunnel"; cat /tmp/cloudflared.log; exit 1
+
+      - name: SonarQube scan
+        id: scan
+        if: steps.chk.outputs.ok == 'true'
+        run: |
+          docker run --rm --network host \
+            -e SONAR_HOST_URL -e SONAR_TOKEN \
+            -v "$GITHUB_WORKSPACE:/usr/src" \
+            "$SONAR_SCANNER_IMAGE" \
+            -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+            -Dsonar.projectName="$SERVICE_NAME" \
+            -Dsonar.sources="$SCAN_DIR,tests/fixtures/security-demo"
+
+      - name: Quality Gate (khong abort)
+        id: qg
+        if: steps.scan.outcome == 'success'
+        continue-on-error: true
+        run: |
+          STATUS=UNKNOWN
+          CE_ID=$(grep '^ceTaskId=' .scannerwork/report-task.txt | cut -d= -f2-)
+          for i in $(seq 1 60); do
+            TASK=$(curl -sS -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/ce/task?id=$CE_ID")
+            S=$(echo "$TASK" | jq -r '.task.status')
+            case "$S" in SUCCESS|FAILED|CANCELED) break;; esac
+            sleep 5
+          done
+          AID=$(echo "$TASK" | jq -r '.task.analysisId // empty')
+          [ -n "$AID" ] && STATUS=$(curl -sS -u "$SONAR_TOKEN:" \
+            "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$AID" | jq -r '.projectStatus.status')
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "Quality Gate: $STATUS"
+
+      - name: Export issues CSV
+        if: steps.scan.outcome == 'success'
+        continue-on-error: true
+        env:
+          SONAR_URL: http://127.0.0.1:9000
+          SONAR_OUTPUT: reports_bundle/sonarqube-issues.csv
+        run: python3 scripts/ci/sonar_export_issues.py
+
+      - name: Build HTML summary
+        if: steps.scan.outcome == 'success'
+        env:
+          QG: ${{ steps.qg.outputs.status || 'UNKNOWN' }}
+        run: |
+          TOTAL=0
+          if [ -f reports_bundle/sonarqube-issues.csv ]; then
+            TOTAL=$(python3 -c "import csv;print(sum(1 for _ in csv.DictReader(open('reports_bundle/sonarqube-issues.csv',encoding='utf-8-sig'))))")
+          fi
+          cat > "reports_bundle/${SONAR_REPORT}.html" <<EOF
+          <html><body>
+          <h2>SonarQube Report - ${SERVICE_NAME}</h2>
+          <p>Run: ${GITHUB_RUN_NUMBER} | Commit: ${IMAGE_TAG}</p>
+          <p>Quality Gate status: <b>${QG}</b></p>
+          <p>Tong so issue dang mo: <b>${TOTAL}</b> (chi tiet: sonarqube-issues.csv)</p>
+          <p><a href="${{ vars.SONAR_DASHBOARD_URL }}/dashboard?id=${SONAR_PROJECT_KEY}">Dashboard (dang nhap Cloudflare Access)</a></p>
+          </body></html>
+          EOF
+          echo "### SonarQube: Quality Gate **${QG}** — ${TOTAL} open issues" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Close tunnel
+        if: always()
+        run: pkill -f "cloudflared access tcp" || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-sonar
+          path: reports_bundle/
+          if-no-files-found: ignore
+
+  # ---------------- CodeClimate (lỗi thời, chi bao cao) ----------------
+  codeclimate:
+    name: CodeClimate analyze
+    needs: prepare
+    if: github.event_name != 'workflow_dispatch' || inputs.run_codeclimate
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports_bundle
+      - name: CodeClimate (toi da 10 phut)
+        timeout-minutes: 10
+        run: |
+          docker run --rm \
+            --env CODECLIMATE_CODE="$GITHUB_WORKSPACE/$SCAN_DIR" \
+            --volume "$GITHUB_WORKSPACE/$SCAN_DIR":/code \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
+            --volume /tmp/cc:/tmp/cc \
+            codeclimate/codeclimate analyze -f html > "reports_bundle/${CODECLIMATE_REPORT}.html" || true
+      - name: Cleanup images
+        if: always()
+        run: docker images --format '{{.Repository}}:{{.Tag}}' | grep '^codeclimate/' | xargs -r docker rmi -f || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-codeclimate
+          path: reports_bundle/
+          if-no-files-found: ignore
+
+  # ---------------- Trivy FS: dependency vuln + hardcoded secret ----------------
+  trivy-fs:
+    name: Trivy FS scan
+    needs: prepare
+    if: github.event_name != 'workflow_dispatch' || inputs.run_trivy_fs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports_bundle
+      # Quet ca repo (.) cho secret vi secret hay nam o workflow/deploy, vuln theo SCAN_DIR
+      - run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" "$TRIVY_IMAGE" \
+            fs /workspace \
+            --scanners vuln,secret,misconfig \
+            --skip-dirs /workspace/Cookbook --skip-dirs /workspace/200lab-agent-skills \
+            --severity HIGH,CRITICAL \
+            --format template --template "@/contrib/html.tpl" \
+            --output "/workspace/reports_bundle/${TRIVYFS_REPORT}.html" || true
+      - name: Cleanup
+        if: always()
+        run: docker rmi -f "$TRIVY_IMAGE" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-trivyfs
+          path: reports_bundle/
+          if-no-files-found: ignore
+
+  # ---------------- Image tam: build -> run -> ZAP + Trivy -> xoa ----------------
+  image-scan:
+    name: Ephemeral image - ZAP baseline + Trivy image
+    needs: prepare
+    if: github.event_name != 'workflow_dispatch' || inputs.run_image_scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      IMAGE_LOCAL: scan/${{ github.event.repository.name }}:${{ needs.prepare.outputs.image_tag }}
+      CONTAINER: oopsla-scan
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run build && mkdir -p reports_bundle
+
+      # Demo lo hong (fixture GIA) chi duoc chen vao image scan tam, KHONG bao gio vao dist production
+      - name: Inject security-demo fixture (scan image only)
+        run: cp tests/fixtures/security-demo/app-config-leak.html dist/security-demo.html
+
+      # Dockerfile sinh tai cho, KHONG commit vao repo. Mo phong route deploy VPS (deploy/oopsla.service)
+      - name: Build ephemeral image
+        run: |
+          cat > Dockerfile.scan <<'EOF'
+          FROM node:22-alpine
+          WORKDIR /app
+          COPY package.json ./
+          COPY src ./src
+          COPY dist ./dist
+          RUN mkdir -p data && chown -R node:node /app
+          USER node
+          ENV NODE_ENV=production PORT=3000
+          EXPOSE 3000
+          CMD ["node", "--experimental-strip-types", "src/server/app.ts"]
+          EOF
+          docker build -f Dockerfile.scan -t "$IMAGE_LOCAL" .
+
+      - name: Trivy image scan
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            "$TRIVY_IMAGE" image \
+            --format template --template "@/contrib/html.tpl" \
+            --output "/workspace/reports_bundle/${TRIVY_IMAGE_REPORT}.html" \
+            "$IMAGE_LOCAL" || true
+
+      - name: Run container (chi trong runner, secret ngau nhien)
+        run: |
+          docker run -d --name "$CONTAINER" -p 127.0.0.1:3000:3000 \
+            -e ADMIN_SECRET_KEY="$(openssl rand -hex 32)" "$IMAGE_LOCAL"
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/ >/dev/null && exit 0; sleep 1; done
+          docker logs "$CONTAINER"; echo "::error::Container khong len"; exit 1
+
+      # ZAP baseline = passive scan, chi nham vao container local, KHONG dong vao production
+      - name: OWASP ZAP baseline (DAST)
+        run: |
+          mkdir -p zap && chmod 777 zap
+          docker run --rm --network host -v "$GITHUB_WORKSPACE/zap:/zap/wrk:rw" "$ZAP_IMAGE" \
+            zap-baseline.py -t http://127.0.0.1:3000 -r "${ZAP_REPORT}.html" -I || true
+          docker run --rm --network host -v "$GITHUB_WORKSPACE/zap:/zap/wrk:rw" "$ZAP_IMAGE" \
+            zap-baseline.py -t http://127.0.0.1:3000/security-demo.html -r "${ZAP_REPORT}-demo.html" -I || true
+          cp zap/*.html reports_bundle/ 2>/dev/null || true
+
+      - name: Cleanup (xoa container + image)
+        if: always()
+        run: |
+          docker rm -f "$CONTAINER" || true
+          docker rmi -f "$IMAGE_LOCAL" "$TRIVY_IMAGE" "$ZAP_IMAGE" || true
+          docker builder prune -af || true
+          rm -f Dockerfile.scan
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-image
+          path: reports_bundle/
+          if-no-files-found: ignore
+
+  # ---------------- Gom report + Telegram ----------------
+  report:
+    name: Archive & Telegram
+    needs: [prepare, sonarqube, codeclimate, trivy-fs, image-scan]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      IMAGE_TAG: ${{ needs.prepare.outputs.image_tag }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: reports-*
+          path: reports_bundle
+          merge-multiple: true
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: security-reports-${{ github.run_number }}
+          path: reports_bundle/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Skip notice
+        if: env.TELEGRAM_BOT_TOKEN == '' || env.TELEGRAM_CHAT_ID == ''
+        run: echo "::notice::Thieu TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID - bo qua Telegram"
+
+      - name: Send reports to Telegram
+        if: env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
+        shell: bash
+        run: |
+          set +e
+          mkdir -p reports_bundle && cd reports_bundle
+          shopt -s nullglob
+          FILES=(*.html *.csv)
+          API="https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}"
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          if [ ${#FILES[@]} -eq 0 ]; then
+            curl -sS -X POST "$API/sendMessage" -d chat_id="$TELEGRAM_CHAT_ID" \
+              --data-urlencode text="[${SERVICE_NAME}] Run #${GITHUB_RUN_NUMBER} - Khong co report. ${RUN_URL}" >/dev/null
+            exit 0
+          fi
+          curl -sS -X POST "$API/sendMessage" -d chat_id="$TELEGRAM_CHAT_ID" \
+            --data-urlencode text="[${SERVICE_NAME}] Run #${GITHUB_RUN_NUMBER} (commit ${IMAGE_TAG}) - ${#FILES[@]} report(s). ${RUN_URL}" >/dev/null
+          FAIL=0
+          for f in "${FILES[@]}"; do
+            CODE=$(curl -sS -o /tmp/tg.json -w "%{http_code}" -X POST "$API/sendDocument" \
+              -F chat_id="$TELEGRAM_CHAT_ID" -F document=@"$f" \
+              -F caption="$f - [${SERVICE_NAME}] Run #${GITHUB_RUN_NUMBER}")
+            [ "$CODE" != "200" ] && { echo "::warning::Gui that bai $f (HTTP $CODE)"; cat /tmp/tg.json; FAIL=$((FAIL+1)); }
+          done
+          echo "Gui xong, that bai: $FAIL"
+          exit 0
+
+      - name: Pipeline result
+        run: |
+          echo "sonarqube=${{ needs.sonarqube.result }} codeclimate=${{ needs.codeclimate.result }} trivy-fs=${{ needs.trivy-fs.result }} image-scan=${{ needs.image-scan.result }}"

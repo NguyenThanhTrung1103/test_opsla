@@ -193,9 +193,11 @@ export default {
 
     // 4. Admin Orders endpoint (Guarded with Bearer Auth)
     if (url.pathname === '/api/admin/orders' && request.method === 'GET') {
+      if (!env.ADMIN_SECRET_KEY) {
+        return jsonResponse({ error: 'Service Unavailable: admin authentication is not configured' }, 503);
+      }
       const auth = request.headers.get('Authorization') || '';
-      const secret = env.ADMIN_SECRET_KEY || 'oopsla-secret-admin-key-change-in-prod';
-      if (!auth.startsWith('Bearer ') || auth.slice(7).trim() !== secret) {
+      if (!auth.startsWith('Bearer ') || auth.slice(7).trim() !== env.ADMIN_SECRET_KEY) {
         return jsonResponse({ error: 'Unauthorized: Admin authentication required' }, 401);
       }
 

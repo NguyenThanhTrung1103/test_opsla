@@ -1,12 +1,15 @@
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { server, verifyAdminAuth } from '../src/server/app.ts';
+import { randomBytes } from 'node:crypto';
+import { server, verifyAdminAuth, assertAdminSecretConfigured } from '../src/server/app.ts';
 import type { AddressInfo } from 'node:net';
 
 describe('Server Security & Auth Verification', () => {
   let baseUrl = '';
+  const adminSecret = randomBytes(32).toString('hex');
 
   before((_, done) => {
+    process.env.ADMIN_SECRET_KEY = adminSecret;
     server.listen(0, '127.0.0.1', () => {
       const addr = server.address() as AddressInfo;
       baseUrl = `http://127.0.0.1:${addr.port}`;
@@ -15,7 +18,10 @@ describe('Server Security & Auth Verification', () => {
   });
 
   after((_, done) => {
-    server.close(done);
+    server.close(() => {
+      delete process.env.ADMIN_SECRET_KEY;
+      done();
+    });
   });
 
   test('GET /api/health responds with 200 and security headers', async () => {
@@ -40,6 +46,23 @@ describe('Server Security & Auth Verification', () => {
     assert.equal(verifyAdminAuth(undefined), false);
     assert.equal(verifyAdminAuth('Basic 12345'), false);
     assert.equal(verifyAdminAuth('Bearer wrong-key'), false);
-    assert.equal(verifyAdminAuth('Bearer oopsla-secret-admin-key-change-in-prod'), true);
+    assert.equal(verifyAdminAuth('Bearer oopsla-secret-admin-key-change-in-prod'), false);
+    assert.equal(verifyAdminAuth(`Bearer ${adminSecret}`), true);
+  });
+
+  test('missing ADMIN_SECRET_KEY fails closed across auth and assertions', async () => {
+    delete process.env.ADMIN_SECRET_KEY;
+    try {
+      assert.equal(verifyAdminAuth('Bearer oopsla-secret-admin-key-change-in-prod'), false);
+      assert.equal(verifyAdminAuth('Bearer '), false);
+      const res = await fetch(`${baseUrl}/api/admin/orders/OLS-000001/confirm`, {
+        method: 'POST',
+        headers: { Authorization: 'Bearer oopsla-secret-admin-key-change-in-prod' }
+      });
+      assert.equal(res.status, 401);
+      assert.throws(() => assertAdminSecretConfigured(), /ADMIN_SECRET_KEY is not configured/);
+    } finally {
+      process.env.ADMIN_SECRET_KEY = adminSecret;
+    }
   });
 });
