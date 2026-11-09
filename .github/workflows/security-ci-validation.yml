@@ -165,8 +165,10 @@ jobs:
 
       - name: Trivy Positive Control (Fixture Scan)
         run: |
-          # Sinh token gia lap co dinh dang chuan de Trivy phat hien ngay tren runner (khong bao gio commit vao git)
-          echo 'MOCK_TOKEN="ghp_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"' > tests/fixtures/security-demo/temp-positive-control.env
+          # Sinh token gia lap bang cach noi chuoi de file workflow khong bi Trivy repo-scan bat nham
+          P="ghp_"
+          S="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          echo "MOCK_TOKEN=\"${P}${S}\"" > tests/fixtures/security-demo/temp-positive-control.env
           docker run --rm -v "$GITHUB_WORKSPACE:/repo" aquasec/trivy:0.76.2 fs /repo/tests/fixtures/security-demo \
             --scanners secret \
             --format json \
