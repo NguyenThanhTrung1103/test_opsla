@@ -116,7 +116,7 @@ jobs:
           # Token doc tu env TUNNEL_SERVICE_TOKEN_ID/SECRET (khong lo ra process list)
           nohup cloudflared access tcp --hostname "$SONAR_TUNNEL_HOSTNAME" --url 127.0.0.1:9000 \
             > /tmp/cloudflared.log 2>&1 &
-          for i in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             if curl -fsS "$SONAR_HOST_URL/api/system/status" | grep -q '"status":"UP"'; then
               echo "SonarQube reachable qua tunnel"; exit 0
             fi
@@ -143,7 +143,7 @@ jobs:
         run: |
           STATUS=UNKNOWN
           CE_ID=$(grep '^ceTaskId=' .scannerwork/report-task.txt | cut -d= -f2-)
-          for i in $(seq 1 60); do
+          for _ in $(seq 1 60); do
             TASK=$(curl -sS -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/ce/task?id=$CE_ID")
             S=$(echo "$TASK" | jq -r '.task.status')
             case "$S" in SUCCESS|FAILED|CANCELED) break;; esac
@@ -305,7 +305,7 @@ jobs:
         run: |
           docker run -d --name "$CONTAINER" -p 127.0.0.1:3000:3000 \
             -e ADMIN_SECRET_KEY="$(openssl rand -hex 32)" "$IMAGE_LOCAL"
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/ >/dev/null && exit 0; sleep 1; done
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/ >/dev/null && exit 0; sleep 1; done
           docker logs "$CONTAINER"; echo "::error::Container khong len"; exit 1
 
       # ZAP baseline = passive scan, chi nham vao container local, KHONG dong vao production

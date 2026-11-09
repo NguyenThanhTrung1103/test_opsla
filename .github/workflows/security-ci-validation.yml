@@ -165,10 +165,13 @@ jobs:
 
       - name: Trivy Positive Control (Fixture Scan)
         run: |
+          # Sinh token gia lap co dinh dang chuan de Trivy phat hien ngay tren runner (khong bao gio commit vao git)
+          echo 'MOCK_TOKEN="ghp_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"' > tests/fixtures/security-demo/temp-positive-control.env
           docker run --rm -v "$GITHUB_WORKSPACE:/repo" aquasec/trivy:0.76.2 fs /repo/tests/fixtures/security-demo \
             --scanners secret \
             --format json \
             --output /repo/reports/trivy-fixture.json
+          rm -f tests/fixtures/security-demo/temp-positive-control.env
 
       # Gate tuong minh: repo (HIGH/CRITICAL) phai = 0; fixture phai >= 1 (positive control)
       - name: Evaluate Trivy Findings and Positive Control
@@ -488,7 +491,7 @@ jobs:
         run: |
           CE_ID=$(grep '^ceTaskId=' .scannerwork/report-task.txt | cut -d= -f2-)
           TASK_STATUS=""
-          for i in $(seq 1 60); do
+          for _ in $(seq 1 60); do
             TASK=$(curl -fsS -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/ce/task?id=$CE_ID")
             TASK_STATUS=$(echo "$TASK" | jq -r '.task.status')
             case "$TASK_STATUS" in SUCCESS|FAILED|CANCELED) break ;; esac
@@ -570,17 +573,19 @@ jobs:
             SONAR_DISPLAY="SKIPPED (not enabled — not run)"
           fi
 
-          echo "## 🛡️ Security CI Validation Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Check / Job | Status |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|-------------|--------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Unit & Integration Tests | $TEST_RES |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Production Build | $BUILD_RES |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Workflow Lint (actionlint) | $ACTIONLINT_RES |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Static Separation Guards | $GUARDS_RES |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Trivy Security Scan | $TRIVY_DISPLAY |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| API Security & Fail-Closed | $API_SEC_RES |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| OWASP ZAP Baseline DAST | $ZAP_DISPLAY |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| SonarQube Quality Gate | $SONAR_DISPLAY |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## 🛡️ Security CI Validation Summary"
+            echo "| Check / Job | Status |"
+            echo "|-------------|--------|"
+            echo "| Unit & Integration Tests | $TEST_RES |"
+            echo "| Production Build | $BUILD_RES |"
+            echo "| Workflow Lint (actionlint) | $ACTIONLINT_RES |"
+            echo "| Static Separation Guards | $GUARDS_RES |"
+            echo "| Trivy Security Scan | $TRIVY_DISPLAY |"
+            echo "| API Security & Fail-Closed | $API_SEC_RES |"
+            echo "| OWASP ZAP Baseline DAST | $ZAP_DISPLAY |"
+            echo "| SonarQube Quality Gate | $SONAR_DISPLAY |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Final Enforcement Gate
         run: |
