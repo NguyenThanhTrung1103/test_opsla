@@ -92,6 +92,7 @@ jobs:
             -e SONAR_HOST_URL -e SONAR_TOKEN \
             -v "$GITHUB_WORKSPACE:/usr/src" \
             sonarsource/sonar-scanner-cli:latest \
+            -Dsonar.working.directory=/usr/src/.scannerwork \
             -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
             -Dsonar.sources=src,oops_la_book_store_uxui_fixed.html,tests/fixtures/security-demo \
             -Dsonar.tests=tests \
