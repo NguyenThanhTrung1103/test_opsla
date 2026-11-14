@@ -1,51 +1,64 @@
-# Quy Trình Kiểm Thử & Thẩm Định An Ninh CI/CD (Security CI Validation)
+﻿# Test and SonarQube pipeline
 
-Tài liệu hướng dẫn vận hành workflow thẩm định an ninh thủ công độc lập (`.github/workflows/security-ci-validation.yml`) cho dự án Oops La Bookstore.
+The workflow `.github/workflows/deploy.yml` runs checks only: checkout, npm ci,
+automated tests, build, redacted credential alerts and SonarQube analysis.
+It reuses the test/build sequence from f500804ec805b6bbddd3901987f435f4ae431e24.
+Deployment, remote migrations and the former broad security workflows are removed.
 
----
+## HTTPS connection
 
-## 1. Cách Kích Hoạt Workflow qua GitHub CLI
+The owner selected direct HTTPS without Cloudflare Access on 2026-11-14:
 
-Workflow này được thiết kế theo chế độ **thủ công 100% (`workflow_dispatch`)**, không tự động chạy trên `push` hay `pull_request` để tiết kiệm tài nguyên và không can thiệp vào quy trình deploy.
+GitHub runner -> https://test-sonarqube.trungnt.me -> existing Cloudflare Tunnel
+-> SonarQube at 192.168.99.33:9000.
 
-Lệnh kích hoạt mẫu:
+Only Actions secret `SONAR_TOKEN` is required. Optional repository variable
+`SONAR_PROJECT_KEY` overrides the default `test_opsla` (repository name).
+The owner created the project and stored SONAR_TOKEN. Existing hostname/Cloudflare
+deployment secrets are unused by this workflow. No Access service token or
+runner-side cloudflared process is needed. The former TCP ingress example is
+historical and must not replace the working HTTP origin route.
+
+The host is publicly reachable; SonarQube owns authentication and project access.
+No credentials are embedded in workflow files or passed as scanner arguments.
+[SonarScanner environment variables](https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/scanners/sonarscanner)
+provide the host URL and token. The Docker scanner retains its inherited latest tag.
+
+## Triggers and policy
+
+Push and pull requests to main/master run tests/build and credential checks.
+Manual workflow_dispatch is available. SonarQube runs on pushes/manual execution,
+never on pull requests, so PR code receives no homelab credential.
+
+- Test/build failures fail CI.
+- Credential matches in storefront HTML, src or dist fail the credential job.
+- Intentional API/DB fixtures remain in tests/fixtures/security-demo and warn.
+- Missing fixture detections fail the positive control.
+- Diagnostics report file/line/category, never credential values.
+- This narrow literal-pattern check is not a comprehensive secret scanner.
+- Missing SONAR_TOKEN, endpoint/scanner/task errors fail SonarQube.
+- Completed quality gate ERROR warns, preserving the requested exercise.
+- Unexpected quality-gate statuses fail; OK passes.
+
+The scanner includes src, the actual storefront HTML and the credential fixture.
+Fixtures are excluded from the separate test scope to avoid double indexing.
+
+## Run and verify
+
+Local: npm ci, npm test, npm run build, node scripts/ci/credential-alert.mjs.
+On GitHub: Actions -> Tests and SonarQube (no deploy) -> Run workflow, selecting
+the branch containing this HTTPS configuration. Or:
+
 ```bash
-gh workflow run security-ci-validation.yml \
-  --ref test/security-ci-validation \
-  -f run_zap=true \
-  -f run_sonarqube=false
+gh workflow run deploy.yml --ref ci/test-sonarqube-https
 ```
 
-### Giới hạn đăng ký `workflow_dispatch` trên nhánh mặc định (Default Branch Limitation)
-- **Đặc thù GitHub Actions**: Để một workflow file có trigger `on: workflow_dispatch` xuất hiện trên giao diện Web UI hoặc được nhận diện bởi lệnh `gh workflow run`, file `.github/workflows/security-ci-validation.yml` **bắt buộc phải tồn tại trên nhánh mặc định (`main`)**.
-- Khi file đã có mặt trên `main`, bạn có thể chỉ định tham số `--ref <tên-nhánh>` để thực thi workflow trên bất kỳ branch thử nghiệm nào.
-- *Lưu ý*: Không tự ý bổ sung các trigger tự động khác (như `push` hay `pull_request`) vào workflow này nhằm tuân thủ nguyên tắc Zero Scope Drift và ngăn ngừa kích hoạt ngoài ý muốn.
+Do not dispatch an older branch's deploy workflow: it can still contain deployment.
+Local validation on the isolated CI branch and live run evidence are recorded in
+`docs/plans/active/2026-11-14-test-sonarqube-ci.md` in the original workspace.
+A workflow run is not evidence of required branch protection.
 
----
+## Recovery
 
-## 2. Chi Tiết Các Công Việc Kiểm Thử (Jobs)
-
-| Job | Mô tả & Nhiệm vụ kiểm thử |
-|---|---|
-| **`tests-build`** | Chạy `npm ci`, thực thi toàn bộ 81 bài automated tests (`npm test`), chạy `npm run build` và kiểm tra `dist/index.html` sạch 100% credentials. |
-| **`actionlint`** | Sử dụng container `rhysd/actionlint:1.7.12` để kiểm tra cú pháp và thực hành bảo mật của tất cả các file workflow GitHub Actions. |
-| **`static-guards`** | Kiểm tra rào chắn bất biến: ngăn chặn chuỗi secret fallback công khai, đảm bảo fixtures demo chỉ nằm trong `tests/fixtures/`, và xác thực thư mục `dist/` hoàn toàn sạch. |
-| **`trivy`** | Quét lỗ hổng (vuln, secret, misconfig) trên repository bằng `aquasec/trivy:0.76.2`. Đồng thời chạy Positive Control trên `tests/fixtures/security-demo/` để chứng minh scanner phát hiện đúng credential mẫu. |
-| **`api-security`** | Kiểm tra khởi động fail-closed khi thiếu `ADMIN_SECRET_KEY` (mã lỗi 1), kiểm tra 4 trạng thái Unauthorized trên toàn bộ 5 route admin Node server, kiểm tra Cloudflare Worker mode (503 khi thiếu key, 401 khi sai key, 200 khi đúng key), và rà soát leak secret trong log. |
-| **`zap`** *(Tùy chọn)* | Khởi chạy server Node cục bộ tại `127.0.0.1:3900` và quét DAST Baseline bằng `ghcr.io/zaproxy/zaproxy:stable` kết hợp cấu hình `.zap/rules.tsv`. |
-| **`sonarqube`** *(Tùy chọn)* | Mở Cloudflare Tunnel qua `cloudflared access tcp` kết nối máy chủ SonarQube nội bộ và quét mã nguồn chuyên sâu bằng `sonar-scanner-cli`. |
-| **`summary`** | Tổng hợp bảng kết quả Markdown vào `$GITHUB_STEP_SUMMARY` và đóng vai trò cổng chốt chặn (Enforcement Gate) bắt buộc tất cả job yêu cầu phải đạt PASS. |
-
----
-
-## 3. Chính Sách Chấp Nhận Cảnh Báo (Acceptance Policy)
-
-### Trivy Security Scan
-- **Production Codebase**: Phải đạt **0** phát hiện mức `HIGH` hoặc `CRITICAL`.
-- **Positive Control (`tests/fixtures/security-demo/`)**: Bắt buộc phải phát hiện $\ge 1$ secret giả lập trong fixture. Kết quả này được hệ thống ghi nhận là:  
-  `ACCEPTED (test fixture, not in production build)` nhằm minh chứng scanner hoạt động chính xác.
-
-### OWASP ZAP Baseline DAST
-- **Mã thoát 0 (PASS)**: Không phát hiện cảnh báo nào.
-- **Mã thoát 2 (WARN)**: Có cảnh báo nhưng được chấp nhận theo chính sách ban đầu tại `.zap/rules.tsv`. Các cảnh báo này được trích xuất thành bảng Markdown trong tóm tắt run để audit.
-- **Mã thoát 1 hoặc 3 (FAIL)**: Lỗi quét hoặc vi phạm quy tắc nghiêm trọng; job sẽ báo lỗi đỏ (`exit 1`).
+Revert the CI commit on its branch. Preserve unrelated uncommitted work in the
+original workspace. No remote DB migration or application deployment is involved.

@@ -1,114 +1,111 @@
-name: CI/CD Pipeline — Automation Tests & Cloudflare Edge Deployment
-
+name: Tests and SonarQube (no deploy)
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   pull_request:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   workflow_dispatch:
-
 permissions:
   contents: read
-
+concurrency:
+  group: test-sonar-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  # ========================================================
-  # STAGE 1: AUTOMATED TESTING & BUILD INTEGRITY (ZERO-TRUST GATE)
-  # ========================================================
   test:
-    name: Run Automated Tests & Verify Invariants
+    name: Automated tests and build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Verify build artifact
+        run: test -s dist/index.html
+  credential-alert:
+    name: Frontend credential alerts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Detect credential traps and production leaks (redacted)
+        run: node scripts/ci/credential-alert.mjs
+  sonarqube:
+    name: SonarQube via HTTPS
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: https://test-sonarqube.trungnt.me
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY || github.event.repository.name }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'npm'
-        continue-on-error: true
+          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Install Dependencies
+      - name: Verify SonarQube Secrets
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
-      - name: Execute Automated Test Suite (68+ Tests)
-        run: |
-          npm test
-
-      - name: Build Web Application & Edge Assets
-        run: |
-          npm run build
-
-      - name: Verify Build Artifacts
-        run: |
-          if [ ! -f dist/index.html ]; then
-            echo "❌ Error: dist/index.html not generated!"
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "::error::SONAR_TOKEN is missing."
             exit 1
           fi
-          echo "✓ Build artifact verified: dist/index.html ($(wc -c < dist/index.html) bytes)"
+          echo "All SonarQube secrets present."
 
-  # ========================================================
-  # STAGE 2: CLOUDFLARE D1 MIGRATION & EDGE DEPLOYMENT
-  # ========================================================
-  deploy:
-    name: Deploy to Cloudflare Workers with D1 Database
-    needs: test
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Dependencies & Build
+      - name: Verify HTTPS endpoint
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-          npm run build
-
-      - name: Verify required secrets (fail closed)
-        env:
-          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+          curl -fsS --retry 3 --connect-timeout 5 --max-time 20 "$SONAR_HOST_URL/api/system/status" | jq -e '.status == "UP"'
+      - name: Execute SonarQube Scanner CLI
         run: |
-          if [ -z "$ADMIN_SECRET_KEY" ]; then
-            echo "::error::ADMIN_SECRET_KEY secret is not configured - refusing to deploy (fail closed)"
+          docker run --rm --network host \
+            --user "$(id -u):$(id -g)" \
+            -e SONAR_USER_HOME=/tmp/sonar \
+            -e SONAR_HOST_URL -e SONAR_TOKEN \
+            -v "$GITHUB_WORKSPACE:/usr/src" \
+            sonarsource/sonar-scanner-cli:latest \
+            -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+            -Dsonar.sources=src,oops_la_book_store_uxui_fixed.html,tests/fixtures/security-demo \
+            -Dsonar.tests=tests \
+            '-Dsonar.test.exclusions=tests/fixtures/**'
+
+      # Follow this scan's task. Findings warn; scanner/task errors fail.
+      - name: Report Quality Gate (findings are alerts)
+        run: |
+          CE_ID=$(grep '^ceTaskId=' .scannerwork/report-task.txt | cut -d= -f2-)
+          test -n "$CE_ID"
+          TASK_STATUS=""
+          for _ in $(seq 1 60); do
+            TASK=$(curl -fsS --connect-timeout 5 --max-time 10 -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/ce/task?id=$CE_ID")
+            TASK_STATUS=$(echo "$TASK" | jq -r '.task.status')
+            case "$TASK_STATUS" in SUCCESS|FAILED|CANCELED) break ;; esac
+            sleep 5
+          done
+          if [ "$TASK_STATUS" != "SUCCESS" ]; then
+            echo "::error::SonarQube background task did not succeed (status: $TASK_STATUS)"
             exit 1
           fi
-          echo "ADMIN_SECRET_KEY present"
-
-      - name: Apply Cloudflare D1 Database Migrations
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          echo "🔄 Running D1 Database migrations against remote database..."
-          npx wrangler d1 migrations apply oopsla-db --remote || echo "⚠️ Warning: D1 migration failed or database not yet created. Check wrangler.toml."
-
-      - name: Deploy Worker & Static Assets to Cloudflare Edge
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "latest"
-          secrets: |
-            ADMIN_SECRET_KEY
-        env:
-          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+          AID=$(echo "$TASK" | jq -er '.task.analysisId | select(length > 0)')
+          QG=$(curl -fsS --connect-timeout 5 --max-time 10 -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$AID" | jq -r '.projectStatus.status')
+          echo "### SonarQube Quality Gate: **$QG**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$QG" = "ERROR" ]; then
+            echo "::warning::SonarQube Quality Gate failed; intentional traps retained. Review findings in SonarQube."
+          elif [ "$QG" != "OK" ]; then
+            echo "::error::Unexpected SonarQube Quality Gate status: $QG"
+            exit 1
+          fi
