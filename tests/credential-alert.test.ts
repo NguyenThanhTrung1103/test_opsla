@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { detectCredentials } from '../scripts/ci/credential-alert.mjs';
+import { detectCredentials, audit } from '../scripts/ci/credential-alert.mjs';
 
 test('credential alerts allow environment lookups and flag literal API/DB credentials', () => {
   assert.equal(detectCredentials('const apiKey = process.env.API_KEY;').length, 0);
@@ -44,4 +44,19 @@ test('credential CLI warns for fixtures, rejects production leaks and redacts va
   } finally {
     rmSync(sandbox, { recursive: true, force: true });
   }
+});
+
+test('only the exact owner-approved dummy key in storefront/index is a demo exception', () => {
+  const sandbox = mkdtempSync(join(tmpdir(), 'oopsla-demo-policy-'));
+  try {
+    for (const dir of ['src', 'dist', 'tests/fixtures/security-demo']) mkdirSync(join(sandbox, dir), { recursive: true });
+    const dummy = 'const API_KEY = "DEMO_ONLY_OOPSLA_PUBLIC_KEY_NOT_VALID";';
+    writeFileSync(join(sandbox, 'oops_la_book_store_uxui_fixed.html'), dummy);
+    writeFileSync(join(sandbox, 'dist/index.html'), dummy);
+    assert.equal(audit(sandbox).filter(hit => hit.intentionalDemo).length, 2);
+    writeFileSync(join(sandbox, 'src/leak.js'), dummy);
+    assert.equal(audit(sandbox).filter(hit => !hit.fixture && !hit.intentionalDemo).length, 1);
+    writeFileSync(join(sandbox, 'dist/index.html'), 'const API_KEY = "unapproved-canary";');
+    assert.equal(audit(sandbox).filter(hit => !hit.fixture && !hit.intentionalDemo).length, 2);
+  } finally { rmSync(sandbox, { recursive: true, force: true }); }
 });

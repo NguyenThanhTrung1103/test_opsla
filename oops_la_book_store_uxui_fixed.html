@@ -2,6 +2,14 @@
 
 <html lang="vi">
 <head>
+<!-- Intentional security demo: public dummy key, never accepted by backend authentication. -->
+<script id="security-demo-config">
+window.DEMO_CONFIG = Object.freeze({
+  API_KEY: "DEMO_ONLY_OOPSLA_PUBLIC_KEY_NOT_VALID",
+  NOTICE: "Fake credential for F12 demo only. No API, admin or database privileges."
+});
+</script>
+
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Oops La Book Store — Architecture &amp; Monographs</title>

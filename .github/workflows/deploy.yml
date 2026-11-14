@@ -1,10 +1,15 @@
-name: Tests and SonarQube (no deploy)
+name: CI Scan and Worker Deploy
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the tested revision to Cloudflare Worker
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -91,6 +96,7 @@ jobs:
             echo "::error::SONAR_TOKEN is missing."
             exit 1
           fi
+
           echo "All SonarQube secrets present."
 
       - name: Normalize copied token whitespace
@@ -148,3 +154,69 @@ jobs:
             echo "::error::Unexpected SonarQube Quality Gate status: $QG"
             exit 1
           fi
+
+  cloudflare-preflight:
+    name: Verify Cloudflare target and rollback snapshot
+    needs: [test, credential-alert, sonarqube]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      worker_url: ${{ steps.target.outputs.worker_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Inspect account, Worker, bindings and previous versions
+        id: target
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/ci/cloudflare-preflight.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cloudflare-before
+          path: test-results/cloudflare-before.json
+          if-no-files-found: warn
+
+  deploy:
+    name: Deploy Cloudflare Worker and verify live demo
+    needs: [test, credential-alert, sonarqube, cloudflare-preflight]
+    if: (github.event_name == 'workflow_dispatch' && inputs.deploy) || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Recheck deployment assets and record revision
+        run: |
+          node scripts/ci/credential-alert.mjs
+          node -e "require('node:fs').writeFileSync('dist/deploy-metadata.json', JSON.stringify({sha:process.env.GITHUB_SHA,worker:'oops-la-bookstore'}))"
+      - name: Configure private admin credential (never the public demo key)
+        env:
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+        run: |
+          test -n "$ADMIN_SECRET_KEY" || { echo '::error::Missing ADMIN_SECRET_KEY'; exit 1; }
+          printf '%s' "$ADMIN_SECRET_KEY" | npx --yes wrangler@4.162.0 secret put ADMIN_SECRET_KEY
+      - name: Deploy Worker code and static assets (no DB migration)
+        run: npx --yes wrangler@4.162.0 deploy
+      - name: Verify deployed HTML, revision, D1 and demo-key rejection
+        env:
+          WORKER_URL: ${{ needs.cloudflare-preflight.outputs.worker_url }}
+        run: node scripts/ci/worker-live-smoke.mjs

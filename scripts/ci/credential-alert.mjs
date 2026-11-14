@@ -12,7 +12,8 @@ export function detectCredentials(source) {
   for (const [rule, pattern] of rules) {
     for (const match of source.matchAll(pattern)) {
       if (match[1] && /^(?:\$\{|process\.env\.|env\.)/.test(match[1])) continue;
-      findings.push({ rule, line: source.slice(0, match.index).split('\n').length });
+      findings.push({ rule, line: source.slice(0, match.index).split('\n').length,
+        demo: match[1] === 'DEMO_ONLY_OOPSLA_PUBLIC_KEY_NOT_VALID' });
     }
   }
   return findings;
@@ -35,7 +36,9 @@ export function audit(root = process.cwd()) {
   ]) {
     for (const file of filesAt(resolve(root, path))) {
       for (const hit of detectCredentials(readFileSync(file, 'utf8'))) {
-        findings.push({ file: relative(root, file).replaceAll('\\', '/'), fixture, ...hit });
+        const name = relative(root, file).replaceAll('\\', '/');
+        const intentionalDemo = hit.demo && ['oops_la_book_store_uxui_fixed.html', 'dist/index.html'].includes(name);
+        findings.push({ file: name, fixture, ...hit, intentionalDemo });
       }
     }
   }
@@ -45,12 +48,13 @@ export function audit(root = process.cwd()) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const findings = audit();
   for (const hit of findings) {
-    const severity = hit.fixture ? 'warning' : 'error';
-    console.log(`::${severity} file=${hit.file},line=${hit.line}::${hit.rule} literal detected (value redacted). ${hit.fixture ? 'Intentional fixture retained.' : 'Remove credential from production source/build; see docs/ci/security-ci-validation.md.'}`);
+    const severity = hit.fixture || hit.intentionalDemo ? 'warning' : 'error';
+    console.log(`::${severity} file=${hit.file},line=${hit.line}::${hit.rule} literal detected (value redacted). ${hit.fixture ? 'Intentional fixture retained.' : hit.intentionalDemo ? 'Owner-approved public dummy key for F12 demo; no privileges.' : 'Remove credential from production source/build; see docs/ci/security-ci-validation.md.'}`);
   }
   const fixture = findings.filter(hit => hit.fixture).length;
-  const production = findings.length - fixture;
-  const summary = `Credential alerts: ${fixture} fixture finding(s), ${production} production finding(s). Values redacted.\n`;
+  const demo = findings.filter(hit => hit.intentionalDemo).length;
+  const production = findings.filter(hit => !hit.fixture && !hit.intentionalDemo).length;
+  const summary = `Credential alerts: ${fixture} fixture finding(s), ${demo} approved dummy-key finding(s), ${production} unexpected production finding(s). Values redacted.\n`;
   console.log(summary.trim());
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
   if (!fixture) console.error('::error::Expected security fixture credentials were not detected; check positive control.');

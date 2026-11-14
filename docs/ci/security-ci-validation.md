@@ -107,3 +107,25 @@ Verified automation-report run: 43573139293 at commit 9415058 completed SUCCESS
 for Automation Tests and Build, Frontend credential alerts and SonarQube via
 HTTPS. Downloaded automation-test-results artifact confirms tests=83, pass=83,
 fail=0, skipped=0. Summary/upload steps succeeded. Main remains unmerged.
+
+## Authorized live deployment and F12 demo
+
+The owner now authorizes real deployment after automation tests, credential
+checks and Sonar analysis. workflow_dispatch input deploy defaults false for
+checks-only runs; set deploy=true for an actual deployment. Push to main/master
+with this workflow also deploys after all required jobs. PRs never deploy.
+Cloudflare preflight verifies the existing oops-la-bookstore Worker, its DB
+binding, account workers.dev hostname and previous deployment metadata. Snapshot
+artifact cloudflare-before supports rollback. No remote DB migration is executed.
+
+The exact public dummy literal DEMO_ONLY_OOPSLA_PUBLIC_KEY_NOT_VALID is now allowed
+only in oops_la_book_store_uxui_fixed.html and dist/index.html. It is visible via
+F12 / window.DEMO_CONFIG.API_KEY and cannot authenticate to admin. This owner
+exception supersedes the older fixture-only rule for this one literal/location.
+All other production credential patterns still fail. Positive/negative tests
+cover allowed storefront/index, forbidden src location and a changed key value.
+The original credential fixture stays outside dist. Deploy smoke verifies the
+demo exists, exact deployed SHA, D1 health/catalog and anonymous/demo-key admin
+requests return 401. Real ADMIN_SECRET_KEY is separate and stored in Secrets.
+Wrangler is pinned to 4.162.0. Code rollback uses the previous version recorded
+in cloudflare-before; no D1 data changes are part of code rollback.
