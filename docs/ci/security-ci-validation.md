@@ -91,3 +91,14 @@ https://test-sonarqube.trungnt.me/dashboard?id=Oops-La-Bookstore
 
 The task plan is docs/plans/completed/2026-11-14-test-sonarqube-ci.md. Main has
 not been merged; its historical workflow is not replaced by this branch run.
+
+## Automation test visibility
+
+The existing npm test suite was retained from the original pipeline; the old
+68+ label was descriptive, not a separate suite. The verified suite now contains
+83 cases. The Automation Tests and Build job runs npm test once, saves its full
+output as automation-test-results/automation-tests.log, and publishes actual
+runner totals/pass/fail/skipped in the Actions Summary. Missing counters are
+reported as Not reported rather than a passing zero. Bash pipefail preserves
+test failures through tee; report steps run even when tests fail. Credential
+alerts, SonarQube, build logic and triggers are unchanged.

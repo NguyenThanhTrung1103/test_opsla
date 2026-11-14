@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   test:
-    name: Automated tests and build
+    name: Automation Tests and Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -24,7 +24,32 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm test
+      - name: Run Automation Tests (npm test)
+        shell: bash
+        run: |
+          mkdir -p test-results
+          npm test 2>&1 | tee test-results/automation-tests.log
+      - name: Publish Automation Test Summary
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const log = fs.existsSync('test-results/automation-tests.log')
+            ? fs.readFileSync('test-results/automation-tests.log', 'utf8') : '';
+          const count = name => log.match(new RegExp('^# ' + name + ' (\\d+)\\s*$', 'm'))?.[1] ?? 'Not reported';
+          const summary = ['## Automation Tests', '', 'Command: `npm test` (existing full suite)', '',
+            '| Total | Passed | Failed | Skipped |', '| --- | --- | --- | --- |',
+            `| ${count('tests')} | ${count('pass')} | ${count('fail')} | ${count('skipped')} |`, '',
+            'Full output: automation-test-results artifact. Missing counts mean the runner did not produce a complete summary.', ''].join('\n');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+          NODE
+      - name: Upload Automation Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-test-results
+          path: test-results/automation-tests.log
+          if-no-files-found: warn
       - run: npm run build
       - name: Verify build artifact
         run: test -s dist/index.html
