@@ -102,3 +102,8 @@ runner totals/pass/fail/skipped in the Actions Summary. Missing counters are
 reported as Not reported rather than a passing zero. Bash pipefail preserves
 test failures through tee; report steps run even when tests fail. Credential
 alerts, SonarQube, build logic and triggers are unchanged.
+
+Verified automation-report run: 43573139293 at commit 9415058 completed SUCCESS
+for Automation Tests and Build, Frontend credential alerts and SonarQube via
+HTTPS. Downloaded automation-test-results artifact confirms tests=83, pass=83,
+fail=0, skipped=0. Summary/upload steps succeeded. Main remains unmerged.
