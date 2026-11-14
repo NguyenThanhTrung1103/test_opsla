@@ -68,6 +68,19 @@ jobs:
           fi
           echo "All SonarQube secrets present."
 
+      - name: Normalize copied token whitespace
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const token = process.env.SONAR_TOKEN.trim();
+          if (!token || /\s/.test(token)) {
+            console.error('::error::SONAR_TOKEN contains invalid whitespace. Save only the generated token value.');
+            process.exit(1);
+          }
+          console.log('::add-mask::' + token);
+          fs.appendFileSync(process.env.GITHUB_ENV, 'SONAR_TOKEN=' + token + '\n');
+          NODE
+
       - name: Verify HTTPS endpoint
         run: |
           curl -fsS --retry 3 --connect-timeout 5 --max-time 20 "$SONAR_HOST_URL/api/system/status" | jq -e '.status == "UP"'
