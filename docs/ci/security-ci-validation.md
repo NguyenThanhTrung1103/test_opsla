@@ -62,3 +62,18 @@ A workflow run is not evidence of required branch protection.
 
 Revert the CI commit on its branch. Preserve unrelated uncommitted work in the
 original workspace. No remote DB migration or application deployment is involved.
+
+## Live GitHub result (2026-11-14)
+
+Branch ci/test-sonarqube-https, commit e9c46dd, run:
+https://github.com/NguyenThanhTrung1103/test_opsla/actions/runs/43570347596
+
+Automated tests/build and credential-alert jobs passed on GitHub. The three
+intentional fixture warnings are redacted. HTTPS readiness and token normalization
+passed. Scanner connected, downloaded analyzers and indexed 39 files, but server
+rejected submission: not authorized to analyze test_opsla, or project does not
+exist and token cannot create it. Verify the exact project key and token Execute
+Analysis permission; do not infer full authorization from scanner bootstrap.
+Unauthenticated project discovery returns 401. Full pipeline success and quality
+gate remain unverified. No merge or deployment performed. Default main still
+contains its historical deploy workflow; run this branch explicitly.
