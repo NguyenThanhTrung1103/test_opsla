@@ -399,3 +399,9 @@ Tài liệu lưu vết toàn bộ các quyết định kiến trúc, lý do kỹ
      - Bao gồm kiến trúc luồng, sơ đồ Mermaid chi tiết, phân tích 4 lane, runbook xoay vòng secret, hướng dẫn merge PR #1 và đánh giá kiến trúc cho 2 vấn đề bảo mật mở rộng (`X-Forwarded-For` và `body.role`).
 - **Trạng thái**: Toàn bộ hệ thống kiểm thử tự động, sơ đồ và tài liệu bàn giao đã hoàn tất và sẵn sàng nghiệm thu.
 
+
+WHY for live demo: an exact harmless public dummy key in storefront/index models
+F12 exposure while narrow path/value checks continue to reject other credential
+matches. Real admin credential is separate. Token-2 D1 read access resolved
+preflight and run 43609968394 verified deployment without DB mutation. No previous
+Worker version existed; record first verified version for future recovery.

@@ -39,3 +39,14 @@
 - Build frontend artifact: `npm run build`
 - Khởi chạy server production: `npm run start`
 - Kiểm tra bộ ba trụ cột: `npm run check-tri-pillar`
+
+## 2026-11-14: live Worker demo deployment verified
+
+Run 43609968394 passed all five jobs and deployed code 4d0d067 to
+https://oops-la-bookstore.trungnt-mcp.workers.dev. Version
+9398843e-11c4-4e93-b6e3-0328f3745ae7 is the verified future rollback target.
+84 tests pass; scan/alerts preserved; exact public dummy API key visible via
+window.DEMO_CONFIG.API_KEY; anonymous/demo-key admin requests both 401.
+D1 connected, catalog 4 books. No migration or main merge. Workflow uses secret
+CLOUDFLARE_API_TOKEN_2. Private admin secret stays in GitHub/Worker, not HTML.
+Guide docs/ci/security-ci-validation.md; completed task plan has final evidence.
