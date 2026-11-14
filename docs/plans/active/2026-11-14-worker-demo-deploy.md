@@ -36,3 +36,15 @@ errors and unexpected production credential matches still block deployment.
 - [ ] Verify account, Worker, bindings and prior deployment version.
 - [ ] Deploy after tests/scans and verify through public endpoints.
 - [ ] Record final evidence, URL, rollback and residual risks.
+
+## Execution evidence
+
+Local npm test 84/84 passed; build passed; credential check reported three
+fixture warnings, two approved dummy-key warnings and zero unexpected production
+hits. New test proves wrong location/value still fails the exception boundary.
+Actionlint passed. Run 43607827022 passed all three existing scan/test jobs but
+preflight hit D1 metadata API 401/10000. No deployment occurred. e9d2645 verifies
+binding ID plus existing Worker /api/health instead of requiring D1 admin API.
+Run 43608099248 is checks-only. Generated a private random ADMIN_SECRET_KEY into
+GitHub Secrets without printing/storing it locally; deployment will replace the
+old Worker admin credential with this private value, never the public demo key.

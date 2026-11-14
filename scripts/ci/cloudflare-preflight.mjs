@@ -12,6 +12,8 @@ async function get(path) {
   return b.result;
 }
 const name = 'oops-la-bookstore';
+const scripts = await get('workers/scripts');
+console.log(JSON.stringify({ availableWorkers: scripts.map(s => s.id) }));
 const [subdomain, settings, deployments] = await Promise.all([
   get('workers/subdomain'), get(`workers/scripts/${name}/settings`),
   get(`workers/scripts/${name}/deployments`),

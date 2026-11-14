@@ -157,7 +157,6 @@ jobs:
 
   cloudflare-preflight:
     name: Verify Cloudflare target and rollback snapshot
-    needs: [test, credential-alert, sonarqube]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
