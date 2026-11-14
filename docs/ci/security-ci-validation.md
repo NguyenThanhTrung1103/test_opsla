@@ -1,4 +1,4 @@
-﻿# Test and SonarQube pipeline
+# Test and SonarQube pipeline
 
 The workflow `.github/workflows/deploy.yml` runs checks only: checkout, npm ci,
 automated tests, build, redacted credential alerts and SonarQube analysis.
@@ -12,8 +12,8 @@ The owner selected direct HTTPS without Cloudflare Access on 2026-11-14:
 GitHub runner -> https://test-sonarqube.trungnt.me -> existing Cloudflare Tunnel
 -> SonarQube at 192.168.99.33:9000.
 
-Only Actions secret `SONAR_TOKEN` is required. Optional repository variable
-`SONAR_PROJECT_KEY` overrides the default `test_opsla` (repository name).
+Only Actions secret `SONAR_TOKEN` is required. Repository variable
+`SONAR_PROJECT_KEY=Oops-La-Bookstore` selects the owner-confirmed project key.
 The owner created the project and stored SONAR_TOKEN. Existing hostname/Cloudflare
 deployment secrets are unused by this workflow. No Access service token or
 runner-side cloudflared process is needed. The former TCP ingress example is
@@ -55,7 +55,7 @@ gh workflow run deploy.yml --ref ci/test-sonarqube-https
 
 Do not dispatch an older branch's deploy workflow: it can still contain deployment.
 Local validation on the isolated CI branch and live run evidence are recorded in
-`docs/plans/active/2026-11-14-test-sonarqube-ci.md` in the original workspace.
+`docs/plans/completed/2026-11-14-test-sonarqube-ci.md` in the original workspace.
 A workflow run is not evidence of required branch protection.
 
 ## Recovery
@@ -77,3 +77,17 @@ Analysis permission; do not infer full authorization from scanner bootstrap.
 Unauthenticated project discovery returns 401. Full pipeline success and quality
 gate remain unverified. No merge or deployment performed. Default main still
 contains its historical deploy workflow; run this branch explicitly.
+
+## Validated successful run
+
+The owner confirmed project key Oops-La-Bookstore and repository variable
+SONAR_PROJECT_KEY now selects it. This resolves the earlier authorization failure.
+Run https://github.com/NguyenThanhTrung1103/test_opsla/actions/runs/43570712635
+completed SUCCESS for all three jobs on ci/test-sonarqube-https (code de250c3).
+GitHub: 83/83 tests passed; three redacted fixture warnings; Sonar ANALYSIS
+SUCCESSFUL / EXECUTION SUCCESS and quality-gate reporting succeeded without a
+Sonar quality-gate warning. Results:
+https://test-sonarqube.trungnt.me/dashboard?id=Oops-La-Bookstore
+
+The task plan is docs/plans/completed/2026-11-14-test-sonarqube-ci.md. Main has
+not been merged; its historical workflow is not replaced by this branch run.
