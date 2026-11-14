@@ -14,6 +14,8 @@ async function get(path) {
 const name = 'oops-la-bookstore';
 const scripts = await get('workers/scripts');
 console.log(JSON.stringify({ availableWorkers: scripts.map(s => s.id) }));
+const databases = await get('d1/database');
+console.log(JSON.stringify({ availableDatabases: databases.map(d => ({ name: d.name, uuid: d.uuid })) }));
 const exists = scripts.some(s => s.id === name);
 const [subdomain, settings, deployments, database] = await Promise.all([
   get('workers/subdomain'),
