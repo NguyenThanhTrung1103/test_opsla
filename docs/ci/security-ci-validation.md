@@ -129,3 +129,10 @@ demo exists, exact deployed SHA, D1 health/catalog and anonymous/demo-key admin
 requests return 401. Real ADMIN_SECRET_KEY is separate and stored in Secrets.
 Wrangler is pinned to 4.162.0. Code rollback uses the previous version recorded
 in cloudflare-before; no D1 data changes are part of code rollback.
+
+Deployment now reads GitHub secret CLOUDFLARE_API_TOKEN_2 (standard Wrangler env
+name remains CLOUDFLARE_API_TOKEN). Initial Worker creation is supported; the
+configured D1 resource is verified by ID/name before creation. Latest diagnostic
+run 43609538039 could list Workers but D1 listing itself returned 401/10000.
+Deployment remains blocked on token-2 D1 Read access for the target account.
+No live code/data changes have been made by these checks-only runs.

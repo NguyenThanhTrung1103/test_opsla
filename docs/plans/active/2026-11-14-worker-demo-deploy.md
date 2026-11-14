@@ -48,3 +48,16 @@ binding ID plus existing Worker /api/health instead of requiring D1 admin API.
 Run 43608099248 is checks-only. Generated a private random ADMIN_SECRET_KEY into
 GitHub Secrets without printing/storing it locally; deployment will replace the
 old Worker admin credential with this private value, never the public demo key.
+
+## Token-2 continuation
+
+Owner created CLOUDFLARE_API_TOKEN_2. Updated workflow to bind it to the standard
+CLOUDFLARE_API_TOKEN environment variable in both preflight and deployment jobs.
+Run 43609407345 still received D1 resource API 401/10000. Diagnostic run
+43609538039 confirms even GET /accounts/{account}/d1/database fails 401/10000,
+while listing Workers succeeds. This is a D1-access blocker, not merely a missing
+configured DB ID. No deployment/migration occurred. Existing configured Worker
+is absent; preflight now handles initial creation and requires database identity
+verification before deploy. New Worker has no prior Worker version to rollback.
+Need owner to add Account > D1 > Read to token-2 for the same target account,
+or update token-2 with a new appropriately scoped token. Never request values.
