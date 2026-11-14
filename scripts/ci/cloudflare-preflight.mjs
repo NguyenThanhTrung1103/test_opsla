@@ -12,19 +12,25 @@ async function get(path) {
   return b.result;
 }
 const name = 'oops-la-bookstore';
-const [subdomain, settings, deployments, database] = await Promise.all([
+const [subdomain, settings, deployments] = await Promise.all([
   get('workers/subdomain'), get(`workers/scripts/${name}/settings`),
   get(`workers/scripts/${name}/deployments`),
-  get('d1/database/3c078acc-b184-480b-81c4-58bc7b1c73c5'),
 ]);
 const bindings = settings.bindings?.map(b => ({ name: b.name, type: b.type, id: b.id }));
+console.log(JSON.stringify({ worker: name, bindings }));
 if (!bindings?.some(b => b.name === 'DB' && b.type === 'd1' && b.id === '3c078acc-b184-480b-81c4-58bc7b1c73c5')) {
   throw new Error('Remote DB binding does not match wrangler.toml; refusing deployment');
 }
 const expected = new Set(['DB', 'ASSETS', 'ADMIN_SECRET_KEY', 'ENVIRONMENT', 'DEFAULT_ADMIN_ROLE']);
 if (bindings.some(b => !expected.has(b.name))) throw new Error('Unrecognized remote binding; inspect ownership before deploy');
 const url = `https://${name}.${subdomain.subdomain}.workers.dev`;
-const snapshot = { account, worker: name, url, bindings, deployments, database: { name: database.name, uuid: database.uuid } };
+// Worker binding ID is the deployment authority. No D1 admin API permission
+// is needed here: database availability is verified via Worker read-only health.
+const database = { name: 'oopsla-db', uuid: '3c078acc-b184-480b-81c4-58bc7b1c73c5' };
+const health = await fetch(url + '/api/health', { signal: AbortSignal.timeout(15000) });
+const status = await health.json();
+if (!health.ok || status.d1 !== 'connected') throw new Error('Existing Worker D1 health is not connected; refusing rollout');
+const snapshot = { account, worker: name, url, bindings, deployments, database, health: status };
 mkdirSync('test-results', { recursive: true });
 writeFileSync('test-results/cloudflare-before.json', JSON.stringify(snapshot, null, 2));
 appendFileSync(process.env.GITHUB_OUTPUT, `worker_url=${url}\n`);
